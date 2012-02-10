@@ -1,8 +1,8 @@
-# e-Navigation Enhanced INS #
+# e-Navigation Shore Display ESD #
 
 ## Introduction ##
    
-ee-INS (e-Navigation Enhanced Integrated Navigation System) is an ECDIS like
+ESD (e-Navigation Shore Display) is an VST
 application for demonstrating possible e-Navigation services.
    
 The application is in Java and uses OpenMap(tm) for presenting geospatial
@@ -41,21 +41,7 @@ Will remove the `dist` folder described below, erasing existing settings.
 
 ## Quick start ##
 
-To be able to see AIS targets and possible own ship, the sensor should be
-configurated. In the main window press the Setup button in the top and 
-go to the Sensor tab. Choose either TCP or serial connection type for AIS and
-configure TCP host/port or serial port.
-
-If a separate sensor is used for GPS this can be configured the same way.
-
-If the AIS source is not a transponder providing own ship information, an 
-own ship can be simulated by choosing a vessel target present in the AIS stream.
-In to bottom of the sensor tab enable Simulated GPS and enter MMSI. If the 
-AIS source provides lots of targets, the targets shown can be limited by 
-selecting a sensor range so targets farther than this distance away not will
-be shown.
-
-Press OK and restart application.
+To do
 	
 ## Project structure ###
 
@@ -101,38 +87,6 @@ following way.
          |
 	     `-- dev (branch for individual task in new version)
  
-
-## ENC layer ##
-
-ee-INS does not come with an ENC layer but with the possibility to add one as 
-a plugin. Currently the only known of OpenMap ENC layer is a commercial one
-from the danish company [Navicon](http://www.navicon.dk).
-
-To use Navicon ENC layer with ee-INS please follow the steps below
-
-1. Contact [Navicon sales](mailto:sales@navicon.dk) regarding a purchase of their 
-   [ENC/S52 rendering engine](http://navicon.dk/site/products.html). Mention the following:
-   * To be used with DaMSA ee-INS
-   * Version for use with OpenMap 5
-   * If you are using a 64-bit machine, ask for 64-bit dongle drivers
-   
-1. After purchasing you will receive a SDK and a USB dongle.
-   Unpack the SDK in a directory. The SDK should at least contain the following folders
-   `lib`, `native` and `data`.
-   
-1. Copy `.ant.properties` to `ant.properties`.
-
-1. Edit `ant.properties` and set `navicon_enc=true` and set the path to SDK, e.g. 
-   `navicon_enc_path=../navicon`.
-
-1. Build with `ant`
-
-1. Edit `dist/enc.properties` and set S-57/S-63 settings.
-
-1. Run application
-
-1. Enter Setup -> Map and enable ENC. Restart.
-
 
 ## Eclipse development ##
 
