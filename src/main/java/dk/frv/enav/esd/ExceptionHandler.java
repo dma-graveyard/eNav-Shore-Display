@@ -58,7 +58,7 @@ public class ExceptionHandler implements UncaughtExceptionHandler {
 		e.printStackTrace(printWriter);
 		LOG.error(result.toString());
 		e.printStackTrace();
-		JOptionPane.showMessageDialog(null, "An error has occured! Please contact administrator.", "Application error", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(null, "An error has occured! Please contact administrator or stop using a mac computer.", "Application error", JOptionPane.ERROR_MESSAGE);
 		System.exit(1);
 	}
 
