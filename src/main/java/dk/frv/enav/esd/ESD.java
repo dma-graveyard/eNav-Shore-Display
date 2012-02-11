@@ -54,6 +54,7 @@ import com.bbn.openmap.PropertyConsumer;
 import dk.frv.ais.proprietary.GatehouseFactory;
 import dk.frv.ais.reader.RoundRobinAisTcpReader;
 import dk.frv.enav.esd.ais.AisHandler;
+
 import dk.frv.enav.esd.gui.MainFrame;
 import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.esd.util.OneInstanceGuard;
