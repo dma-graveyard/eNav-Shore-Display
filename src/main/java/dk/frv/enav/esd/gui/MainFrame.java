@@ -46,6 +46,7 @@ import com.bbn.openmap.MapHandler;
 
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.settings.GuiSettings;
+import dk.frv.enav.ins.EeINS;
 
 /**
  * The main frame containing map and panels 
@@ -121,6 +122,16 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	public ChartPanel getChartPanel() {
 		return chartPanel;
+	}
+	
+	public void saveSettings() {
+		// Save gui settings
+		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
+		guiSettings.setMaximized((getExtendedState() & MAXIMIZED_BOTH) > 0);
+		guiSettings.setAppLocation(getLocation());
+		guiSettings.setAppDimensions(getSize());
+		// Save map settings
+		chartPanel.saveSettings();
 	}
 	
 	

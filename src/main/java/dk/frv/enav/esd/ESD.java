@@ -258,7 +258,7 @@ public class ESD {
 	
 	public static void closeApp(boolean restart) {
 		// Shutdown routine
-//		mainFrame.saveSettings();
+		mainFrame.saveSettings();
 		settings.saveToFile();
 //		routeManager.saveToFile();
 //		msiHandler.saveToFile();

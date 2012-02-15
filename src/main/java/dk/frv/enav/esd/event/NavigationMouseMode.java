@@ -43,6 +43,7 @@ import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.gui.ChartPanel;
 
 
+
 /**
  * The mouse mode used in navigation mode
  */
@@ -160,6 +161,7 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
 
             p.setCenter(llp);
             map.setProjection(p);
+//            chartPanel.manualProjChange();
         }
     }
 
@@ -193,7 +195,7 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
 
         synchronized (this) {
 
-        	point2 = e.getPoint();
+            point2 = getRatioPoint((MapBean) e.getSource(), point1, e.getPoint());
 
             int dx = Math.abs(point2.x - point1.x);
             int dy = Math.abs(point2.y - point1.y);
@@ -210,8 +212,7 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
                 return;
             }
 
-
-            
+             
             // Figure out the new scale
             float newScale;
 			if (point1.x < point2.x) {
@@ -249,6 +250,7 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
 
             
             map.setProjection(p);
+//            chartPanel.manualProjChange();
         }
     }
 
@@ -320,9 +322,8 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
 	            // paint new rectangle
 	            // point2 = e.getPoint();
 
-	            	point2 = e.getPoint();
-	            	
-	            
+	            point2 = getRatioPoint((MapBean) e.getSource(), point1, e.getPoint());
+
 	            paintRectangle((MapBean) e.getSource(), point1, point2);
 			}
     	}
