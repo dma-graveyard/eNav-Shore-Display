@@ -41,6 +41,9 @@ import org.apache.log4j.Logger;
 
 import com.bbn.openmap.util.PropUtils;
 
+import dk.frv.enav.ins.settings.AisSettings;
+import dk.frv.enav.ins.settings.SensorSettings;
+
 /**
  * Settings class
  */
@@ -53,9 +56,9 @@ public class Settings implements Serializable {
 	
 	private GuiSettings guiSettings = new GuiSettings();
 	private MapSettings mapSettings = new MapSettings();
-//	private SensorSettings sensorSettings = new SensorSettings();
+	private SensorSettings sensorSettings = new SensorSettings();
 //	private NavSettings navSettings = new NavSettings();
-//	private AisSettings aisSettings = new AisSettings();
+	private AisSettings aisSettings = new AisSettings();
 //	private EnavSettings enavSettings = new EnavSettings();
 	
 	
@@ -74,12 +77,12 @@ public class Settings implements Serializable {
 			LOG.info("No settings file found");
 			return;
 		}
-//		aisSettings.readProperties(props);
+		aisSettings.readProperties(props);
 //		enavSettings.readProperties(props);
 		guiSettings.readProperties(props);
 		mapSettings.readProperties(props);
 //		navSettings.readProperties(props);
-//		sensorSettings.readProperties(props);
+		sensorSettings.readProperties(props);
 	}
 	
 	public void saveToFile() {
@@ -119,5 +122,12 @@ public class Settings implements Serializable {
 		return settingsFile;
 	}
 
+	public SensorSettings getSensorSettings() {
+		return sensorSettings;
+	}
+	
+	public AisSettings getAisSettings() {
+		return aisSettings;
+	}
 
 }
