@@ -116,7 +116,7 @@ public class AisHandler extends MapHandlerChild implements IAisListener, IStatus
 	private Map<Long, SarTarget> sarTargets = new HashMap<Long, SarTarget>();
 	private List<IAisTargetListener> listeners = new ArrayList<IAisTargetListener>();
 	private List<IAisRouteSuggestionListener> suggestionListeners = new ArrayList<IAisRouteSuggestionListener>();
-	private VesselTarget ownShip = new VesselTarget();	
+//	private VesselTarget ownShip = new VesselTarget();	
 	private double aisRange = 0;
 	private NmeaSensor nmeaSensor = null;
 	private AisServices aisServices = null;
@@ -126,7 +126,7 @@ public class AisHandler extends MapHandlerChild implements IAisListener, IStatus
 	public AisHandler() {
 		if (ESD.getSettings().getSensorSettings().isSimulateGps() && ESD.getSettings().getSensorSettings().getAisSensorRange() == 0) {
 			aisRange = SIMULATED_AIS_RANGE;
-			ownShip.setMmsi(ESD.getSettings().getSensorSettings().getSimulatedOwnShip());
+//			ownShip.setMmsi(ESD.getSettings().getSensorSettings().getSimulatedOwnShip());
 		} else {
 			aisRange = ESD.getSettings().getSensorSettings().getAisSensorRange();
 		}
@@ -134,21 +134,6 @@ public class AisHandler extends MapHandlerChild implements IAisListener, IStatus
 		ESD.startThread(this, "AisHandler");
 	}
 
-	/**
-	 * Get target with mmsi
-	 * @param mmsi
-	 * @return
-	 */
-	public synchronized AisTarget getTarget(long mmsi) {
-		if (vesselTargets.containsKey(mmsi)) {
-			return new VesselTarget(vesselTargets.get(mmsi));
-		} else if (sarTargets.containsKey(mmsi)) {
-			return new SarTarget(sarTargets.get(mmsi));
-		} else if (atonTargets.containsKey(mmsi)) {
-			return new AtoNTarget(atonTargets.get(mmsi));
-		}
-		return null;
-	}
 	
 	/**
 	 * Method receiving AIS messages from AIS sensor
@@ -175,7 +160,6 @@ public class AisHandler extends MapHandlerChild implements IAisListener, IStatus
 			}
 		} else if (aisMessage instanceof AisMessage21) {
 			AisMessage21 msg21 = (AisMessage21) aisMessage;
-			updateAton(msg21);
 		} else if (aisMessage instanceof AisMessage5) {
 			AisMessage5 msg5 = (AisMessage5) aisMessage;
 			VesselStaticData staticData = new VesselStaticData(msg5);
@@ -193,23 +177,14 @@ public class AisHandler extends MapHandlerChild implements IAisListener, IStatus
 				return;
 			}
 			// Handle broadcast messages
-			if (aisMessage.getMsgId() == 8 && appMessage != null) {
-				// Handle route information
-				if (appMessage.getDac() == BroadcastIntendedRoute.DAC && appMessage.getFi() == BroadcastIntendedRoute.FI) {
-					BroadcastIntendedRoute intendedRoute = (BroadcastIntendedRoute)appMessage;
-					//LOG.info("BroadcastRouteInformation: " + routeInformation);
-					// Handle intended route
-					updateIntendedRoute(aisMessage.getUserId(), new AisIntendedRoute(intendedRoute));
-				}
-			}
 			// Handle addressed messages
 			if (aisMessage.getMsgId() == 6 && appMessage != null) {
 				
 				// Check if for own ship
 				AisMessage6 msg6 = (AisMessage6)aisMessage; 
-				if (ownShip.getMmsi() != msg6.getDestination()) {
-					return;
-				}
+//				if (ownShip.getMmsi() != msg6.getDestination()) {
+//					return;
+//				}
 				
 				// Handle adressed route information
 				if (appMessage.getDac() == 1 && appMessage.getFi() == 28) {
@@ -235,74 +210,9 @@ public class AisHandler extends MapHandlerChild implements IAisListener, IStatus
 	 */
 	@Override
 	public synchronized void receiveOwnMessage(AisMessage aisMessage) {
-		// Determine if our vessel has changed. Clear if so.
-		if (ownShip != null) {
-			if (aisMessage.getUserId() != ownShip.getMmsi()) {
-				ownShip = new VesselTarget();
-			}
-		}
+	}
+
 		
-		if (aisMessage instanceof AisPositionMessage) {
-			AisPositionMessage aisPositionMessage = (AisPositionMessage) aisMessage;
-			ownShip.setAisClass(VesselTarget.AisClass.A);
-			ownShip.setPositionData(new VesselPositionData(aisPositionMessage));
-		} else if (aisMessage instanceof AisMessage18) {
-			AisMessage18 posMessage = (AisMessage18) aisMessage;
-			ownShip.setAisClass(VesselTarget.AisClass.B);
-			ownShip.setPositionData(new VesselPositionData(posMessage));
-		} else if (aisMessage instanceof AisMessage5) {
-			AisMessage5 msg5 = (AisMessage5) aisMessage;
-			ownShip.setStaticData(new VesselStaticData(msg5));
-		}
-
-		ownShip.setLastReceived(GnssTime.getInstance().getDate());
-		ownShip.setMmsi(aisMessage.getUserId());
-
-	}
-
-	/**
-	 * Update AtoN target
-	 * @param msg21
-	 */
-	private synchronized void updateAton(AisMessage21 msg21) {
-		if (!isWithinRange(msg21.getPos().getGeoLocation())) {
-			return;
-		}
-		
-		// Try to find existing entry
-		AtoNTarget atonTarget = atonTargets.get(msg21.getUserId());
-		// If not exists, create new and insert
-		if (atonTarget == null) {
-			atonTarget = new AtoNTarget();
-			atonTarget.setMmsi(msg21.getUserId());
-			atonTargets.put(msg21.getUserId(), atonTarget);
-		}
-		// Update target
-		atonTarget.update(msg21);
-		// Update last received
-		atonTarget.setLastReceived(GnssTime.getInstance().getDate());
-		// Update status
-		atonTarget.setStatus(AisTarget.Status.OK);
-		publishUpdate(atonTarget);
-	}
-	
-	/**
-	 * Update intended route of vessel target
-	 * @param mmsi
-	 * @param routeData
-	 */
-	private synchronized void updateIntendedRoute(long mmsi, AisIntendedRoute routeData) {
-		// Try to find exiting target
-		VesselTarget vesselTarget = vesselTargets.get(mmsi);
-		// If not exists, wait for it to be created by position report
-		if (vesselTarget == null) {
-			return;
-		}
-		// Update intented route
-		vesselTarget.setAisRouteData(routeData);
-		publishUpdate(vesselTarget);
-	}
-	
 	/**
 	 * Update vessel target statics
 	 * @param mmsi
@@ -507,10 +417,10 @@ public class AisHandler extends MapHandlerChild implements IAisListener, IStatus
 		suggestionListeners.remove(routeSuggestionListener);
 	}
 	
-	public synchronized VesselTarget getOwnShip() {		
-		if (ownShip == null) return null;
-		return new VesselTarget(ownShip);
-	}
+//	public synchronized VesselTarget getOwnShip() {		
+//		if (ownShip == null) return null;
+//		return new VesselTarget(ownShip);
+//	}
 
 	/**
 	 * Update status of all targets
@@ -630,9 +540,11 @@ public class AisHandler extends MapHandlerChild implements IAisListener, IStatus
 		       
 		    List<AisMessageExtended> shipList = getShipList();
 		    
+		    System.out.println("Recieving AIS:");
 		    for (int i = 0; i < shipList.size(); i++) {
-				System.out.println(shipList.get(i).name);
+				System.out.println("ID " + shipList.get(i).MMSI + " : " +shipList.get(i).name);
 			}
+		    System.out.println("AIS Recieved");
 		    
 //		    while (iterator.hasNext()) {  
 //		       String key = iterator.next().toString();  
@@ -706,7 +618,6 @@ public class AisHandler extends MapHandlerChild implements IAisListener, IStatus
 					name = " " + AisMessage.trimText(this.getVesselTargets().get(key).getStaticData().getName());
 				}
 				if (!ESD.getGpsHandler().getCurrentData().isBadPosition()){
-//				if (!true){
 					ownPosition = ESD.getGpsHandler().getCurrentData().getPosition();
 					
 					if (currentTarget.getPositionData().getPos() != null){
@@ -718,8 +629,6 @@ public class AisHandler extends MapHandlerChild implements IAisListener, IStatus
 					}				
 				}	
 				hdg = currentTarget.getPositionData().getCog();								
-				
-			    //System.out.println("Key: " + key + ", Value: " + this.getVesselTargets().get(key));
 			    AisMessageExtended newEntry = new AisMessageExtended(name, key, hdg, dst);
 			    
 			    if (!this.getVesselTargets().get(key).isGone()){
@@ -730,73 +639,6 @@ public class AisHandler extends MapHandlerChild implements IAisListener, IStatus
 		return list;
 	}
 	
-	/**
-	 * Try to load AIS view from disk
-	 */
-	public synchronized void loadView() {
-		AisStore aisStore = null;		 
-		
-		try {
-			FileInputStream fileIn = new FileInputStream(aisViewFile);
-			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-			aisStore = (AisStore) objectIn.readObject();
-			objectIn.close();
-			fileIn.close();
-		} catch (FileNotFoundException e) {
-			// Not an error
-		} catch (Exception e) {
-			LOG.error("Failed to load AIS view file: " + e.getMessage());
-			// Delete possible corrupted or old file
-			(new File(aisViewFile)).delete();
-		}
-		
-		if (aisStore == null) {
-			return;
-		}
-		
-		// Retrieve targets
-		if (aisStore.getVesselTargets() != null) {
-			vesselTargets = aisStore.getVesselTargets();
-		}
-		if (aisStore.getAtonTargets() != null) {
-			atonTargets = aisStore.getAtonTargets();
-		}
-		if (aisStore.getSarTargets() != null) {
-			sarTargets = aisStore.getSarTargets();
-		}
-		
-		// Retrieve own ship
-		ownShip = aisStore.getOwnShip();
-		
-		LOG.info("AIS handler loaded total targets: " + (vesselTargets.size() + atonTargets.size() + sarTargets.size()));
-				
-		// Update status to update old and gone (twice for old and gone)
-		updateStatus();
-		updateStatus();
-		
-	}
-	
-	/**
-	 * Save AIS view to file
-	 */
-	public synchronized void saveView() {
-		AisStore aisStore = new AisStore();
-		aisStore.setVesselTargets(vesselTargets);
-		aisStore.setAtonTargets(atonTargets);
-		aisStore.setSarTargets(sarTargets);
-		ownShip.setPositionData(null);
-		aisStore.setOwnShip(ownShip);
-		
-		try {
-			FileOutputStream fileOut = new FileOutputStream(aisViewFile);
-			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-			objectOut.writeObject(aisStore);
-			objectOut.close();
-			fileOut.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			LOG.error("Failed to save Ais view file: " + e.getMessage());
-		}
-	}
+
 	
 }

@@ -142,7 +142,7 @@ public class ESD {
         startSensors();
         
         aisHandler = new AisHandler();
-        aisHandler.loadView();
+//        aisHandler.loadView();
         mapHandler.add(aisHandler);
         
 // 
@@ -179,12 +179,7 @@ public class ESD {
 			aisSensor = new NmeaStdinSensor();
 			break;
 		case TCP:
-			aisSensor = new NmeaTcpSensor("192.168.10.250", sensorSettings.getAisTcpPort());
-			System.out.println(sensorSettings.getAisHostOrSerialPort());
-			
-        	System.out.println("TCP?");
-        	System.out.println(sensorSettings.getAisTcpPort());
-			
+			aisSensor = new NmeaTcpSensor("192.168.10.250", 4001);
 			break;
 		case SERIAL:
 			aisSensor = new NmeaSerialSensor(sensorSettings.getAisHostOrSerialPort());
@@ -223,7 +218,6 @@ public class ESD {
         if (gpsSensor != null) {
         	gpsSensor.addSensorType(SensorType.GPS);
         }
-        
         if (aisSensor != null) {
         	aisSensor.setSimulateGps(sensorSettings.isSimulateGps());
         	aisSensor.setSimulatedOwnShip(sensorSettings.getSimulatedOwnShip());
