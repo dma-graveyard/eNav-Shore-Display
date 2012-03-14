@@ -540,7 +540,6 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	@Override
 	public void run() {
 		
-		System.out.println("AisHandler started");
 		// Publish loaded targets
 		EeINS.sleep(2000);
 		publishAll();
