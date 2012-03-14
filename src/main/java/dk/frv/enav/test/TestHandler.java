@@ -1,4 +1,4 @@
-package dk.frv.enav.test;
+package dk.frv.enav.esd.test;
 
 import java.util.List;
 
