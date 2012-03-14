@@ -119,7 +119,7 @@ public class ESD {
         gpsHandler = new GpsHandler();
         mapHandler.add(gpsHandler); 
         
-        // Create NoGo handler
+        // Create a test handler for use in testing ais handler data
         testHandler = new TestHandler();
         mapHandler.add(testHandler);
         
