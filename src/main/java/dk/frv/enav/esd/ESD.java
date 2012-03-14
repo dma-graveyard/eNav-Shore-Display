@@ -57,12 +57,12 @@ import dk.frv.enav.esd.gui.MainFrame;
 import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.nmea.NmeaTcpSensor;
 import dk.frv.enav.esd.settings.Settings;
+import dk.frv.enav.esd.test.TestHandler;
 import dk.frv.enav.esd.util.OneInstanceGuard;
 import dk.frv.enav.ins.gps.GnssTime;
 import dk.frv.enav.ins.gps.GpsHandler;
 import dk.frv.enav.ins.nmea.SensorType;
 import dk.frv.enav.ins.settings.SensorSettings;
-import dk.frv.enav.test.TestHandler;
 
 /**
  * Main class with main method.
