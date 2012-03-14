@@ -179,7 +179,8 @@ public class ESD {
 			aisSensor = new NmeaStdinSensor();
 			break;
 		case TCP:
-			aisSensor = new NmeaTcpSensor("192.168.10.250", 4001);
+			//aisSensor = new NmeaTcpSensor("192.168.10.250", 4001);
+			aisSensor = new NmeaTcpSensor("localhost", 4001);
 			break;
 		case SERIAL:
 			aisSensor = new NmeaSerialSensor(sensorSettings.getAisHostOrSerialPort());
