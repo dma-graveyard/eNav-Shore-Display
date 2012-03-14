@@ -51,22 +51,18 @@ import org.apache.log4j.xml.DOMConfigurator;
 import com.bbn.openmap.MapHandler;
 import com.bbn.openmap.PropertyConsumer;
 
-import dk.frv.ais.proprietary.GatehouseFactory;
-import dk.frv.ais.reader.RoundRobinAisTcpReader;
 import dk.frv.enav.esd.ais.AisHandler;
-
+import dk.frv.enav.esd.ais.VesselAisHandler;
 import dk.frv.enav.esd.gui.MainFrame;
+import dk.frv.enav.esd.nmea.NmeaSensor;
+import dk.frv.enav.esd.nmea.NmeaTcpSensor;
 import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.esd.util.OneInstanceGuard;
 import dk.frv.enav.ins.gps.GnssTime;
 import dk.frv.enav.ins.gps.GpsHandler;
-import dk.frv.enav.ins.nmea.NmeaFileSensor;
-import dk.frv.enav.ins.nmea.NmeaSensor;
-import dk.frv.enav.ins.nmea.NmeaSerialSensor;
-import dk.frv.enav.ins.nmea.NmeaStdinSensor;
-import dk.frv.enav.ins.nmea.NmeaTcpSensor;
 import dk.frv.enav.ins.nmea.SensorType;
 import dk.frv.enav.ins.settings.SensorSettings;
+import dk.frv.enav.test.TestHandler;
 
 /**
  * Main class with main method.
@@ -84,10 +80,12 @@ public class ESD {
 	private static Settings settings;
 	private static Properties properties = new Properties();
 
-	private static AisHandler aisHandler;
+	//private static AisHandler aisHandler;
+	private static VesselAisHandler aisHandler;
 	private static NmeaSensor aisSensor;
 	private static NmeaSensor gpsSensor;
 	private static GpsHandler gpsHandler;
+	private static TestHandler testHandler;
 	
 	private static ExceptionHandler exceptionHandler = new ExceptionHandler();
 	
@@ -121,6 +119,10 @@ public class ESD {
         gpsHandler = new GpsHandler();
         mapHandler.add(gpsHandler); 
         
+        // Create NoGo handler
+        testHandler = new TestHandler();
+        mapHandler.add(testHandler);
+        
         // Load settings or get defaults and add to bean context       
         if (args.length > 0) {        	
         	settings = new Settings(args[0]);
@@ -141,7 +143,8 @@ public class ESD {
         // Start sensors
         startSensors();
         
-        aisHandler = new AisHandler();
+//        aisHandler = new AisHandler();
+        aisHandler = new VesselAisHandler(settings);
 //        aisHandler.loadView();
         mapHandler.add(aisHandler);
         
@@ -175,18 +178,9 @@ public class ESD {
 	private static void startSensors() {
 		SensorSettings sensorSettings = settings.getSensorSettings();
         switch (sensorSettings.getAisConnectionType()) {
-		case NONE:
-			aisSensor = new NmeaStdinSensor();
-			break;
 		case TCP:
-			//aisSensor = new NmeaTcpSensor("192.168.10.250", 4001);
-			aisSensor = new NmeaTcpSensor("localhost", 4001);
-			break;
-		case SERIAL:
-			aisSensor = new NmeaSerialSensor(sensorSettings.getAisHostOrSerialPort());
-			break;		
-		case FILE:
-			aisSensor = new NmeaFileSensor(sensorSettings.getAisFilename(), sensorSettings);
+			aisSensor = new NmeaTcpSensor("192.168.10.250", 4001);
+//			aisSensor = new NmeaTcpSensor("localhost", 4001);
 			break;
 		default:
 			LOG.error("Unknown sensor connection type: " + sensorSettings.getAisConnectionType());
@@ -197,21 +191,9 @@ public class ESD {
         }
 
         switch (sensorSettings.getGpsConnectionType()) {
-        case NONE:
-        	gpsSensor = new NmeaStdinSensor();
-        	break;
         case TCP:
         	gpsSensor = new NmeaTcpSensor(sensorSettings.getGpsHostOrSerialPort(), sensorSettings.getGpsTcpPort());
         	break;
-        case SERIAL:
-        	gpsSensor = new NmeaSerialSensor(sensorSettings.getGpsHostOrSerialPort());
-        	break;
-        case FILE:
-        	gpsSensor = new NmeaFileSensor(sensorSettings.getGpsFilename(), sensorSettings);
-        	break;
-        case AIS_SHARED:
-			gpsSensor = aisSensor;
-			break;
         default:
 			LOG.error("Unknown sensor connection type: " + sensorSettings.getAisConnectionType());
         }
