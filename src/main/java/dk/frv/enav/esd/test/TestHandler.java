@@ -37,20 +37,6 @@ public class TestHandler extends MapHandlerChild implements Runnable {
 			}
 			System.out.println("AIS Recieved");
 
-			// while (iterator.hasNext()) {
-			// String key = iterator.next().toString();
-			// VesselTarget vessel = vesselTargets.get(key);
-			//
-			// if (vessel == null){
-			// System.out.println("is null");
-			// }
-			//
-			// // String value = vesselTargets.get(key).getStatus().toString();
-			//
-			// // System.out.println(key + " " + value);
-			// System.out.println(key);
-			// }
-
 		}
 
 	}
