@@ -95,6 +95,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		Properties props = ESD.getProperties();
 		aisLayer = new AisLayer();
 		aisLayer.setVisible(true);
+		mapHandler.add(ESD.getAisHandler());
 		mapHandler.add(aisLayer);
 
 		// Create a MapBean, and add it to the MapHandler.

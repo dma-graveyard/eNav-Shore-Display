@@ -27,9 +27,9 @@ public class TestHandler extends MapHandlerChild implements Runnable {
 			ESD.sleep(10000);
 
 			List<AisMessageExtended> shipList = aisHandler.getShipList();
-			AisMessageExtended firstShip = shipList.get(0);			
-			GeoLocation targetPosition = aisHandler.getVesselTargets().get(firstShip.MMSI).getPositionData().getPos();
-			System.out.println("MMSI: "+firstShip.MMSI+" hdg: "+firstShip.hdg+" pos: ("+targetPosition.getLatitude()+","+targetPosition.getLongitude()+")");
+			//AisMessageExtended firstShip = shipList.get(0);			
+			//GeoLocation targetPosition = aisHandler.getVesselTargets().get(firstShip.MMSI).getPositionData().getPos();
+			//System.out.println("MMSI: "+firstShip.MMSI+" hdg: "+firstShip.hdg+" pos: ("+targetPosition.getLatitude()+","+targetPosition.getLongitude()+")");
 			
 			//System.out.println("Recieving AIS:");
 			//for (int i = 0; i < shipList.size(); i++) {
