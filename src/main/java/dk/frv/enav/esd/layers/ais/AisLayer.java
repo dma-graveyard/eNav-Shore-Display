@@ -2,6 +2,7 @@ package dk.frv.enav.esd.layers.ais;
 
 import java.awt.Color;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.bbn.openmap.layer.OMGraphicHandlerLayer;
@@ -39,38 +40,22 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 
 	private void drawVessels() {
 		if (aisHandler != null) {
+			int[] xPos = { -5, 0, 5, -5 };
+			int[] yPos = { -5, 5, -5, -5 };
 			list.clear();
-			// Long theShipMMSI = aisHandler.getShipList().get(0).MMSI;
-			Long theShipMMSI = (long) 218125000;
-			if (aisHandler.getVesselTargets().containsKey(theShipMMSI)) {
-				GeoLocation theShip = aisHandler.getVesselTargets().get(theShipMMSI).getPositionData().getPos();
-
-				int[] xPos = { -5, 0, 5, -5 };
-				int[] yPos = { -5, 5, -5, -5 };
-				OMPoly poly = new OMPoly(theShip.getLatitude(), theShip.getLongitude(), xPos, yPos, 0);
-				poly.setFillPaint(new Color(0));
-				list.add(poly);
-				doPrepare();
+			
+			List<AisMessageExtended> shipList = aisHandler.getShipList();
+			for (int i = 0; i < shipList.size(); i++) {
+				if (aisHandler.getVesselTargets().containsKey(shipList.get(i).MMSI)) {
+					GeoLocation theShip = aisHandler.getVesselTargets().get(shipList.get(i).MMSI).getPositionData().getPos();
+					OMPoly poly = new OMPoly(theShip.getLatitude(), theShip.getLongitude(), xPos, yPos, 0);
+					poly.setFillPaint(new Color(0));
+					list.add(poly);
+				}
 			}
+			doPrepare();
 		}
-
-		// list.clear();
-		// int[] xPos = {-5,0,5,-5};
-		// int[] yPos = {-5,5,-5,-5};
-		//
-		// double shipLat = 55.6761;
-		// double shipLon = 12.5683;
-		// OMPoly poly = new OMPoly(shipLat, shipLon, xPos, yPos, 0);
-		// poly.setFillPaint(new Color(0));
-		// list.add(poly);
-		//
-		// shipLat = 55.0309;
-		// shipLon = 14.9924;
-		// poly = new OMPoly(shipLat, shipLon, xPos, yPos, 0);
-		// poly.setFillPaint(new Color(0));
-		// list.add(poly);
-		//
-		// doPrepare();
+		
 	}
 
 	@Override
