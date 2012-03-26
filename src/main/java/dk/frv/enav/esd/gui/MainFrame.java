@@ -29,18 +29,15 @@
  */
 package dk.frv.enav.esd.gui;
 
+
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Image;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.ImageIcon;
-import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
@@ -52,106 +49,72 @@ import dk.frv.enav.esd.settings.GuiSettings;
 import dk.frv.enav.ins.EeINS;
 
 /**
- * The main frame containing map and panels
+ * The main frame containing map and panels 
  */
 public class MainFrame extends JFrame implements WindowListener {
-
+	
 	private static final String TITLE = "eNav Shore Display System ";
-
-	private static final long serialVersionUID = 1L;
+	
+	private static final long serialVersionUID = 1L;	
 	private static final Logger LOG = Logger.getLogger(MainFrame.class);
-
+	
 	protected static final int SENSOR_PANEL_WIDTH = 190;
-
+	
 	private ChartPanel chartPanel;
-	private ChartPanel chartPanel2;
-	private ChartPanel chartPanel3;
-
 
 	private JPanel glassPanel;
-
+	
 	public MainFrame() {
-		super();
-		initGUI();
-	}
-
+        super();
+        initGUI();
+    }
+	
 	private void initGUI() {
 		MapHandler mapHandler = ESD.getMapHandler();
 		// Get settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
-
-		setTitle(TITLE);
+		
+		setTitle(TITLE);		
 		// Set location and size
 		if (guiSettings.isMaximized()) {
 			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
 		} else {
 			setLocation(guiSettings.getAppLocation());
 			setSize(guiSettings.getAppDimensions());
-		}
+		}		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setIconImage(getAppIcon());
 		addWindowListener(this);
-
-		JDesktopPane dtp = new JDesktopPane();
-		this.setContentPane(dtp);
-		dtp.setBackground(Color.LIGHT_GRAY);
+		
+		// Create panels
+		Container pane = getContentPane();
 
 		chartPanel = new ChartPanel();
-		chartPanel2 = new ChartPanel();
-		chartPanel3 = new ChartPanel();
 
-		JInternalFrame mboxFrame = new JInternalFrame("Map Window", true, true, true, true);
-		mboxFrame.setContentPane(chartPanel);
-		mboxFrame.setSize(400, 300);
-		mboxFrame.setLocation(50, 50);
-		mboxFrame.setVisible(true);
-		mboxFrame.setResizable(true);
-		dtp.add(mboxFrame);
+		pane.add(chartPanel, BorderLayout.CENTER);
 
-		JInternalFrame compFrame = new JInternalFrame("Map Window 2", true, true, true, true);
-		compFrame.setContentPane(chartPanel2);
-		compFrame.setSize(300, 200);
-		compFrame.setLocation(200, 200);
-		compFrame.setVisible(true);
-		dtp.add(compFrame);
-
-		JInternalFrame listFrame = new JInternalFrame("Map Window 3", true, true, true, true);
-		listFrame.setContentPane(chartPanel3);
-		listFrame.setLocation(400, 400);
-		listFrame.setSize(500, 200);
-		listFrame.setVisible(true);
-		dtp.add(listFrame);
-
-		// Create panels
-//		Container pane = getContentPane();
-		//
-
-		//
-		// pane.add(chartPanel, BorderLayout.CENTER);
-		//
-		// // Set up the chart panel with layers etc
+		// Set up the chart panel with layers etc
 		chartPanel.initChart();
-		chartPanel2.initChart();
-		chartPanel3.initChart();
 
+		
 		// Init glass pane
 		initGlassPane();
-
+		
 		// Add self to map map handler
 		mapHandler.add(this);
 
 	}
-
+	
 	private void initGlassPane() {
-		glassPanel = (JPanel) getGlassPane();
+		glassPanel = (JPanel)getGlassPane();
 		glassPanel.setLayout(null);
 		glassPanel.setVisible(false);
 	}
-
+	
 	private static Image getAppIcon() {
 		java.net.URL imgURL = ESD.class.getResource("/images/appicon.png");
 		if (imgURL != null) {
-			return new ImageIcon(imgURL).getImage();
+            return new ImageIcon(imgURL).getImage();
 		}
 		LOG.error("Could not find app icon");
 		return null;
@@ -160,7 +123,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	public ChartPanel getChartPanel() {
 		return chartPanel;
 	}
-
+	
 	public void saveSettings() {
 		// Save gui settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
@@ -170,7 +133,8 @@ public class MainFrame extends JFrame implements WindowListener {
 		// Save map settings
 		chartPanel.saveSettings();
 	}
-
+	
+	
 	@Override
 	public void windowActivated(WindowEvent we) {
 	}
@@ -184,6 +148,8 @@ public class MainFrame extends JFrame implements WindowListener {
 		// Close routine
 		ESD.closeApp();
 	}
+	
+
 
 	@Override
 	public void windowDeactivated(WindowEvent we) {
@@ -201,20 +167,20 @@ public class MainFrame extends JFrame implements WindowListener {
 	public void windowOpened(WindowEvent we) {
 	}
 
-	// public ChartPanel getChartPanel() {
-	// return chartPanel;
-	// }
-
-	// public SensorPanel getSensorPanel() {
-	// return sensorPanel;
-	// }
-
+//	public ChartPanel getChartPanel() {
+//		return chartPanel;
+//	}
+	
+//	public SensorPanel getSensorPanel() {
+//		return sensorPanel;
+//	}
+	
 	public JPanel getGlassPanel() {
 		return glassPanel;
 	}
-
-	// public TopPanel getTopPanel() {
-	// return topPanel;
-	// }
-
+	
+//	public TopPanel getTopPanel() {
+//		return topPanel;
+//	}
+	
 }

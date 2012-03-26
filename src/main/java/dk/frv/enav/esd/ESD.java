@@ -243,7 +243,7 @@ public class ESD {
 		mainFrame.setVisible(true);
 		
 	    // Create keybinding shortcuts
-//        makeKeyBindings();
+        makeKeyBindings();
 		
 
 	}

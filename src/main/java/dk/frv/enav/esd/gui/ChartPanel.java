@@ -80,7 +80,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	public ChartPanel() {
 		super();
 		// Set map handler
-		mapHandler = new MapHandler();
+		mapHandler = ESD.getMapHandler();
 		// Set layout
 		setLayout(new BorderLayout());
 		// Set border
