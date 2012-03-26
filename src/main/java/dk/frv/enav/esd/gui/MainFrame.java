@@ -93,6 +93,9 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		// Add self to map map handler
 		mapHandler.add(this);
+		
+		// HARDCODED: Initialize with 1 map window
+		addMapWindow();
 
 	}
 
