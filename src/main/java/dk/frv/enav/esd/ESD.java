@@ -121,7 +121,8 @@ public class ESD {
         	settings = new Settings(args[0]);
         } else {
         	settings = new Settings();
-        }       
+        } 
+        
         LOG.info("Using settings file: " + settings.getSettingsFile());
         settings.loadFromFile();
         mapHandler.add(settings);
