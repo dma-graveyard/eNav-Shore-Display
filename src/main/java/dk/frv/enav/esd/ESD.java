@@ -29,19 +29,12 @@
  */
 package dk.frv.enav.esd;
 
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -128,7 +121,8 @@ public class ESD {
         	settings = new Settings(args[0]);
         } else {
         	settings = new Settings();
-        }       
+        } 
+        
         LOG.info("Using settings file: " + settings.getSettingsFile());
         settings.loadFromFile();
         mapHandler.add(settings);
@@ -248,73 +242,7 @@ public class ESD {
 
 	}
 	
-	private static void makeKeyBindings(){
-	      JPanel content = (JPanel) mainFrame.getContentPane();
-	      InputMap inputMap = content.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		
-	    @SuppressWarnings("serial")
-		Action zoomIn = new AbstractAction() {
-	        public void actionPerformed(ActionEvent actionEvent) {
-	        	mainFrame.getChartPanel().doZoom(0.5f);
-	        }
-	      };
-	      
-		@SuppressWarnings("serial")
-		Action zoomOut = new AbstractAction() {
-		    public void actionPerformed(ActionEvent actionEvent) {
-		    	mainFrame.getChartPanel().doZoom(2f);
-		        }
-		      };	      
-			
-		@SuppressWarnings("serial")
-		Action panUp = new AbstractAction() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				mainFrame.getChartPanel().pan(1);
-				}
-			};
-		@SuppressWarnings("serial")
-		Action panDown = new AbstractAction() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				mainFrame.getChartPanel().pan(2);
-				}
-			};			
-			
-		@SuppressWarnings("serial")
-		Action panLeft = new AbstractAction() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				mainFrame.getChartPanel().pan(3);
-				}
-			};
-		@SuppressWarnings("serial")
-		Action panRight = new AbstractAction() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				mainFrame.getChartPanel().pan(4);
-				}
-			};			
-	   			
-	      inputMap.put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ADD, 0), "ZoomIn");
-	      inputMap.put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_PLUS, 0), "ZoomIn");
-	      inputMap.put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SUBTRACT, 0), "ZoomOut");
-	      inputMap.put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_MINUS, 0), "ZoomOut");
-	      inputMap.put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_UP, 0), "panUp");
-	      inputMap.put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DOWN, 0), "panDown");
-	      inputMap.put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_LEFT, 0), "panLeft");
-	      inputMap.put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_RIGHT, 0), "panRight");
-	      inputMap.put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_KP_UP, 0), "panUp");
-	      inputMap.put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_KP_DOWN, 0), "panDown");
-	      inputMap.put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_KP_LEFT, 0), "panLeft");
-	      inputMap.put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_KP_RIGHT, 0), "panRight");	      
-     
-	      
-	      content.getActionMap().put("ZoomOut", zoomOut);
-	      content.getActionMap().put("ZoomIn", zoomIn);
-	      content.getActionMap().put("panUp", panUp);	
-	      content.getActionMap().put("panDown", panDown);	
-	      content.getActionMap().put("panLeft", panLeft);	
-	      content.getActionMap().put("panRight", panRight);	
-	      
-	}
-	
 	private static void initLookAndFeel() {
 		try {
             UIManager.setLookAndFeel(

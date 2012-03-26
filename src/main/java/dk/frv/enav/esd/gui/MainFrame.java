@@ -29,19 +29,16 @@
  */
 package dk.frv.enav.esd.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Image;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
@@ -49,7 +46,6 @@ import com.bbn.openmap.MapHandler;
 
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.settings.GuiSettings;
-import dk.frv.enav.ins.EeINS;
 
 /**
  * The main frame containing map and panels
@@ -60,15 +56,9 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(MainFrame.class);
+	private int windowCount = 0;
 
-	protected static final int SENSOR_PANEL_WIDTH = 190;
-
-	private ChartPanel chartPanel;
-	private ChartPanel chartPanel2;
-	private ChartPanel chartPanel3;
-
-
-	private JPanel glassPanel;
+	List<JMapFrame> mapWindows;
 
 	public MainFrame() {
 		super();
@@ -79,8 +69,8 @@ public class MainFrame extends JFrame implements WindowListener {
 		MapHandler mapHandler = ESD.getMapHandler();
 		// Get settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
-
 		setTitle(TITLE);
+
 		// Set location and size
 		if (guiSettings.isMaximized()) {
 			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
@@ -96,56 +86,14 @@ public class MainFrame extends JFrame implements WindowListener {
 		this.setContentPane(dtp);
 		dtp.setBackground(Color.LIGHT_GRAY);
 
-		chartPanel = new ChartPanel();
-		chartPanel2 = new ChartPanel();
-		chartPanel3 = new ChartPanel();
+		mapWindows = new ArrayList<JMapFrame>();
 
-		JInternalFrame mboxFrame = new JInternalFrame("Map Window", true, true, true, true);
-		mboxFrame.setContentPane(chartPanel);
-		mboxFrame.setSize(400, 300);
-		mboxFrame.setLocation(50, 50);
-		mboxFrame.setVisible(true);
-		mboxFrame.setResizable(true);
-		dtp.add(mboxFrame);
-
-		JInternalFrame compFrame = new JInternalFrame("Map Window 2", true, true, true, true);
-		compFrame.setContentPane(chartPanel2);
-		compFrame.setSize(300, 200);
-		compFrame.setLocation(200, 200);
-		compFrame.setVisible(true);
-		dtp.add(compFrame);
-
-		JInternalFrame listFrame = new JInternalFrame("Map Window 3", true, true, true, true);
-		listFrame.setContentPane(chartPanel3);
-		listFrame.setLocation(400, 400);
-		listFrame.setSize(500, 200);
-		listFrame.setVisible(true);
-		dtp.add(listFrame);
-
-		// Create panels
-//		Container pane = getContentPane();
-		//
-
-		//
-		// pane.add(chartPanel, BorderLayout.CENTER);
-		//
-		// // Set up the chart panel with layers etc
-		chartPanel.initChart();
-		chartPanel2.initChart();
-		chartPanel3.initChart();
-
-		// Init glass pane
-		initGlassPane();
+		JFrameMenuBar floatingMenu = new JFrameMenuBar(this);
+		dtp.add(floatingMenu);
 
 		// Add self to map map handler
 		mapHandler.add(this);
 
-	}
-
-	private void initGlassPane() {
-		glassPanel = (JPanel) getGlassPane();
-		glassPanel.setLayout(null);
-		glassPanel.setVisible(false);
 	}
 
 	private static Image getAppIcon() {
@@ -157,8 +105,16 @@ public class MainFrame extends JFrame implements WindowListener {
 		return null;
 	}
 
-	public ChartPanel getChartPanel() {
-		return chartPanel;
+	public List<JMapFrame> getMapWindows() {
+		return mapWindows;
+	}
+
+	public void addMapWindow(){
+		System.out.println("Called");
+		windowCount++;
+		JMapFrame window = new JMapFrame(windowCount);
+		this.add(window);
+		mapWindows.add(window);
 	}
 
 	public void saveSettings() {
@@ -168,7 +124,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		guiSettings.setAppLocation(getLocation());
 		guiSettings.setAppDimensions(getSize());
 		// Save map settings
-		chartPanel.saveSettings();
+//		chartPanel.saveSettings();
 	}
 
 	@Override
@@ -200,21 +156,5 @@ public class MainFrame extends JFrame implements WindowListener {
 	@Override
 	public void windowOpened(WindowEvent we) {
 	}
-
-	// public ChartPanel getChartPanel() {
-	// return chartPanel;
-	// }
-
-	// public SensorPanel getSensorPanel() {
-	// return sensorPanel;
-	// }
-
-	public JPanel getGlassPanel() {
-		return glassPanel;
-	}
-
-	// public TopPanel getTopPanel() {
-	// return topPanel;
-	// }
 
 }
