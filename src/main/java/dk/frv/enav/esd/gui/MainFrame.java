@@ -87,11 +87,11 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		mapWindows = new ArrayList<JMapFrame>();
 
-//		JFrameMenuBar floatingMenu = new JFrameMenuBar(this);
-//		dtp.add(floatingMenu);
-		JMenuWorkspaceBar topMenu = new JMenuWorkspaceBar(this);
-//		dtp.add(topMenu);
-		this.setJMenuBar(topMenu);
+		JFrameMenuBar floatingMenu = new JFrameMenuBar(this);
+		dtp.add(floatingMenu);
+		
+//		JMenuWorkspaceBar topMenu = new JMenuWorkspaceBar(this);
+//		this.setJMenuBar(topMenu);
 
 		dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
