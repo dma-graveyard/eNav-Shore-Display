@@ -29,6 +29,7 @@
  */
 package dk.frv.enav.esd;
 
+import java.beans.beancontext.BeanContextServicesSupport;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -41,7 +42,6 @@ import javax.swing.UIManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import com.bbn.openmap.MapHandler;
 import com.bbn.openmap.PropertyConsumer;
 
 import dk.frv.enav.esd.ais.AisHandler;
@@ -69,7 +69,7 @@ public class ESD {
 	private static String MINORVERSION;
 	private static Logger LOG;	
 	private static MainFrame mainFrame;	
-	private static MapHandler mapHandler;
+	private static BeanContextServicesSupport beanHandler;
 	private static Settings settings;
 	private static Properties properties = new Properties();
 
@@ -102,19 +102,20 @@ public class ESD {
         loadProperties();
                 
         // Create the bean context (map handler)
-        mapHandler = new MapHandler();
+//        mapHandler = new MapHandler();
+        beanHandler = new BeanContextServicesSupport();
         
         // Enable GPS timer by adding it to bean context
         GnssTime.init();
-        mapHandler.add(GnssTime.getInstance());
+        beanHandler.add(GnssTime.getInstance());
         
         // Start position handler and add to bean context
         gpsHandler = new GpsHandler();
-        mapHandler.add(gpsHandler); 
+        beanHandler.add(gpsHandler); 
         
         // Create a test handler for use in testing ais handler data
         testHandler = new TestHandler();
-        mapHandler.add(testHandler);
+        beanHandler.add(testHandler);
         
         // Load settings or get defaults and add to bean context       
         if (args.length > 0) {        	
@@ -125,7 +126,7 @@ public class ESD {
         
         LOG.info("Using settings file: " + settings.getSettingsFile());
         settings.loadFromFile();
-        mapHandler.add(settings);
+        beanHandler.add(settings);
         
         // Determine if instance already running and if that is allowed
         OneInstanceGuard guard = new OneInstanceGuard("esd.lock");
@@ -140,7 +141,7 @@ public class ESD {
 //        aisHandler = new AisHandler();
         aisHandler = new VesselAisHandler(settings);
 //        aisHandler.loadView();
-        mapHandler.add(aisHandler);
+        beanHandler.add(aisHandler);
         
 // 
 //        RoundRobinAisTcpReader reader = new RoundRobinAisTcpReader();
@@ -200,14 +201,14 @@ public class ESD {
         	aisSensor.setSimulatedOwnShip(sensorSettings.getSimulatedOwnShip());
         	aisSensor.start();
         	// Add ais sensor to bean context
-        	mapHandler.add(aisSensor);
+        	beanHandler.add(aisSensor);
         }
         if (gpsSensor != null && gpsSensor != aisSensor) {
         	gpsSensor.setSimulateGps(sensorSettings.isSimulateGps());
         	gpsSensor.setSimulatedOwnShip(sensorSettings.getSimulatedOwnShip());
         	gpsSensor.start();
         	// Add gps sensor to bean context
-        	mapHandler.add(gpsSensor);
+        	beanHandler.add(gpsSensor);
         }
         
 	}
@@ -289,7 +290,7 @@ public class ESD {
 					PropertyConsumer propCons = (PropertyConsumer) obj;
 					propCons.setProperties(compName, props);
 				}
-				mapHandler.add(obj);
+				beanHandler.add(obj);
 			} catch (IOException e) {
 				LOG.error("IO Exception instantiating class \"" + className + "\"");
 			} catch (ClassNotFoundException e) {
@@ -322,8 +323,8 @@ public class ESD {
 		return aisHandler;
 	}
 	
-	public static MapHandler getMapHandler() {
-		return mapHandler;
+	public static BeanContextServicesSupport getBeanHandler(){
+		return beanHandler;
 	}
 	
 	public static void sleep(long ms) {

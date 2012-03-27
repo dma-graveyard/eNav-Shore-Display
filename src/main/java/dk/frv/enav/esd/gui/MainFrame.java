@@ -33,6 +33,7 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.beancontext.BeanContextServicesSupport;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	private void initGUI() {
-		MapHandler mapHandler = ESD.getMapHandler();
+		BeanContextServicesSupport beanHandler = ESD.getBeanHandler();
 		// Get settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
 		setTitle(TITLE);
@@ -92,7 +93,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		dtp.add(floatingMenu);
 
 		// Add self to map map handler
-		mapHandler.add(this);
+		beanHandler.add(this);
 
 	}
 

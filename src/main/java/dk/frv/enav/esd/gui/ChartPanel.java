@@ -56,6 +56,7 @@ import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.ais.AisHandler;
 import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.settings.MapSettings;
 
@@ -75,12 +76,13 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	private NavigationMouseMode mapNavMouseMode;
 	private MouseDelegator mouseDelegator;
 	public int maxScale = 5000;
-
+	private AisHandler aisHandler;
 
 	public ChartPanel() {
 		super();
 		// Set map handler
 		mapHandler = new MapHandler();
+		mapHandler.add(ESD.getAisHandler());
 		// Set layout
 		setLayout(new BorderLayout());
 		// Set border
@@ -311,9 +313,6 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
             case 3:  point = new Point(width/2-100,height/2);	break;
             case 4:  point = new Point(width/2+100,height/2);	break;
 	        }
-	    
-	    
-	    
         
         Proj p = (Proj) projection;
         LatLonPoint llp = projection.inverse(point);
