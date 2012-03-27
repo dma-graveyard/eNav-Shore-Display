@@ -87,10 +87,15 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		mapWindows = new ArrayList<JMapFrame>();
 
-		JFrameMenuBar floatingMenu = new JFrameMenuBar(this);
-		dtp.add(floatingMenu);
+//		JFrameMenuBar floatingMenu = new JFrameMenuBar(this);
+//		dtp.add(floatingMenu);
+		JMenuWorkspaceBar topMenu = new JMenuWorkspaceBar(this);
+//		dtp.add(topMenu);
+		this.setJMenuBar(topMenu);
 
-		// Add self to map map handler
+		dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+
+		// Add self to bean handler
 
 		beanHandler.add(this);
 
@@ -119,6 +124,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		JMapFrame window = new JMapFrame(windowCount);
 		this.add(window);
 		mapWindows.add(window);
+		window.toFront();
 	}
 
 	public void saveSettings() {
