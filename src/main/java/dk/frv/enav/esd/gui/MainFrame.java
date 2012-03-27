@@ -43,8 +43,6 @@ import javax.swing.JFrame;
 
 import org.apache.log4j.Logger;
 
-import com.bbn.openmap.MapHandler;
-
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.settings.GuiSettings;
 
@@ -93,7 +91,13 @@ public class MainFrame extends JFrame implements WindowListener {
 		dtp.add(floatingMenu);
 
 		// Add self to map map handler
+
 		beanHandler.add(this);
+
+		
+		// HARDCODED: Initialize with 1 map window
+		addMapWindow();
+
 
 	}
 
@@ -111,7 +115,6 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	public void addMapWindow(){
-		System.out.println("Called");
 		windowCount++;
 		JMapFrame window = new JMapFrame(windowCount);
 		this.add(window);
