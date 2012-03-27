@@ -56,7 +56,6 @@ import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.esd.ESD;
-import dk.frv.enav.esd.ais.AisHandler;
 import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.settings.MapSettings;
 
@@ -76,13 +75,16 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	private NavigationMouseMode mapNavMouseMode;
 	private MouseDelegator mouseDelegator;
 	public int maxScale = 5000;
-	private AisHandler aisHandler;
 
 	public ChartPanel() {
 		super();
-		// Set map handler
+		
+		// Create the charts own maphandler
 		mapHandler = new MapHandler();
+		
+		// Add the aishandler to this bean
 		mapHandler.add(ESD.getAisHandler());
+		
 		// Set layout
 		setLayout(new BorderLayout());
 		// Set border
@@ -92,10 +94,10 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	}
 
 	public void initChart() {
+		
 		MapSettings mapSettings = ESD.getSettings().getMapSettings();
 		Properties props = ESD.getProperties();
 		
-
 		// Create a MapBean, and add it to the MapHandler.
 		map = new BufferedLayerMapBean();
 		map.setDoubleBuffered(true);
