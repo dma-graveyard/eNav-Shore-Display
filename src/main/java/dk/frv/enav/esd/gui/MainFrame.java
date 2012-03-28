@@ -30,7 +30,9 @@
 package dk.frv.enav.esd.gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.beancontext.BeanContextServicesSupport;
@@ -56,7 +58,10 @@ public class MainFrame extends JFrame implements WindowListener {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(MainFrame.class);
 	private int windowCount = 0;
-
+	private Dimension size;
+	private Point location;
+	private JMenuWorkspaceBar topMenu;
+	
 	List<JMapFrame> mapWindows;
 
 	public MainFrame() {
@@ -65,6 +70,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	private void initGUI() {
+
 		BeanContextServicesSupport beanHandler = ESD.getBeanHandler();
 		// Get settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
@@ -87,11 +93,11 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		mapWindows = new ArrayList<JMapFrame>();
 
-		JFrameMenuBar floatingMenu = new JFrameMenuBar(this);
-		dtp.add(floatingMenu);
-		
-//		JMenuWorkspaceBar topMenu = new JMenuWorkspaceBar(this);
-//		this.setJMenuBar(topMenu);
+		// JFrameMenuBar floatingMenu = new JFrameMenuBar(this);
+		// dtp.add(floatingMenu);
+
+		topMenu = new JMenuWorkspaceBar(this);
+		this.setJMenuBar(topMenu);
 
 		dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
@@ -99,10 +105,8 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		beanHandler.add(this);
 
-		
 		// HARDCODED: Initialize with 1 map window
 		addMapWindow();
-
 
 	}
 
@@ -119,12 +123,40 @@ public class MainFrame extends JFrame implements WindowListener {
 		return mapWindows;
 	}
 
-	public void addMapWindow(){
+	public void addMapWindow() {
 		windowCount++;
-		JMapFrame window = new JMapFrame(windowCount);
+		JMapFrame window = new JMapFrame(windowCount, this);
 		this.add(window);
 		mapWindows.add(window);
 		window.toFront();
+		
+		topMenu.addMap(window);
+	}
+	
+	public void removeMapWindow(JMapFrame window){
+		topMenu.removeMapMenu(window);
+	}
+	
+	public void renameMapWindow(JMapFrame window){
+		topMenu.renameMapMenu(window);
+	}
+
+	public void toggleFullScreen() {
+		if (!this.isUndecorated()) {
+			location = this.getLocation();
+			size = this.getSize();
+			setExtendedState(JFrame.MAXIMIZED_BOTH);
+			dispose();
+			this.setUndecorated(true);
+			setVisible(true);
+		} else {
+			setExtendedState(JFrame.NORMAL);
+			this.setSize(size);
+			this.setLocation(location);
+			dispose();
+			this.setUndecorated(false);
+			setVisible(true);
+		}
 	}
 
 	public void saveSettings() {
@@ -134,7 +166,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		guiSettings.setAppLocation(getLocation());
 		guiSettings.setAppDimensions(getSize());
 		// Save map settings
-//		chartPanel.saveSettings();
+		// chartPanel.saveSettings();
 	}
 
 	@Override

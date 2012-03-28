@@ -42,7 +42,9 @@ import javax.swing.UIManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import com.bbn.openmap.MapHandler;
 import com.bbn.openmap.PropertyConsumer;
+import com.bbn.openmap.tools.beanbox.BeanBoxHandler;
 
 import dk.frv.enav.esd.ais.AisHandler;
 import dk.frv.enav.esd.ais.VesselAisHandler;
@@ -69,6 +71,7 @@ public class ESD {
 	private static String MINORVERSION;
 	private static Logger LOG;	
 	private static MainFrame mainFrame;	
+
 	private static BeanContextServicesSupport beanHandler;
 	private static Settings settings;
 	private static Properties properties = new Properties();
@@ -174,8 +177,8 @@ public class ESD {
 		SensorSettings sensorSettings = settings.getSensorSettings();
         switch (sensorSettings.getAisConnectionType()) {
 		case TCP:
-//			aisSensor = new NmeaTcpSensor("192.168.10.250", 4001);
-			aisSensor = new NmeaTcpSensor("localhost", 4001);
+			aisSensor = new NmeaTcpSensor("192.168.10.250", 4001);
+//			aisSensor = new NmeaTcpSensor("localhost", 4001);
 			break;
 		default:
 			LOG.error("Unknown sensor connection type: " + sensorSettings.getAisConnectionType());
