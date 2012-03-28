@@ -89,6 +89,9 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		JMenuItem front = new JMenuItem("Bring to front");
 		mapWindow.add(front);		
 		
+		JMenuItem rename = new JMenuItem("Rename");
+		mapWindow.add(rename);		
+		
 		mapMenus.put(window.getId(), mapWindow);
 
 		maps.add(mapWindow);
@@ -96,6 +99,18 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		toggleLock.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				window.lockUnlockWindow();
+			}
+		});
+		
+		rename.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				window.rename();
+			}
+		});
+		
+		front.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				window.toFront();
 			}
 		});
 

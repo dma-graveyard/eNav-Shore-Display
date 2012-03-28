@@ -167,17 +167,21 @@ public class JMapFrame extends JInternalFrame implements MouseListener, Internal
 	      content.getActionMap().put("panRight", panRight);	
 	      
 	}
+	
+	public void rename(){
+		String title =
+	        JOptionPane.showInputDialog(this, "Enter a new title:", this.getTitle());
+		if (title != null){
+		this.setTitle(title);
+		mainFrame.renameMapWindow(this);
+		}
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		if (arg0.getClickCount() == 2){
-			String title =
-		        JOptionPane.showInputDialog(this, "Enter a new title:", this.getTitle());
-			if (title != null){
-			this.setTitle(title);
-			mainFrame.renameMapWindow(this);
-			}
+			rename();
 		}
 	}
 
