@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -176,9 +174,9 @@ public class JMapFrame extends JInternalFrame implements MouseListener, Internal
 		if (arg0.getClickCount() == 2){
 			String title =
 		        JOptionPane.showInputDialog(this, "Enter a new title:", this.getTitle());
-			mainFrame.renameMapWindow(this);
 			if (title != null){
 			this.setTitle(title);
+			mainFrame.renameMapWindow(this);
 			}
 		}
 	}
