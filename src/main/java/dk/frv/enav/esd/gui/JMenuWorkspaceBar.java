@@ -85,6 +85,7 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		
 		JMenuItem windowSettings = new JMenuItem("Settings");
 		mapWindow.add(windowSettings);
+		windowSettings.setEnabled(false);
 		
 		JMenuItem front = new JMenuItem("Bring to front");
 		mapWindow.add(front);		
