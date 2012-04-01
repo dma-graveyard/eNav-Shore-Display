@@ -40,8 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 
 import org.apache.log4j.Logger;
 
@@ -63,50 +63,63 @@ public class MainFrame extends JFrame implements WindowListener {
 	private JMenuWorkspaceBar topMenu;
 	
 	List<JMapFrame> mapWindows;
-
+	JMainDesktopPane desktop;
+	private JScrollPane scrollPane;
+	
 	public MainFrame() {
 		super();
 		initGUI();
+		
+
+
+		// HARDCODED: Initialize with 1 map window
+//		addMapWindow();
 	}
 
 	private void initGUI() {
 
 		BeanContextServicesSupport beanHandler = ESD.getBeanHandler();
 		// Get settings
-		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
+//		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
 		setTitle(TITLE);
 
-		// Set location and size
-		if (guiSettings.isMaximized()) {
-			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
-		} else {
-			setLocation(guiSettings.getAppLocation());
-			setSize(guiSettings.getAppDimensions());
-		}
+//		// Set location and size
+//		if (guiSettings.isMaximized()) {
+//			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+//		} else {
+//			setLocation(guiSettings.getAppLocation());
+//			setSize(guiSettings.getAppDimensions());
+//		}
+
+		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setIconImage(getAppIcon());
 		addWindowListener(this);
 
-		JDesktopPane dtp = new JDesktopPane();
-		this.setContentPane(dtp);
-		dtp.setBackground(Color.LIGHT_GRAY);
+		desktop = new JMainDesktopPane();
+		scrollPane = new JScrollPane();
+		
+//		pack();
+		this.setSize(1000, 700);
+//		desktop.setSize(1000, 700);
+//		scrollPane.setSize(1000, 700);
+		
+		scrollPane.getViewport().add(desktop);
+	    getContentPane().add(scrollPane);
+		
+		desktop.setBackground(Color.LIGHT_GRAY);
 
+		
 		mapWindows = new ArrayList<JMapFrame>();
-
-		// JFrameMenuBar floatingMenu = new JFrameMenuBar(this);
-		// dtp.add(floatingMenu);
 
 		topMenu = new JMenuWorkspaceBar(this);
 		this.setJMenuBar(topMenu);
 
-		dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+//		dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
 		// Add self to bean handler
-
 		beanHandler.add(this);
 
-		// HARDCODED: Initialize with 1 map window
-		addMapWindow();
 
 	}
 
@@ -126,7 +139,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	public void addMapWindow() {
 		windowCount++;
 		JMapFrame window = new JMapFrame(windowCount, this);
-		this.add(window);
+		desktop.add(window);
 		mapWindows.add(window);
 		window.toFront();
 		
