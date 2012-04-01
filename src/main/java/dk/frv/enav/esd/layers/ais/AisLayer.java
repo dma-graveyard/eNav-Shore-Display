@@ -54,6 +54,8 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private Font font = null;
 	private OMText label = null;
 	private int sizeOffset = 5;
+	private int h;
+	private int w;
 	private String callSign;
 	private String name;
 	private String dst;
@@ -78,7 +80,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	@Override
 	public void run() {
 
-		//shipInfoWindow();
+		shipInfoWindow();
 
 		// Import settings for each window
 		Boolean settings = false;
@@ -100,10 +102,6 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		if (aisHandler != null) {
 			list.clear();
 
-			// Size of triangle
-			int[] xPos = { -sizeOffset, 0, sizeOffset, -sizeOffset };
-			int[] yPos = { -sizeOffset, sizeOffset, -sizeOffset, -sizeOffset };
-
 			shipList = aisHandler.getShipList();
 			for (int i = 0; i < shipList.size(); i++) {
 				if (aisHandler.getVesselTargets().containsKey(shipList.get(i).MMSI)) {
@@ -116,8 +114,49 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					double lon = location.getPos().getLongitude();
 
 					// Draw vessel
-					poly = new OMPoly(location.getPos().getLatitude(), location.getPos().getLongitude(), xPos, yPos, 0);
-					poly.setFillPaint(new Color(0));
+					if (staticData != null) {
+						bow = staticData.getDimBow();
+						stern = staticData.getDimStern();
+						port = staticData.getDimPort();
+						starboard = staticData.getDimStarboard();
+					} else {
+						bow = 0;
+						stern = 0;
+						port = 0;
+						starboard = 0;
+					}
+					if(bow>0 && stern>0 && port>0 && starboard>0){
+						// We have dimensions and reference points
+						int bowOffset = dimToOffset(bow);
+						int sternOffset = dimToOffset(stern);
+						int portOffset = dimToOffset(port);
+						int starboardOffset = dimToOffset(starboard);
+						int[] xPos = { -sternOffset, -sternOffset, bowOffset-1, bowOffset, bowOffset-1, -sternOffset };
+						int[] yPos = { -portOffset, starboardOffset, starboardOffset, 0, -portOffset, -portOffset };
+
+						if(vessel.MMSI == 219653000 || vessel.MMSI == 219282000 || vessel.MMSI == 219173000){
+							System.out.println("Bow: "+bow+" offset: "+bowOffset);
+							System.out.println("Stern: "+stern+" offset: "+sternOffset);
+							System.out.println("Port: "+port+" offset: "+portOffset);
+							System.out.println("Starboard: "+starboard+" offset: "+starboardOffset);
+						}
+						
+						poly = new OMPoly(location.getPos().getLatitude(), location.getPos().getLongitude(), xPos, yPos, 0);
+						poly.setFillPaint(new Color(0));
+					} else if(bow>0 || stern>0 || port>0 || starboard>0){
+						// We have only dimensions
+						int offset = (bow+stern)/2;
+						int[] xPos = { -offset, -offset, offset, 2*offset, offset, -offset };
+						int[] yPos = { -offset, offset, offset, 0, -offset, -offset };
+						poly = new OMPoly(location.getPos().getLatitude(), location.getPos().getLongitude(), xPos, yPos, 0);
+						poly.setFillPaint(new Color(50));
+					} else {
+						// We don't have anything
+						int[] xPos = { -sizeOffset, -sizeOffset, sizeOffset, 2*sizeOffset, sizeOffset, -sizeOffset };
+						int[] yPos = { -sizeOffset, sizeOffset, sizeOffset, 0, -sizeOffset, -sizeOffset };
+						poly = new OMPoly(location.getPos().getLatitude(), location.getPos().getLongitude(), xPos, yPos, 0);
+						poly.setFillPaint(new Color(100));
+					}
 					list.add(poly);
 
 					if (drawMMSI) {
@@ -171,6 +210,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			}
 			doPrepare();
 		}
+	}
+	
+	public int dimToOffset(int m){
+		return Math.round(m/20);
 	}
 
 	@Override
