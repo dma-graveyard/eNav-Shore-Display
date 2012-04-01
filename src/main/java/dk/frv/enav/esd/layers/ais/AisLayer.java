@@ -78,10 +78,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	@Override
 	public void run() {
 
-		shipInfoWindow();
+		//shipInfoWindow();
 
 		// Import settings for each window
-		Boolean settings = true;
+		Boolean settings = false;
 		drawMMSI = settings;
 		drawCallSign = settings;
 		drawName = settings;
