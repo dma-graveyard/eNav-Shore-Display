@@ -81,7 +81,7 @@ System.out.println(getHeight());
 	    int y = 0;
 	    JInternalFrame allFrames[] = getAllFrames();
 
-	    manager.setNormalSize();
+//	    manager.setNormalSize();
 	    int frameHeight = (getBounds().height - 5) - allFrames.length * FRAME_OFFSET;
 	    int frameWidth = (getBounds().width - 5) - allFrames.length * FRAME_OFFSET;
 	    for (int i = allFrames.length - 1; i >= 0; i--) {
@@ -98,12 +98,18 @@ System.out.println(getHeight());
 	  public void tileFrames() {
 	    java.awt.Component allFrames[] = getAllFrames();
 	    manager.setNormalSize();
+	    int frameWidth = getBounds().width / allFrames.length;
+	    
 	    int frameHeight = getBounds().height / allFrames.length;
 	    int y = 0;
+	    int x = 0;
+	    
 	    for (int i = 0; i < allFrames.length; i++) {
-	      allFrames[i].setSize(getBounds().width, frameHeight);
-	      allFrames[i].setLocation(0, y);
+//	      allFrames[i].setSize(getBounds().width, frameHeight);
+	    	allFrames[i].setSize(frameWidth, getBounds().height);
+	      allFrames[i].setLocation(x, 0);
 	      y = y + frameHeight;
+	      x = x + frameWidth;
 	    }
 	  }
 

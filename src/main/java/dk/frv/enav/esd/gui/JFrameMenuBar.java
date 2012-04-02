@@ -22,6 +22,8 @@ public class JFrameMenuBar extends JInternalFrame {
 		super();
 //		this.mainFrame = mainFrame;
 		
+		//DO NOT USE THIS - USING JMenuworkspaceBar for now!
+		
 		setRootPaneCheckingEnabled(false);
 		javax.swing.plaf.InternalFrameUI ifu= this.getUI();
 		((javax.swing.plaf.basic.BasicInternalFrameUI)ifu).setNorthPane(null);

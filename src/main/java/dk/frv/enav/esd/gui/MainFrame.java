@@ -105,7 +105,8 @@ public class MainFrame extends JFrame implements WindowListener {
 //		scrollPane.setSize(1000, 700);
 		
 		scrollPane.getViewport().add(desktop);
-	    getContentPane().add(scrollPane);
+//	    getContentPane().add(scrollPane);
+	    this.setContentPane(scrollPane);
 		
 		desktop.setBackground(Color.LIGHT_GRAY);
 
@@ -154,6 +155,10 @@ public class MainFrame extends JFrame implements WindowListener {
 		topMenu.renameMapMenu(window);
 	}
 
+	public JMainDesktopPane getDesktop(){
+		return desktop;
+	}
+	
 	public void toggleFullScreen() {
 		if (!this.isUndecorated()) {
 			location = this.getLocation();
