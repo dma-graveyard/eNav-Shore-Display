@@ -25,6 +25,7 @@ import javax.swing.table.TableColumn;
 import com.bbn.openmap.layer.OMGraphicHandlerLayer;
 import com.bbn.openmap.omGraphics.OMGraphic;
 import com.bbn.openmap.omGraphics.OMGraphicList;
+import com.bbn.openmap.omGraphics.OMLine;
 import com.bbn.openmap.omGraphics.OMPoly;
 import com.bbn.openmap.omGraphics.OMText;
 import com.bbn.openmap.omGraphics.labeled.LabeledOMGraphic;
@@ -83,10 +84,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		shipInfoWindow();
 
 		// Import settings for each window
-		Boolean settings = false;
-		drawMMSI = settings;
-		drawCallSign = settings;
-		drawName = settings;
+		Boolean settings = true;
+		drawMMSI = true;
+		drawCallSign = false;
+		drawName = true;
 
 		while (true) {
 			ESD.sleep(1000);
@@ -127,38 +128,40 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					}
 					if(bow>0 && stern>0 && port>0 && starboard>0){
 						// We have dimensions and reference points
-						int bowOffset = dimToOffset(bow);
-						int sternOffset = dimToOffset(stern);
-						int portOffset = dimToOffset(port);
-						int starboardOffset = dimToOffset(starboard);
-						int[] xPos = { -sternOffset, -sternOffset, bowOffset-1, bowOffset, bowOffset-1, -sternOffset };
-						int[] yPos = { -portOffset, starboardOffset, starboardOffset, 0, -portOffset, -portOffset };
-
-						if(vessel.MMSI == 219653000 || vessel.MMSI == 219282000 || vessel.MMSI == 219173000){
-							System.out.println("Bow: "+bow+" offset: "+bowOffset);
-							System.out.println("Stern: "+stern+" offset: "+sternOffset);
-							System.out.println("Port: "+port+" offset: "+portOffset);
-							System.out.println("Starboard: "+starboard+" offset: "+starboardOffset);
-						}
-						
+						h = dimToOffset((bow+stern)/2);
+						w = dimToOffset((stern+port)/2);
+						int f = (int) Math.ceil(h/2);
+						int[] xPos = { -h, -h, h-f, h, h-f, -h };
+						int[] yPos = { -w, w, w, 0, -w, -w };
 						poly = new OMPoly(location.getPos().getLatitude(), location.getPos().getLongitude(), xPos, yPos, 0);
-						poly.setFillPaint(new Color(0));
+						poly.setFillPaint(new Color(255,0,0));
 					} else if(bow>0 || stern>0 || port>0 || starboard>0){
 						// We have only dimensions
-						int offset = (bow+stern)/2;
-						int[] xPos = { -offset, -offset, offset, 2*offset, offset, -offset };
-						int[] yPos = { -offset, offset, offset, 0, -offset, -offset };
+						h = dimToOffset((bow+stern)/2);
+						w = dimToOffset((stern+port)/2);
+						int f = (int) Math.ceil(h/2);
+						int[] xPos = { -h, -h, h-f, h, h-f, -h };
+						int[] yPos = { -w, w, w, 0, -w, -w };
 						poly = new OMPoly(location.getPos().getLatitude(), location.getPos().getLongitude(), xPos, yPos, 0);
-						poly.setFillPaint(new Color(50));
+						poly.setFillPaint(new Color(0,255,0));
 					} else {
 						// We don't have anything
 						int[] xPos = { -sizeOffset, -sizeOffset, sizeOffset, 2*sizeOffset, sizeOffset, -sizeOffset };
 						int[] yPos = { -sizeOffset, sizeOffset, sizeOffset, 0, -sizeOffset, -sizeOffset };
 						poly = new OMPoly(location.getPos().getLatitude(), location.getPos().getLongitude(), xPos, yPos, 0);
-						poly.setFillPaint(new Color(100));
+						poly.setFillPaint(new Color(0,0,255));
 					}
 					list.add(poly);
-
+					
+					if(true){
+						double trueHeading = location.getTrueHeading();
+						double hdgR = trueHeading;
+						int xoffset = (int) Math.floor(Math.cos(hdgR)*40);
+						int yoffset = (int) Math.floor(Math.sin(hdgR)*40);
+						OMLine line = new OMLine(lat, lon, 0, 0, xoffset, yoffset);
+						list.add(line);
+					}
+					
 					if (drawMMSI) {
 						// Add MMSI sign
 						label = new OMText(0, 0, 0, 0, Long.toString(shipList.get(i).MMSI), font, OMText.JUSTIFY_CENTER);
@@ -213,7 +216,13 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	}
 	
 	public int dimToOffset(int m){
-		return Math.round(m/20);
+		int offset = (int) Math.ceil(m/15);
+		if(offset<5)
+			return 5;
+		else if(offset > 10)
+			return 10;
+		else
+			return offset;
 	}
 
 	@Override
