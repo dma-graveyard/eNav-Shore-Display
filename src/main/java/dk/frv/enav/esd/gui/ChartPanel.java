@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 
 import org.apache.log4j.Logger;
 
@@ -88,11 +90,14 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		mapHandler.add(ESD.getAisHandler());
 		
 		// Set layout
-		setLayout(new BorderLayout());
+//		setLayout(new BorderLayout());
+		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS) );
 		// Set border
 		setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		// Max scale
 		this.maxScale = ESD.getSettings().getMapSettings().getMaxScale(); 
+
+		
 	}
 
 	public void initChart() {

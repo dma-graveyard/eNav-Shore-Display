@@ -1,5 +1,6 @@
 package dk.frv.enav.esd.gui;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -10,22 +11,26 @@ import javax.swing.Action;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
+import dk.frv.enav.esd.event.JMapFrameMouseListener;
 
 public class JMapFrame extends JInternalFrame implements MouseListener, InternalFrameListener  {
 	
 	
-	private static final long serialVersionUID = 1L;	
+	private static final long serialVersionUID = 1L;
+//	private static final InternalFrameListener JMapFrameMouseListener = null;	
 	private ChartPanel chartPanel;
 	boolean locked = false;
 //	private JComponent northPanel;
 	MouseMotionListener[] actions;
 	private int id;
 	private MainFrame mainFrame;
+	JLabel name;
 	
 	public JMapFrame(int id, MainFrame mainFrame) {
 		super("New Window "+id, true, true, true, true);
@@ -39,8 +44,24 @@ public class JMapFrame extends JInternalFrame implements MouseListener, Internal
 		this.setSize(400, 300);
 		this.setLocation(50, 50);
 		this.setVisible(true);
+		JMapFrameMouseListener jMapFrameMouseListener = new JMapFrameMouseListener();
 		
-		addInternalFrameListener(this);
+		
+		name = new JLabel(this.getTitle());
+//		name.setVerticalTextPosition(JLabel.BOTTOM);
+//		name.setHorizontalTextPosition(JLabel.CENTER);
+		name.setVisible(false);
+//		name.setOpaque(false);
+//		name.setBounds(10, 10, 270, 70);
+//		name.setBackground(new Color(102, 102, 102));
+		
+		chartPanel.add(name);
+//		this.add(name);
+//		this.getContentPane().add(name);
+		
+		addMouseListener(jMapFrameMouseListener);
+		
+//		addInternalFrameListener(jMapFrameMouseListener);
 		
 		chartPanel.initChart();
 		makeKeyBindings();
@@ -67,6 +88,10 @@ public class JMapFrame extends JInternalFrame implements MouseListener, Internal
 		return id;
 	}
 	
+	
+	public JLabel getNameLabel(){
+		return name;
+	}
 	
 	public void lockUnlockWindow(){
 		
@@ -180,7 +205,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener, Internal
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		if (arg0.getClickCount() == 2){
+		if (arg0.getClickCount() == 1){
 			rename();
 		}
 	}
@@ -188,8 +213,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener, Internal
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		
-	}
+}
 
 	@Override
 	public void mouseExited(MouseEvent arg0) {
