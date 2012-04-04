@@ -62,8 +62,8 @@ public class MainFrame extends JFrame implements WindowListener {
 	private Point location;
 	private JMenuWorkspaceBar topMenu;
 	
-	List<JMapFrame> mapWindows;
-	JMainDesktopPane desktop;
+	private List<JMapFrame> mapWindows;
+	private JMainDesktopPane desktop;
 	private JScrollPane scrollPane;
 	
 	public MainFrame() {

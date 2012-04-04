@@ -18,8 +18,8 @@ public class JMainDesktopPane extends JDesktopPane {
 
 	  private JMainDesktopManager manager;
 
-	  public JMainDesktopPane() {
-		  System.out.println("constructor");
+
+	public JMainDesktopPane() {
 	    manager = new JMainDesktopManager(this);
 	    setDesktopManager(manager);
 	    setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
@@ -30,6 +30,10 @@ public class JMainDesktopPane extends JDesktopPane {
 //	    checkDesktopSize();
 //	  }
 
+	  public JMainDesktopManager getManager() {
+			return manager;
+		}
+	  
 	  public Component add(JInternalFrame frame) {
 		  System.out.println("adding");
 	    JInternalFrame[] array = getAllFrames();
@@ -50,8 +54,8 @@ public class JMainDesktopPane extends JDesktopPane {
 	    if (frame.isResizable()) {
 	      w = getWidth() - (getWidth() / 3);
 	      h = getHeight() - (getHeight() / 3);
-System.out.println(getWidth());
-System.out.println(getHeight());
+//System.out.println(getWidth());
+//System.out.println(getHeight());
 	      if (w < frame.getMinimumSize().getWidth())
 	        w = (int) frame.getMinimumSize().getWidth();
 	      if (h < frame.getMinimumSize().getHeight())

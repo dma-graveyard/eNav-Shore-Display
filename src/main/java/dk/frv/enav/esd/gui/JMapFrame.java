@@ -94,13 +94,9 @@ public class JMapFrame extends JInternalFrame implements MouseListener, Internal
 	}
 	
 	public void lockUnlockWindow(){
-		
 		if (locked){
-			
 //			for (int i = 0; i < actions.length; i++)
 //				northPanel.addMouseMotionListener( actions[i] );
-			
-
 			this.setResizable(true);
 			setRootPaneCheckingEnabled(true);
 			this.updateUI();
@@ -124,6 +120,10 @@ public class JMapFrame extends JInternalFrame implements MouseListener, Internal
 //			this.updateUI();
 			locked = true;
 		}
+	}
+	
+	public void alwaysFront(){
+		mainFrame.getDesktop().getManager().addToFront(id, this);
 	}
 	
 	private void makeKeyBindings(){

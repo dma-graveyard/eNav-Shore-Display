@@ -108,6 +108,9 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		mapWindow.add(windowSettings);
 		windowSettings.setEnabled(false);
 		
+		JCheckBoxMenuItem alwaysFront = new JCheckBoxMenuItem("Always on top");
+		mapWindow.add(alwaysFront);	
+		
 		JMenuItem front = new JMenuItem("Bring to front");
 		mapWindow.add(front);		
 		
@@ -135,6 +138,12 @@ public class JMenuWorkspaceBar extends JMenuBar {
 				window.toFront();
 			}
 		});
+		
+		alwaysFront.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				window.alwaysFront();
+			}
+		});		
 
 	}
 
