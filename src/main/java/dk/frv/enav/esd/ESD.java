@@ -85,6 +85,8 @@ public class ESD {
 	
 	private static ExceptionHandler exceptionHandler = new ExceptionHandler();
 	
+	
+	
 	public static void main(String[] args) {
 		// Set up log4j logging
 		DOMConfigurator.configure("log4j.xml");
