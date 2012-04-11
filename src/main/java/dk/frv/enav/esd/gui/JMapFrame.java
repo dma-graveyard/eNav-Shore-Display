@@ -1,6 +1,5 @@
 package dk.frv.enav.esd.gui;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -17,7 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
-import dk.frv.enav.esd.event.JMapFrameMouseListener;
 
 public class JMapFrame extends JInternalFrame implements MouseListener, InternalFrameListener  {
 	
@@ -44,7 +42,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener, Internal
 		this.setSize(400, 300);
 		this.setLocation(50, 50);
 		this.setVisible(true);
-		JMapFrameMouseListener jMapFrameMouseListener = new JMapFrameMouseListener();
+//		JMapFrameMouseListener jMapFrameMouseListener = new JMapFrameMouseListener();
 		
 		
 		name = new JLabel(this.getTitle());
@@ -59,7 +57,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener, Internal
 //		this.add(name);
 //		this.getContentPane().add(name);
 		
-		addMouseListener(jMapFrameMouseListener);
+//		addMouseListener(jMapFrameMouseListener);
 		
 //		addInternalFrameListener(jMapFrameMouseListener);
 		
