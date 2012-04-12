@@ -29,6 +29,8 @@ import com.bbn.openmap.omGraphics.OMLine;
 import com.bbn.openmap.omGraphics.OMPoly;
 import com.bbn.openmap.omGraphics.OMText;
 import com.bbn.openmap.omGraphics.labeled.LabeledOMGraphic;
+import com.bbn.openmap.proj.Length;
+import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.ais.message.AisMessage;
@@ -50,45 +52,20 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private static VesselAisHandler aisHandler;
 	private List<AisMessageExtended> shipList;
 
+	private VesselLayer heading;
+	private VesselLayer ves;
+	private VesselLayer speed;
+	private LatLonPoint startPos = null;
+	private LatLonPoint endPos = null;
+	
 	private VesselPositionData location;
 	private OMPoly poly;
 	private Font font = null;
 	private OMText label = null;
 	private int sizeOffset = 5;
-	private int h;
-	private int w;
-	private String callSign;
-	private String name;
-	private String dst;
-	private int bow;
-	private int port;
-	private int starboard;
-	private int stern;
-	private float draught;
-	private long eta;
-	private long imo;
-	private int postype;
-	private ShipTypeCargo shiptype;
-	private String data[][];
-	private Container pane;
-	private JTable table;
-	private JTextArea tf2 = new JTextArea();
-	private JFrame jf;
-	private Boolean drawMMSI;
-	private Boolean drawCallSign;
-	private Boolean drawName;
 
 	@Override
 	public void run() {
-
-		shipInfoWindow();
-
-		// Import settings for each window
-		Boolean settings = true;
-		drawMMSI = true;
-		drawCallSign = false;
-		drawName = true;
-
 		while (true) {
 			ESD.sleep(1000);
 			drawVessels();
@@ -113,116 +90,90 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					location = vesselTarget.getPositionData();
 					double lat = location.getPos().getLatitude();
 					double lon = location.getPos().getLongitude();
+					double trueHeading = location.getTrueHeading();
+					boolean noHeading = false;
+					if (trueHeading == 511) {
+						trueHeading = vesselTarget.getPositionData().getCog();
+						noHeading = true;
+					}
+					double hdgR = Math.toRadians(trueHeading);
+					double cogR = Math.toRadians(location.getCog());
+					double sog = location.getSog();
+					
+					// Draw Vessel
+					int[] xPos = { sizeOffset, -sizeOffset, 0 };
+					int[] yPos = { sizeOffset, sizeOffset, -sizeOffset };
+					ves = new VesselLayer(xPos, yPos);
+					ves.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, hdgR);
+					ves.setFillPaint(new Color(0, 0, 255));
+					list.add(ves);
 
-					// Draw vessel
+					// Draw heading
+					int[] xPosh = { 0, 0 };
+					int[] yPosh = { 0, -30 };
+					heading = new VesselLayer(xPosh, yPosh);
+					heading.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, hdgR);
+					heading.setFillPaint(new Color(0, 0, 0));
+					if (!noHeading)
+						list.add(heading);
+
+					// Add MMSI/name tag
+					label = new OMText(0, 0, 0, 0, Long.toString(shipList.get(i).MMSI), font, OMText.JUSTIFY_CENTER);
+					label.setLat(lat);
+					label.setLon(lon);
+					if (trueHeading > 90 && trueHeading < 270) {
+						label.setY(-10);
+					} else {
+						label.setY(20);
+					}
+					String name;
 					if (staticData != null) {
-						bow = staticData.getDimBow();
-						stern = staticData.getDimStern();
-						port = staticData.getDimPort();
-						starboard = staticData.getDimStarboard();
+						name = AisMessage.trimText(staticData.getName());
 					} else {
-						bow = 0;
-						stern = 0;
-						port = 0;
-						starboard = 0;
+						Long mmsi = shipList.get(i).MMSI;
+						name = "ID:" + mmsi.toString();
 					}
-					if(bow>0 && stern>0 && port>0 && starboard>0){
-						// We have dimensions and reference points
-						h = dimToOffset((bow+stern)/2);
-						w = dimToOffset((stern+port)/2);
-						int f = (int) Math.ceil(h/2);
-						int[] xPos = { -h, -h, h-f, h, h-f, -h };
-						int[] yPos = { -w, w, w, 0, -w, -w };
-						poly = new OMPoly(location.getPos().getLatitude(), location.getPos().getLongitude(), xPos, yPos, 0);
-						poly.setFillPaint(new Color(255,0,0));
-					} else if(bow>0 || stern>0 || port>0 || starboard>0){
-						// We have only dimensions
-						h = dimToOffset((bow+stern)/2);
-						w = dimToOffset((stern+port)/2);
-						int f = (int) Math.ceil(h/2);
-						int[] xPos = { -h, -h, h-f, h, h-f, -h };
-						int[] yPos = { -w, w, w, 0, -w, -w };
-						poly = new OMPoly(location.getPos().getLatitude(), location.getPos().getLongitude(), xPos, yPos, 0);
-						poly.setFillPaint(new Color(0,255,0));
-					} else {
-						// We don't have anything
-						int[] xPos = { -sizeOffset, -sizeOffset, sizeOffset, 2*sizeOffset, sizeOffset, -sizeOffset };
-						int[] yPos = { -sizeOffset, sizeOffset, sizeOffset, 0, -sizeOffset, -sizeOffset };
-						poly = new OMPoly(location.getPos().getLatitude(), location.getPos().getLongitude(), xPos, yPos, 0);
-						poly.setFillPaint(new Color(0,0,255));
-					}
-					list.add(poly);
+					label.setData(name);
+					list.add(label);
 					
-					if(true){
-						double trueHeading = location.getTrueHeading();
-						double hdgR = trueHeading;
-						int xoffset = (int) Math.floor(Math.cos(hdgR)*40);
-						int yoffset = (int) Math.floor(Math.sin(hdgR)*40);
-						OMLine line = new OMLine(lat, lon, 0, 0, xoffset, yoffset);
-						list.add(line);
-					}
+					// Draw speed vector
+					/*
+					 * Should cogR be with sog instead? This is not done yet.
+					 * */
+					int[] xPoss = { 0, 0 };
+					int[] yPoss = { 0, (int) (-60 * (sog / 60.0)) };
+					speed = new VesselLayer(xPoss, yPoss);
+					speed.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, cogR);
+					speed.setFillPaint(new Color(255, 0, 0));
+					list.add(speed);
 					
-					if (drawMMSI) {
-						// Add MMSI sign
+					// Draw call sign
+					if (staticData != null) {
 						label = new OMText(0, 0, 0, 0, Long.toString(shipList.get(i).MMSI), font, OMText.JUSTIFY_CENTER);
 						label.setLat(lat);
 						label.setLon(lon);
-						label.setY(4 * sizeOffset);
-						label.setData("ID: " + Long.toString(vesselTarget.getMmsi()));
+						if (trueHeading > 90 && trueHeading < 270) {
+							label.setY(-25);
+						} else {
+							label.setY(35);
+						}
+						label.setData("Call Sign: " + staticData.getCallsign());
 						list.add(label);
 					}
-
-					if (staticData != null) {
-						callSign = staticData.getCallsign();
-						name = staticData.getName();
-					} else {
-						callSign = "N/A";
-						name = "N/A";
-					}
-
-					if (drawCallSign) {
-						// Add call sign
-						label = new OMText(0, 0, 0, 0, Long.toString(shipList.get(i).MMSI), font, OMText.JUSTIFY_RIGHT);
-						label.setLat(lat);
-						label.setLon(lon);
-						label.setX(-2 * sizeOffset);
-						label.setY(sizeOffset);
-						label.setData("Call Sign: " + callSign);
-						list.add(label);
-					}
-
-					if (drawName) {
-						// Add name
-						label = new OMText(0, 0, 0, 0, Long.toString(shipList.get(i).MMSI), font, OMText.JUSTIFY_LEFT);
-						label.setLat(lat);
-						label.setLon(lon);
-						label.setX(2 * sizeOffset);
-						label.setY(sizeOffset);
-						label.setData("Name: " + name);
-						list.add(label);
-					}
-					// Add heading
-					/*
-					 * float trueHeading = location.getTrueHeading();
-					 * System.out.println(trueHeading); boolean noHeading =
-					 * false; if (trueHeading == 511) { trueHeading =
-					 * location.getCog(); noHeading = true; }
-					 */
-
 				}
 			}
 			doPrepare();
 		}
 	}
-	
-	public int dimToOffset(int m){
-		int offset = (int) Math.ceil(m/15);
-		if(offset<5)
-			return 5;
-		else if(offset > 10)
-			return 10;
-		else
-			return offset;
+
+	private void updateVessels() {
+		if (aisHandler != null) {
+			shipList = aisHandler.getShipList();
+			for (int i = 0; i < shipList.size(); i++) {
+				if (aisHandler.getVesselTargets().containsKey(shipList.get(i).MMSI)) {
+				}
+			}
+		}
 	}
 
 	@Override
@@ -249,125 +200,5 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	public void receiveOwnMessage(AisMessage aisMessage) {
 		// TODO Auto-generated method stub
 
-	}
-
-	public void shipInfoWindow() {
-		List<AisMessageExtended> shipList = aisHandler.getShipList();
-		jf = new JFrame();
-		jf.setTitle("Ship Info Window");
-		jf.setSize(800, 600);
-		pane = jf.getContentPane();
-		pane.setLayout(new GridLayout(1, 3));
-
-		String fields[] = { "MSI" };
-		data = new String[3][1];
-		int index = 0;
-		for (int i = 0; i < shipList.size(); i++) {
-			if (aisHandler.getVesselTargets().containsKey(shipList.get(i).MMSI)) {
-				if (shipList.get(i).MMSI == 219653000 || shipList.get(i).MMSI == 219282000 || shipList.get(i).MMSI == 219173000) {
-					data[index][0] = Long.toString(shipList.get(i).MMSI);
-					index++;
-				}
-			}
-		}
-
-		table = new JTable(data, fields);
-		table.setBounds(0, 0, 100, 600);
-		JScrollPane test = new JScrollPane(table);
-		test.setBounds(0, 0, 100, 600);
-		table.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				if (SwingUtilities.isLeftMouseButton(e)) {
-					updateRightPaneOfInfoWindow(e.getPoint());
-				}
-			}
-		});
-		pane.add(test, 0);
-		tf2.setText("");
-		tf2.setEditable(false);
-		pane.add(tf2, 1);
-
-		JButton reload = new JButton();
-		reload.setText("Reload");
-		reload.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				jf.setVisible(false);
-				jf.dispose();
-				shipInfoWindow();
-			}
-		});
-		pane.add(reload, 2);
-
-		jf.setDefaultCloseOperation(jf.EXIT_ON_CLOSE);
-		jf.setVisible(true);
-	}
-
-	public void updateRightPaneOfInfoWindow(Point point) {
-		Long MMSI = Long.parseLong(data[table.rowAtPoint(point)][0]);
-
-		VesselTarget vesselTarget = aisHandler.getVesselTargets().get(MMSI);
-		VesselStaticData staticData = vesselTarget.getStaticData();
-
-		if (staticData != null) {
-			callSign = staticData.getCallsign();
-			name = staticData.getName();
-			dst = staticData.getDestination();
-			bow = staticData.getDimBow();
-			port = staticData.getDimPort();
-			starboard = staticData.getDimStarboard();
-			stern = staticData.getDimStern();
-			draught = staticData.getDraught();
-			eta = staticData.getEta();
-			imo = staticData.getImo();
-			postype = staticData.getPosType();
-			shiptype = staticData.getShipType();
-		} else {
-			callSign = "N/A";
-			name = "N/A";
-			dst = "N/A";
-			bow = 0;
-			port = 0;
-			starboard = 0;
-			stern = 0;
-			draught = 0;
-			eta = 0;
-			imo = 0;
-			postype = 0;
-			shiptype = null;
-		}
-
-		String out = "";
-		out += "MMSI: " + data[table.rowAtPoint(point)][0] + "\n";
-		out += "Call sign: " + callSign + "\n";
-		out += "Name: " + name + "\n";
-		out += "Destination: " + dst + "\n";
-		out += "Bow: " + bow + "\n";
-		out += "Port: " + port + "\n";
-		out += "Starboard: " + starboard + "\n";
-		out += "Stern: " + stern + "\n";
-		out += "Draught: " + draught + "\n";
-		out += "Eta: " + eta + "\n";
-		out += "Imo: " + imo + "\n";
-		out += "Pos-type: " + postype + "\n";
-		if (shiptype != null)
-			out += "Ship type: " + shiptype + "\n";
-		else
-			out += "Ship type: None\n";
-		out += "AisRouteData: " + vesselTarget.checkAisRouteData() + "\n";
-		out += "AisClass: " + vesselTarget.getAisClass().toString() + "\n";
-		out += "Last Received: " + vesselTarget.getLastReceived().toString() + "\n";
-		out += "Status: " + vesselTarget.getStatus().toString() + "\n";
-		out += "Has Intented Route: " + vesselTarget.hasIntendedRoute() + "\n";
-		out += "Cog: " + vesselTarget.getPositionData().getCog() + "\n";
-		out += "NavStatus: " + vesselTarget.getPositionData().getNavStatus() + "\n";
-		out += "PosAcc: " + vesselTarget.getPositionData().getPosAcc() + "\n";
-		out += "Rot: " + vesselTarget.getPositionData().getRot() + "\n";
-		out += "Sog: " + vesselTarget.getPositionData().getSog() + "\n";
-		out += "True Heading: " + vesselTarget.getPositionData().getTrueHeading() + "\n";
-		out += "Enum Nav Status: " + vesselTarget.getPositionData().getEnumNavStatus() + "\n";
-		out += "Lat: " + vesselTarget.getPositionData().getPos().getLatitude() + "\n";
-		out += "Long: " + vesselTarget.getPositionData().getPos().getLongitude() + "\n";
-		out += "Has pos: " + vesselTarget.getPositionData().hasPos() + "\n";
-		tf2.setText(out);
 	}
 }
