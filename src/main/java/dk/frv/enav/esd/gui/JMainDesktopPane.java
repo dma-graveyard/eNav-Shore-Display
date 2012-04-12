@@ -17,9 +17,11 @@ public class JMainDesktopPane extends JDesktopPane {
 	private static int FRAME_OFFSET = 20;
 
 	  private JMainDesktopManager manager;
+	  private MainFrame mainFrame;
 
 
-	public JMainDesktopPane() {
+	public JMainDesktopPane(MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
 	    manager = new JMainDesktopManager(this);
 	    setDesktopManager(manager);
 	    setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
@@ -35,7 +37,6 @@ public class JMainDesktopPane extends JDesktopPane {
 		}
 	  
 	  public Component add(JInternalFrame frame) {
-		  System.out.println("adding");
 	    JInternalFrame[] array = getAllFrames();
 	    Point p;
 	    int w;
@@ -73,6 +74,11 @@ public class JMainDesktopPane extends JDesktopPane {
 	  }
 
 	  public void remove(Component c) {
+		  
+		  if (c instanceof JMapFrame){
+			  mainFrame.removeMapWindow((JMapFrame) c);
+		  }
+		  
 	    super.remove(c);
 //	    checkDesktopSize();
 	  }

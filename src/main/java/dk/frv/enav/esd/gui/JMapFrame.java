@@ -17,7 +17,7 @@ import javax.swing.KeyStroke;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
-public class JMapFrame extends JInternalFrame implements MouseListener, InternalFrameListener  {
+public class JMapFrame extends JInternalFrame implements MouseListener  {
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -27,13 +27,14 @@ public class JMapFrame extends JInternalFrame implements MouseListener, Internal
 //	private JComponent northPanel;
 	MouseMotionListener[] actions;
 	private int id;
-	private MainFrame mainFrame;
+	private final MainFrame mainFrame;
 	JLabel name;
 	
 	public JMapFrame(int id, MainFrame mainFrame) {
 		super("New Window "+id, true, true, true, true);
 
 		this.mainFrame = mainFrame;
+		
 		this.id = id;
 		chartPanel = new ChartPanel();
 		
@@ -231,43 +232,5 @@ public class JMapFrame extends JInternalFrame implements MouseListener, Internal
 		
 	}
 
-	@Override
-	public void internalFrameActivated(InternalFrameEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void internalFrameClosed(InternalFrameEvent arg0) {
-		
-	}
-
-	@Override
-	public void internalFrameClosing(InternalFrameEvent arg0) {
-		mainFrame.removeMapWindow(this);
-		
-	}
-
-	@Override
-	public void internalFrameDeactivated(InternalFrameEvent arg0) {
-		
-	}
-
-	@Override
-	public void internalFrameDeiconified(InternalFrameEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void internalFrameIconified(InternalFrameEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void internalFrameOpened(InternalFrameEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }

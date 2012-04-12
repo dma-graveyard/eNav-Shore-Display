@@ -31,8 +31,12 @@ package dk.frv.enav.esd.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.DisplayMode;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.beancontext.BeanContextServicesSupport;
@@ -96,7 +100,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		setIconImage(getAppIcon());
 		addWindowListener(this);
 
-		desktop = new JMainDesktopPane();
+		desktop = new JMainDesktopPane(this);
 		scrollPane = new JScrollPane();
 		
 //		pack();
@@ -149,6 +153,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	
 	public void removeMapWindow(JMapFrame window){
 		topMenu.removeMapMenu(window);
+		mapWindows.remove(window);
 	}
 	
 	public void renameMapWindow(JMapFrame window){
@@ -159,16 +164,45 @@ public class MainFrame extends JFrame implements WindowListener {
 		return desktop;
 	}
 	
+	public Dimension getMaxResolution(){
+		int width = 0;
+		int height = 0;
+		
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice[] gs = ge.getScreenDevices();
+
+		for (GraphicsDevice curGs : gs)
+		{
+		  DisplayMode mode = curGs.getDisplayMode();
+		  width += mode.getWidth();
+		  if (height < mode.getHeight()){
+			  height = mode.getHeight();  
+		  }
+
+		}
+		  return new Dimension(width, height);
+		
+	}
+	
 	public void toggleFullScreen() {
+		
+		System.out.println(this.getLocationOnScreen());
+		
 		if (!this.isUndecorated()) {
 			location = this.getLocation();
 			size = this.getSize();
-			setExtendedState(JFrame.MAXIMIZED_BOTH);
+			
+			this.setSize(getMaxResolution());
+			
+//			setLocationRelativeTo(null);
+			this.setLocation(0,0);
+//			setExtendedState(JFrame.MAXIMIZED_BOTH);
+			
 			dispose();
 			this.setUndecorated(true);
 			setVisible(true);
 		} else {
-			setExtendedState(JFrame.NORMAL);
+//			setExtendedState(JFrame.NORMAL);
 			this.setSize(size);
 			this.setLocation(location);
 			dispose();

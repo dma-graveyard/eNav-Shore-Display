@@ -42,17 +42,17 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 
 	  public void activateFrame(JInternalFrame f) {
 		  JInternalFrame[] allFrames = desktop.getAllFrames();
-		  System.out.println("Activated frame id " +  ((JMapFrame) f).getId());
+//		  System.out.println("Activated frame id " +  ((JMapFrame) f).getId());
 		  if (toFront.size() == 0){
-			  System.out.println("Still zero");
+//			  System.out.println("Still zero");
 			  super.activateFrame(f);
 		  }else{
 			  if (toFront.containsKey(((JMapFrame) f).getId())){
-				  System.out.println("It's added");
+//				  System.out.println("It's added");
 				  super.activateFrame(f);
 			  }else{
 				  
-				 System.out.println("Not in toFront");
+//				 System.out.println("Not in toFront");
 				 Map.Entry<Integer, JInternalFrame> entry = (Entry<Integer, JInternalFrame>) toFront.entrySet().iterator().next();
 
 				 super.activateFrame(f);
