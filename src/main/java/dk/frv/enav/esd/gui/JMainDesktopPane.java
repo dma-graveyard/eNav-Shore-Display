@@ -53,6 +53,7 @@ public class JMainDesktopPane extends JDesktopPane {
 	    }
 	    frame.setLocation(p.x, p.y);
 	    if (frame.isResizable()) {
+	    	
 	      w = getWidth() - (getWidth() / 3);
 	      h = getHeight() - (getHeight() / 3);
 //System.out.println(getWidth());
@@ -61,7 +62,17 @@ public class JMainDesktopPane extends JDesktopPane {
 	        w = (int) frame.getMinimumSize().getWidth();
 	      if (h < frame.getMinimumSize().getHeight())
 	        h = (int) frame.getMinimumSize().getHeight();
+	      
+	      if (w > 700){
+	    	  w = 400;
+	      }
+	      if (h > 700){
+	    	  h = 400;
+	      }
+	      
 	      frame.setSize(w, h);
+	      
+	      
 	    }
 	    moveToFront(frame);
 	    frame.setVisible(true);

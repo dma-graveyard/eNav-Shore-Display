@@ -205,7 +205,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		if (arg0.getClickCount() == 1){
-			rename();
+//			rename();
 		}
 	}
 

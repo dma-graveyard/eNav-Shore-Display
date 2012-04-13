@@ -50,7 +50,7 @@ import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
 
 import dk.frv.enav.esd.ESD;
-import dk.frv.enav.esd.settings.GuiSettings;
+//import dk.frv.enav.esd.settings.GuiSettings;
 
 /**
  * The main frame containing map and panels
@@ -175,6 +175,9 @@ public class MainFrame extends JFrame implements WindowListener {
 		{
 		  DisplayMode mode = curGs.getDisplayMode();
 		  width += mode.getWidth();
+		  
+//		  System.out.println("Width: " + width);
+		  
 		  if (height < mode.getHeight()){
 			  height = mode.getHeight();  
 		  }
@@ -187,6 +190,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	public void toggleFullScreen() {
 		
 		System.out.println(this.getLocationOnScreen());
+//		System.out.println("fullscreen toggle");
 		
 		if (!this.isUndecorated()) {
 			location = this.getLocation();
@@ -197,7 +201,6 @@ public class MainFrame extends JFrame implements WindowListener {
 //			setLocationRelativeTo(null);
 			this.setLocation(0,0);
 //			setExtendedState(JFrame.MAXIMIZED_BOTH);
-			
 			dispose();
 			this.setUndecorated(true);
 			setVisible(true);
@@ -213,10 +216,10 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	public void saveSettings() {
 		// Save gui settings
-		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
-		guiSettings.setMaximized((getExtendedState() & MAXIMIZED_BOTH) > 0);
-		guiSettings.setAppLocation(getLocation());
-		guiSettings.setAppDimensions(getSize());
+//		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
+//		guiSettings.setMaximized((getExtendedState() & MAXIMIZED_BOTH) > 0);
+//		guiSettings.setAppLocation(getLocation());
+//		guiSettings.setAppDimensions(getSize());
 		// Save map settings
 		// chartPanel.saveSettings();
 	}
