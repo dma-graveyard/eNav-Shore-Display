@@ -189,7 +189,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	
 	public void toggleFullScreen() {
 		
-		System.out.println(this.getLocationOnScreen());
+//		System.out.println(this.getLocationOnScreen());
 //		System.out.println("fullscreen toggle");
 		
 		if (!this.isUndecorated()) {
