@@ -17,12 +17,16 @@ public class JMenuWorkspaceBar extends JMenuBar {
 	private static final long serialVersionUID = 1L;
 	private JMenu maps;
 	private HashMap<Integer, JMenu> mapMenus;
-
+//	private MainFrame mainFrame;
+	private JMainDesktopPane desktop;
 	// private MainFrame mainFrame;
 
 	public JMenuWorkspaceBar(final MainFrame mainFrame) {
 		super();
 
+//		this.mainFrame = mainFrame;
+		this.desktop = mainFrame.getDesktop();
+		
 		// this.mainFrame = mainFrame;
 		// JMenuBar mb = new JMenuBar();
 		// this.setJMenuBar(mb);
@@ -42,6 +46,12 @@ public class JMenuWorkspaceBar extends JMenuBar {
 
 		JMenuItem addMap = new JMenuItem("New Map Window");
 		maps.add(addMap);
+		
+		JMenuItem cascade = new JMenuItem("Sort by Cascade");
+		maps.add(cascade);
+		
+		JMenuItem tile = new JMenuItem("Sort by Tile");
+		maps.add(tile);		
 
 //		JMenuItem lockMaps = new JMenuItem("Lock/Unlock all map windows");
 //		maps.add(lockMaps);
@@ -66,6 +76,17 @@ public class JMenuWorkspaceBar extends JMenuBar {
 			}
 		});
 
+		
+	    cascade.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent ae) {
+	          desktop.cascadeFrames();
+	        }
+	      });
+	    tile.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent ae) {
+	        desktop.tileFrames();
+	        }
+	      });
 //		lockMaps.addActionListener(new ActionListener() {
 //			public void actionPerformed(ActionEvent e) {
 //				List<JMapFrame> mapWindows = mainFrame.getMapWindows();
@@ -86,6 +107,9 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		JMenuItem windowSettings = new JMenuItem("Settings");
 		mapWindow.add(windowSettings);
 		windowSettings.setEnabled(false);
+		
+		JCheckBoxMenuItem alwaysFront = new JCheckBoxMenuItem("Always on top");
+		mapWindow.add(alwaysFront);	
 		
 		JMenuItem front = new JMenuItem("Bring to front");
 		mapWindow.add(front);		
@@ -114,6 +138,12 @@ public class JMenuWorkspaceBar extends JMenuBar {
 				window.toFront();
 			}
 		});
+		
+		alwaysFront.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				window.alwaysFront();
+			}
+		});		
 
 	}
 

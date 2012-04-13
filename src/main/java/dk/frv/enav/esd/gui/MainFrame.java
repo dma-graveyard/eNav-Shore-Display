@@ -31,8 +31,12 @@ package dk.frv.enav.esd.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.DisplayMode;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.beancontext.BeanContextServicesSupport;
@@ -40,13 +44,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 
 import org.apache.log4j.Logger;
 
 import dk.frv.enav.esd.ESD;
-import dk.frv.enav.esd.settings.GuiSettings;
+//import dk.frv.enav.esd.settings.GuiSettings;
 
 /**
  * The main frame containing map and panels
@@ -62,51 +66,65 @@ public class MainFrame extends JFrame implements WindowListener {
 	private Point location;
 	private JMenuWorkspaceBar topMenu;
 	
-	List<JMapFrame> mapWindows;
-
+	private List<JMapFrame> mapWindows;
+	private JMainDesktopPane desktop;
+	private JScrollPane scrollPane;
+	
 	public MainFrame() {
 		super();
 		initGUI();
+		
+
+
+		// HARDCODED: Initialize with 1 map window
+//		addMapWindow();
 	}
 
 	private void initGUI() {
 
 		BeanContextServicesSupport beanHandler = ESD.getBeanHandler();
 		// Get settings
-		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
+//		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
 		setTitle(TITLE);
 
-		// Set location and size
-		if (guiSettings.isMaximized()) {
-			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
-		} else {
-			setLocation(guiSettings.getAppLocation());
-			setSize(guiSettings.getAppDimensions());
-		}
+//		// Set location and size
+//		if (guiSettings.isMaximized()) {
+//			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+//		} else {
+//			setLocation(guiSettings.getAppLocation());
+//			setSize(guiSettings.getAppDimensions());
+//		}
+
+		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setIconImage(getAppIcon());
 		addWindowListener(this);
 
-		JDesktopPane dtp = new JDesktopPane();
-		this.setContentPane(dtp);
-		dtp.setBackground(Color.LIGHT_GRAY);
+		desktop = new JMainDesktopPane(this);
+		scrollPane = new JScrollPane();
+		
+//		pack();
+		this.setSize(1000, 700);
+//		desktop.setSize(1000, 700);
+//		scrollPane.setSize(1000, 700);
+		
+		scrollPane.getViewport().add(desktop);
+//	    getContentPane().add(scrollPane);
+	    this.setContentPane(scrollPane);
+		
+		desktop.setBackground(Color.LIGHT_GRAY);
 
+		
 		mapWindows = new ArrayList<JMapFrame>();
-
-		// JFrameMenuBar floatingMenu = new JFrameMenuBar(this);
-		// dtp.add(floatingMenu);
 
 		topMenu = new JMenuWorkspaceBar(this);
 		this.setJMenuBar(topMenu);
 
-		dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+//		dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
 		// Add self to bean handler
-
 		beanHandler.add(this);
 
-		// HARDCODED: Initialize with 1 map window
-		addMapWindow();
 
 	}
 
@@ -126,7 +144,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	public void addMapWindow() {
 		windowCount++;
 		JMapFrame window = new JMapFrame(windowCount, this);
-		this.add(window);
+		desktop.add(window);
 		mapWindows.add(window);
 		window.toFront();
 		
@@ -135,22 +153,59 @@ public class MainFrame extends JFrame implements WindowListener {
 	
 	public void removeMapWindow(JMapFrame window){
 		topMenu.removeMapMenu(window);
+		mapWindows.remove(window);
 	}
 	
 	public void renameMapWindow(JMapFrame window){
 		topMenu.renameMapMenu(window);
 	}
 
+	public JMainDesktopPane getDesktop(){
+		return desktop;
+	}
+	
+	public Dimension getMaxResolution(){
+		int width = 0;
+		int height = 0;
+		
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice[] gs = ge.getScreenDevices();
+
+		for (GraphicsDevice curGs : gs)
+		{
+		  DisplayMode mode = curGs.getDisplayMode();
+		  width += mode.getWidth();
+		  
+//		  System.out.println("Width: " + width);
+		  
+		  if (height < mode.getHeight()){
+			  height = mode.getHeight();  
+		  }
+
+		}
+		  return new Dimension(width, height);
+		
+	}
+	
 	public void toggleFullScreen() {
+		
+		System.out.println(this.getLocationOnScreen());
+//		System.out.println("fullscreen toggle");
+		
 		if (!this.isUndecorated()) {
 			location = this.getLocation();
 			size = this.getSize();
-			setExtendedState(JFrame.MAXIMIZED_BOTH);
+			
+			this.setSize(getMaxResolution());
+			
+//			setLocationRelativeTo(null);
+			this.setLocation(0,0);
+//			setExtendedState(JFrame.MAXIMIZED_BOTH);
 			dispose();
 			this.setUndecorated(true);
 			setVisible(true);
 		} else {
-			setExtendedState(JFrame.NORMAL);
+//			setExtendedState(JFrame.NORMAL);
 			this.setSize(size);
 			this.setLocation(location);
 			dispose();
@@ -161,10 +216,10 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	public void saveSettings() {
 		// Save gui settings
-		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
-		guiSettings.setMaximized((getExtendedState() & MAXIMIZED_BOTH) > 0);
-		guiSettings.setAppLocation(getLocation());
-		guiSettings.setAppDimensions(getSize());
+//		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
+//		guiSettings.setMaximized((getExtendedState() & MAXIMIZED_BOTH) > 0);
+//		guiSettings.setAppLocation(getLocation());
+//		guiSettings.setAppDimensions(getSize());
 		// Save map settings
 		// chartPanel.saveSettings();
 	}
