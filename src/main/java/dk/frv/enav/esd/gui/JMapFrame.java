@@ -125,6 +125,10 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		mainFrame.getDesktop().getManager().addToFront(id, this);
 	}
 	
+	public boolean isLocked(){
+		return locked;
+	}
+	
 	private void makeKeyBindings(){
 	      JPanel content = (JPanel) getContentPane();
 	      InputMap inputMap = content.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
