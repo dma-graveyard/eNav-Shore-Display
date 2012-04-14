@@ -51,6 +51,7 @@ import dk.frv.enav.esd.ais.VesselAisHandler;
 import dk.frv.enav.esd.gui.MainFrame;
 import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.nmea.NmeaTcpSensor;
+import dk.frv.enav.esd.settings.GuiSettings;
 import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.esd.test.TestHandler;
 import dk.frv.enav.esd.util.OneInstanceGuard;
@@ -263,11 +264,28 @@ public class ESD {
 	
 	public static void closeApp(boolean restart) {
 		// Shutdown routine
+		
+		//Chart panels
+		
+		//Window state
+		
+		//Window state has a 
+		//Name, Size, Location, Locked status, on top status
+		//Chart panel has a zoom level, position
+		
+		//Main application
+		
 		mainFrame.saveSettings();
 		settings.saveToFile();
+		
+		
+		
+//		GuiSettings
+//		Handler settings		
 //		routeManager.saveToFile();
 //		msiHandler.saveToFile();
 //		aisHandler.saveView();
+		
 		LOG.info("Closing ESD");
 		System.exit(restart ? 2 : 0);
 	}

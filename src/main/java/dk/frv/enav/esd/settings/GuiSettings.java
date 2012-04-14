@@ -47,8 +47,8 @@ public class GuiSettings implements Serializable {
 	private boolean maximized = false;
 	private Point appLocation = new Point(10, 10);
 	private Dimension appDimensions = new Dimension(1280, 800);
+	private boolean fullscreen = false;
 	private boolean multipleInstancesAllowed = false;
-	private boolean riskNogoDisabled = true;
 
 	
 	public GuiSettings() {
@@ -63,8 +63,7 @@ public class GuiSettings implements Serializable {
 		double w = PropUtils.doubleFromProperties(props, PREFIX + "appDimensions_w", appDimensions.getWidth());
 		double h = PropUtils.doubleFromProperties(props, PREFIX + "appDimensions_h", appDimensions.getHeight());
 		appDimensions.setSize(w, h);
-		multipleInstancesAllowed = PropUtils.booleanFromProperties(props, PREFIX + "multipleInstancesAllowed", multipleInstancesAllowed);
-		riskNogoDisabled = PropUtils.booleanFromProperties(props, PREFIX + "riskNogoDisabled", riskNogoDisabled);
+		fullscreen = PropUtils.booleanFromProperties(props, PREFIX + "fullscreen", fullscreen);		
 	}
 
 	public void setProperties(Properties props) {
@@ -74,7 +73,7 @@ public class GuiSettings implements Serializable {
 		props.put(PREFIX + "appDimensions_w", Double.toString(appDimensions.getWidth()));
 		props.put(PREFIX + "appDimensions_h", Double.toString(appDimensions.getHeight()));
 		props.put(PREFIX + "multipleInstancesAllowed", Boolean.toString(multipleInstancesAllowed));
-		props.put(PREFIX + "riskNogoDisabled", Boolean.toString(riskNogoDisabled));
+		props.put(PREFIX + "fullscreen", Boolean.toString(fullscreen));
 	}
 
 	public Point getAppLocation() {
@@ -109,12 +108,13 @@ public class GuiSettings implements Serializable {
 		this.multipleInstancesAllowed = multipleInstancesAllowed;
 	}
 
-	public boolean isRiskNogoDisabled() {
-		return riskNogoDisabled;
+
+	public boolean isFullscreen(){
+		return fullscreen;
 	}
 	
-	public void setRiskNogoDisabled(boolean riskNogoDisabled) {
-		this.riskNogoDisabled = riskNogoDisabled;
+	public void setFullscreen(boolean fullscreen){
+		this.fullscreen = fullscreen;
 	}
 	
 }

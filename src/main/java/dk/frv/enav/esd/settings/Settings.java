@@ -55,6 +55,8 @@ public class Settings implements Serializable {
 	private String settingsFile = "settings.properties";
 	
 	private GuiSettings guiSettings = new GuiSettings();
+	
+	
 	private MapSettings mapSettings = new MapSettings();
 	private SensorSettings sensorSettings = new SensorSettings();
 //	private NavSettings navSettings = new NavSettings();
@@ -93,10 +95,13 @@ public class Settings implements Serializable {
 		mapSettings.setProperties(props);
 //		navSettings.setProperties(props);
 //		sensorSettings.setProperties(props);
+		
+		
+		
 		try {
 			FileWriter outFile = new FileWriter(settingsFile);
 			PrintWriter out = new PrintWriter(outFile);
-			out.println("# ee-INS settings saved: " + new Date());
+			out.println("# esd settings saved: " + new Date());
 			TreeSet<String> keys = new TreeSet<String>();
 			for (Object key : props.keySet()) {
 				keys.add((String)key);
