@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 
 import org.apache.log4j.Logger;
 
@@ -57,6 +59,7 @@ import com.bbn.openmap.proj.coords.LatLonPoint;
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.event.NavigationMouseMode;
+import dk.frv.enav.esd.layers.ais.AisLayer;
 import dk.frv.enav.esd.settings.MapSettings;
 
 /**
@@ -75,24 +78,36 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	private NavigationMouseMode mapNavMouseMode;
 	private MouseDelegator mouseDelegator;
 	public int maxScale = 5000;
-
+	private AisLayer aisLayer;
 
 	public ChartPanel() {
 		super();
-		// Set map handler
+		
+		// Create the charts own maphandler
 		mapHandler = new MapHandler();
+		
+		// Add the aishandler to this bean
+		mapHandler.add(ESD.getAisHandler());
+		
 		// Set layout
-		setLayout(new BorderLayout());
+//		setLayout(new BorderLayout());
+		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS) );
 		// Set border
 		setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		// Max scale
 		this.maxScale = ESD.getSettings().getMapSettings().getMaxScale(); 
+
+		
 	}
 
 	public void initChart() {
+		
 		MapSettings mapSettings = ESD.getSettings().getMapSettings();
 		Properties props = ESD.getProperties();
-		
+
+		aisLayer = new AisLayer();
+		aisLayer.setVisible(true);
+		mapHandler.add(aisLayer);
 
 		// Create a MapBean, and add it to the MapHandler.
 		map = new BufferedLayerMapBean();
@@ -311,9 +326,6 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
             case 3:  point = new Point(width/2-100,height/2);	break;
             case 4:  point = new Point(width/2+100,height/2);	break;
 	        }
-	    
-	    
-	    
         
         Proj p = (Proj) projection;
         LatLonPoint llp = projection.inverse(point);

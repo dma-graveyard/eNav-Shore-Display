@@ -1,56 +1,132 @@
 package dk.frv.enav.esd.gui;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 
-public class JMapFrame extends JInternalFrame{
+public class JMapFrame extends JInternalFrame implements MouseListener  {
 	
-	private ChartPanel chartPanel;
+	
 	private static final long serialVersionUID = 1L;
-	
+//	private static final InternalFrameListener JMapFrameMouseListener = null;	
+	private ChartPanel chartPanel;
 	boolean locked = false;
-	private JComponent northPanel;
-	public JMapFrame(int id) {
-		super("New Window "+id, true, true, true);
+//	private JComponent northPanel;
+	MouseMotionListener[] actions;
+	private int id;
+	private final MainFrame mainFrame;
+	JLabel name;
+	
+	public JMapFrame(int id, MainFrame mainFrame) {
+		super("New Window "+id, true, true, true, true);
+
+		this.mainFrame = mainFrame;
 		
+		this.id = id;
 		chartPanel = new ChartPanel();
+		
 		this.setContentPane(chartPanel);
+		
 		this.setSize(400, 300);
 		this.setLocation(50, 50);
 		this.setVisible(true);
-
+//		JMapFrameMouseListener jMapFrameMouseListener = new JMapFrameMouseListener();
+		
+		
+		name = new JLabel(this.getTitle());
+//		name.setVerticalTextPosition(JLabel.BOTTOM);
+//		name.setHorizontalTextPosition(JLabel.CENTER);
+		name.setVisible(false);
+//		name.setOpaque(false);
+//		name.setBounds(10, 10, 270, 70);
+//		name.setBackground(new Color(102, 102, 102));
+		
+		chartPanel.add(name);
+//		this.add(name);
+//		this.getContentPane().add(name);
+		
+//		addMouseListener(jMapFrameMouseListener);
+		
+//		addInternalFrameListener(jMapFrameMouseListener);
+		
 		chartPanel.initChart();
 		makeKeyBindings();
 		
-		javax.swing.plaf.InternalFrameUI ifu= this.getUI();
-		northPanel = ((javax.swing.plaf.basic.BasicInternalFrameUI)ifu).getNorthPane();
+		
+//		MouseListener listeners = ((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().getMouseListeners()[0];
+		
+//		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().removeMouseListener(listeners);
+		
+		
+//		System.out.println(((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().getMouseListeners().length);
+		
+		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().addMouseListener(this);
+		
+//		northPanel = ((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane();
+		
+//		System.out.println(northPanel.getMouseListeners().length);
+		
+		actions = (MouseMotionListener[])((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().getListeners(MouseMotionListener.class);
+		
 	}
 
+	public int getId(){
+		return id;
+	}
+	
+	
+	public JLabel getNameLabel(){
+		return name;
+	}
+	
 	public void lockUnlockWindow(){
-		
 		if (locked){
-			setRootPaneCheckingEnabled(true);
-			javax.swing.plaf.InternalFrameUI ifu= this.getUI();
-			((javax.swing.plaf.basic.BasicInternalFrameUI)ifu).setNorthPane(northPanel);
+//			for (int i = 0; i < actions.length; i++)
+//				northPanel.addMouseMotionListener( actions[i] );
 			this.setResizable(true);
-			this.repaint();
+			setRootPaneCheckingEnabled(true);
+			this.updateUI();
+			((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().addMouseListener(this);
 			
+			
+//			System.out.println(northPanel.getMouseListeners().length);
+
+
 			locked = false;
 		}else{
-			setRootPaneCheckingEnabled(false);
-			javax.swing.plaf.InternalFrameUI ifu= this.getUI();
-			((javax.swing.plaf.basic.BasicInternalFrameUI)ifu).setNorthPane(null);
+			
+//			for (int i = 0; i < actions.length; i++)
+//				northPanel.removeMouseMotionListener( actions[i] );
+
 			this.setResizable(false);
-			this.repaint();
+			setRootPaneCheckingEnabled(false);
+			((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).setNorthPane(null);
+			this.setBorder(null);
+//			this.updateUI();
+//			this.updateUI();
 			locked = true;
 		}
+	}
+	
+	public void alwaysFront(){
+		mainFrame.getDesktop().getManager().addToFront(id, this);
+	}
+	
+	public boolean isLocked(){
+		return locked;
 	}
 	
 	private void makeKeyBindings(){
@@ -120,6 +196,45 @@ public class JMapFrame extends JInternalFrame{
 	      
 	}
 	
-	
+	public void rename(){
+		String title =
+	        JOptionPane.showInputDialog(this, "Enter a new title:", this.getTitle());
+		if (title != null){
+		this.setTitle(title);
+		mainFrame.renameMapWindow(this);
+		}
+	}
 
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		if (arg0.getClickCount() == 1){
+//			rename();
+		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 }

@@ -22,34 +22,18 @@ public class TestHandler extends MapHandlerChild implements Runnable {
 
 		while (true) {
 			ESD.sleep(10000);
-			// Update status on targets
 
-			// vesselTargets
-
-			// Iterator iterator = vesselTargets.keySet().iterator();
-
-			List<AisMessageExtended> shipList = aisHandler.getShipList();
-
-			System.out.println("Recieving AIS:");
-			for (int i = 0; i < shipList.size(); i++) {
-				System.out.println("ID " + shipList.get(i).MMSI + " : "
-						+ shipList.get(i).name);
-			}
-			System.out.println("AIS Recieved");
-
-			// while (iterator.hasNext()) {
-			// String key = iterator.next().toString();
-			// VesselTarget vessel = vesselTargets.get(key);
-			//
-			// if (vessel == null){
-			// System.out.println("is null");
-			// }
-			//
-			// // String value = vesselTargets.get(key).getStatus().toString();
-			//
-			// // System.out.println(key + " " + value);
-			// System.out.println(key);
-			// }
+//			List<AisMessageExtended> shipList = aisHandler.getShipList();
+			//AisMessageExtended firstShip = shipList.get(0);			
+			//GeoLocation targetPosition = aisHandler.getVesselTargets().get(firstShip.MMSI).getPositionData().getPos();
+			//System.out.println("MMSI: "+firstShip.MMSI+" hdg: "+firstShip.hdg+" pos: ("+targetPosition.getLatitude()+","+targetPosition.getLongitude()+")");
+			
+			//System.out.println("Recieving AIS:");
+			//for (int i = 0; i < shipList.size(); i++) {
+			//	System.out.println("ID " + shipList.get(i).MMSI + " : "
+			//			+ shipList.get(i).name);
+			//}
+			//System.out.println("AIS Recieved");
 
 		}
 

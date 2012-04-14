@@ -50,6 +50,7 @@ public class GuiSettings implements Serializable {
 	private boolean multipleInstancesAllowed = false;
 	private boolean riskNogoDisabled = true;
 
+	
 	public GuiSettings() {
 
 	}
