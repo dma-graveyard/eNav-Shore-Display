@@ -14,6 +14,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import dk.frv.enav.esd.ESD;
+
 public class JMenuWorkspaceBar extends JMenuBar {
 
 	/**
@@ -94,7 +96,8 @@ public class JMenuWorkspaceBar extends JMenuBar {
 
 		mi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
+//				System.exit(0);
+				ESD.closeApp();
 			}
 		});
 

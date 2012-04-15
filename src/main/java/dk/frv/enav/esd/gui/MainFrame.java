@@ -63,7 +63,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(MainFrame.class);
 	private int windowCount = 0;
-	private Dimension size;
+	private Dimension size = new Dimension(1000, 700);
 	private Point location;
 	private JMenuWorkspaceBar topMenu;
 	private boolean fullscreen = false;
@@ -83,7 +83,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	private void initGUI() {
-
+		this.setSize(1000, 700);
 		BeanContextServicesSupport beanHandler = ESD.getBeanHandler();
 		// Get settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
@@ -94,10 +94,11 @@ public class MainFrame extends JFrame implements WindowListener {
 			setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
 		} else {
 			setLocation(guiSettings.getAppLocation());
-			setSize(guiSettings.getAppDimensions());
 		}
 		if (guiSettings.isFullscreen()){
 			toggleFullScreen();
+		}else{
+			setSize(guiSettings.getAppDimensions());
 		}
 
 		
@@ -109,7 +110,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		scrollPane = new JScrollPane();
 		
 //		pack();
-		this.setSize(1000, 700);
+
 //		desktop.setSize(1000, 700);
 //		scrollPane.setSize(1000, 700);
 		
@@ -202,7 +203,6 @@ public class MainFrame extends JFrame implements WindowListener {
 			size = this.getSize();
 			
 			this.setSize(getMaxResolution());
-			
 //			setLocationRelativeTo(null);
 			this.setLocation(0,0);
 //			setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -224,12 +224,13 @@ public class MainFrame extends JFrame implements WindowListener {
 	public void saveSettings() {
 		// Save gui settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
-		
-		
+		guiSettings.setFullscreen(fullscreen);
 		guiSettings.setMaximized((getExtendedState() & MAXIMIZED_BOTH) > 0);
 		guiSettings.setAppLocation(getLocation());
 		guiSettings.setAppDimensions(getSize());
-		guiSettings.setFullscreen(fullscreen);
+		
+		System.out.println(fullscreen);
+		
 		// Save map settings
 		// chartPanel.saveSettings();
 	}
@@ -244,6 +245,9 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	@Override
 	public void windowClosing(WindowEvent we) {
+		
+		System.out.println("Closing app");
+		
 		// Close routine
 		ESD.closeApp();
 	}
