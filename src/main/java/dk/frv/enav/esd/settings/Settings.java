@@ -53,6 +53,8 @@ public class Settings implements Serializable {
 	private static final Logger LOG = Logger.getLogger(Settings.class);
 	
 	private String settingsFile = "settings.properties";
+	private String defaultWorkSpace = "workspaces/default.properties";
+	
 	
 	private GuiSettings guiSettings = new GuiSettings();
 	
@@ -62,6 +64,7 @@ public class Settings implements Serializable {
 //	private NavSettings navSettings = new NavSettings();
 	private AisSettings aisSettings = new AisSettings();
 //	private EnavSettings enavSettings = new EnavSettings();
+	private Workspace workspace = new Workspace();
 	
 	
 	public Settings() {
@@ -85,6 +88,19 @@ public class Settings implements Serializable {
 		mapSettings.readProperties(props);
 //		navSettings.readProperties(props);
 		sensorSettings.readProperties(props);
+		
+		
+		
+		//Load default workspace
+		Properties defaultworkspace = new Properties();
+		if (!PropUtils.loadProperties(defaultworkspace, ".", defaultWorkSpace)) {
+			LOG.info("No workspace file found");
+			return;
+		}		
+		workspace.readProperties(defaultworkspace);
+		
+		
+		
 	}
 	
 	public void saveToFile() {
@@ -135,4 +151,7 @@ public class Settings implements Serializable {
 		return aisSettings;
 	}
 
+	public Workspace getWorkspace(){
+		return workspace;
+	}
 }

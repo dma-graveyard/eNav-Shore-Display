@@ -40,8 +40,8 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		
 		this.setContentPane(chartPanel);
 		
-		this.setSize(400, 300);
-		this.setLocation(50, 50);
+//		this.setSize(400, 300);
+//		this.setLocation(50, 50);
 		this.setVisible(true);
 //		JMapFrameMouseListener jMapFrameMouseListener = new JMapFrameMouseListener();
 		

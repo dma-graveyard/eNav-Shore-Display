@@ -36,14 +36,19 @@ public class JMainDesktopPane extends JDesktopPane {
 			return manager;
 		}
 	  
-	  public Component add(JInternalFrame frame) {
+	  public Component add(JInternalFrame frame, boolean workspaceWindow) {
 	    JInternalFrame[] array = getAllFrames();
 	    Point p;
 	    int w;
 	    int h;
 
+
+	    
 	    Component retval = super.add(frame);
 //	    checkDesktopSize();
+	    if (!workspaceWindow){
+	    	
+
 	    if (array.length > 0) {
 	      p = array[0].getLocation();
 	      p.x = p.x + FRAME_OFFSET;
@@ -70,8 +75,9 @@ public class JMainDesktopPane extends JDesktopPane {
 	    	  h = 400;
 	      }
 	      
-	      frame.setSize(w, h);
+//	      frame.setSize(w, h);
 	      
+	    }
 	      
 	    }
 	    moveToFront(frame);

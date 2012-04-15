@@ -52,6 +52,7 @@ import org.apache.log4j.Logger;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.settings.GuiSettings;
 //import dk.frv.enav.esd.settings.GuiSettings;
+import dk.frv.enav.esd.settings.Workspace;
 
 /**
  * The main frame containing map and panels
@@ -87,6 +88,9 @@ public class MainFrame extends JFrame implements WindowListener {
 		BeanContextServicesSupport beanHandler = ESD.getBeanHandler();
 		// Get settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
+		
+		Workspace workspace = ESD.getSettings().getWorkspace();
+		
 		setTitle(TITLE);
 
 		// Set location and size
@@ -131,6 +135,8 @@ public class MainFrame extends JFrame implements WindowListener {
 		// Add self to bean handler
 		beanHandler.add(this);
 
+		setWorkSpace(workspace);
+		
 
 	}
 
@@ -150,12 +156,35 @@ public class MainFrame extends JFrame implements WindowListener {
 	public void addMapWindow() {
 		windowCount++;
 		JMapFrame window = new JMapFrame(windowCount, this);
-		desktop.add(window);
+		desktop.add(window, false);
 		mapWindows.add(window);
 		window.toFront();
 		
 		topMenu.addMap(window);
 	}
+	
+	public void setWorkSpace(Workspace workspace){
+		windowCount++;
+		JMapFrame window = new JMapFrame(windowCount, this);
+		window.setTitle(workspace.getName());
+		
+		//Recreate windows
+		desktop.add(window, true);
+		mapWindows.add(window);
+		
+		topMenu.addMap(window);
+		
+		
+		window.setSize(workspace.getSize());
+		window.setLocation(workspace.getPosition());
+		
+		System.out.println(window.getLocation());
+		
+		
+		
+	}
+	
+	
 	
 	public void removeMapWindow(JMapFrame window){
 		topMenu.removeMapMenu(window);
