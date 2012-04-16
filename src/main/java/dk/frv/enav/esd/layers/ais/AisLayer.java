@@ -1,65 +1,42 @@
 package dk.frv.enav.esd.layers.ais;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Font;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.table.TableColumn;
-
 import com.bbn.openmap.layer.OMGraphicHandlerLayer;
 import com.bbn.openmap.omGraphics.OMGraphic;
 import com.bbn.openmap.omGraphics.OMGraphicList;
 import com.bbn.openmap.omGraphics.OMLine;
-import com.bbn.openmap.omGraphics.OMPoly;
 import com.bbn.openmap.omGraphics.OMText;
-import com.bbn.openmap.omGraphics.labeled.LabeledOMGraphic;
 import com.bbn.openmap.proj.Length;
 import com.bbn.openmap.proj.coords.LatLonPoint;
 
-import dk.frv.ais.geo.GeoLocation;
 import dk.frv.ais.message.AisMessage;
-import dk.frv.ais.message.ShipTypeCargo;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.ais.AisHandler.AisMessageExtended;
 import dk.frv.enav.esd.ais.VesselAisHandler;
-import dk.frv.enav.esd.gui.ChartPanel;
 import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.ins.ais.VesselPositionData;
 import dk.frv.enav.ins.ais.VesselStaticData;
 import dk.frv.enav.ins.ais.VesselTarget;
+import dk.frv.enav.esd.layers.ais.VesselLayer;
 
 public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVesselAisListener {
-	private OMGraphic graphic = new OMGraphicList();
-	private ChartPanel chartPanel;
+	private static final long serialVersionUID = 1L;
 	private OMGraphicList list = new OMGraphicList();
-	private Map<Long, OMPoly> targets = new HashMap<Long, OMPoly>();
 	private static VesselAisHandler aisHandler;
 	private List<AisMessageExtended> shipList;
 
 	private VesselLayer heading;
 	private VesselLayer ves;
-	private VesselLayer speed;
+	
+	private OMLine speedVector;
 	private LatLonPoint startPos = null;
 	private LatLonPoint endPos = null;
+	public static final float STROKE_WIDTH = 1.5f;
 	
 	private VesselPositionData location;
-	private OMPoly poly;
 	private Font font = null;
 	private OMText label = null;
 	private int sizeOffset = 5;
@@ -115,8 +92,37 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					heading.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, hdgR);
 					heading.setFillPaint(new Color(0, 0, 0));
 					if (!noHeading)
-						list.add(heading);
-
+						list.add(heading);					
+					
+					// Draw call sign
+					if (staticData != null) {
+						label = new OMText(0, 0, 0, 0, Long.toString(shipList.get(i).MMSI), font, OMText.JUSTIFY_CENTER);
+						label.setLat(lat);
+						label.setLon(lon);
+						if (trueHeading > 90 && trueHeading < 270) {
+							label.setY(-25);
+						} else {
+							label.setY(35);
+						}
+						label.setData("Call Sign: " + staticData.getCallsign());
+						list.add(label);
+					}
+					
+					// Draw speed vector	
+					speedVector = new OMLine(0, 0, 0, 0, OMLine.LINETYPE_STRAIGHT);
+					speedVector.setStroke(new BasicStroke(STROKE_WIDTH, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, new float[] { 10.0f, 8.0f }, 0.0f));
+					speedVector.setLinePaint(new Color(255,0,0));
+					list.add(speedVector);
+					double[] speedLL = new double[4];
+					speedLL[0] = (float) lat;
+					speedLL[1] = (float) lon;
+					startPos = new LatLonPoint.Double(lat, lon);
+					float length = (float) Length.NM.toRadians(6.0 * (sog / 60.0));
+					endPos = startPos.getPoint(length, cogR);
+					speedLL[2] = endPos.getLatitude();
+					speedLL[3] = endPos.getLongitude();
+					speedVector.setLL(speedLL);
+					
 					// Add MMSI/name tag
 					label = new OMText(0, 0, 0, 0, Long.toString(shipList.get(i).MMSI), font, OMText.JUSTIFY_CENTER);
 					label.setLat(lat);
@@ -135,44 +141,9 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					}
 					label.setData(name);
 					list.add(label);
-					
-					// Draw speed vector
-					/*
-					 * Should cogR be with sog instead? This is not done yet.
-					 * */
-					int[] xPoss = { 0, 0 };
-					int[] yPoss = { 0, (int) (-60 * (sog / 60.0)) };
-					speed = new VesselLayer(xPoss, yPoss);
-					speed.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, cogR);
-					speed.setFillPaint(new Color(255, 0, 0));
-					list.add(speed);
-					
-					// Draw call sign
-					if (staticData != null) {
-						label = new OMText(0, 0, 0, 0, Long.toString(shipList.get(i).MMSI), font, OMText.JUSTIFY_CENTER);
-						label.setLat(lat);
-						label.setLon(lon);
-						if (trueHeading > 90 && trueHeading < 270) {
-							label.setY(-25);
-						} else {
-							label.setY(35);
-						}
-						label.setData("Call Sign: " + staticData.getCallsign());
-						list.add(label);
-					}
 				}
 			}
 			doPrepare();
-		}
-	}
-
-	private void updateVessels() {
-		if (aisHandler != null) {
-			shipList = aisHandler.getShipList();
-			for (int i = 0; i < shipList.size(); i++) {
-				if (aisHandler.getVesselTargets().containsKey(shipList.get(i).MMSI)) {
-				}
-			}
 		}
 	}
 
