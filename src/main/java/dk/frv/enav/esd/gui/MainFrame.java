@@ -61,6 +61,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private Dimension size;
 	private Point location;
 	private JMenuWorkspaceBar topMenu;
+	private ToolBar toolbar;
 	
 	List<JMapFrame> mapWindows;
 
@@ -70,7 +71,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	private void initGUI() {
-
+		
 		BeanContextServicesSupport beanHandler = ESD.getBeanHandler();
 		// Get settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
@@ -107,9 +108,21 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		// HARDCODED: Initialize with 1 map window
 		addMapWindow();
+		
+		// Toolbar testing
+		toolbar = new ToolBar(this);
+		this.add(toolbar);
 
 	}
 
+	public void toggleToolbarLock() {
+		toolbar.toggleToolbarLock();
+	}
+	
+	public void addToolbarTool() {
+		toolbar.addTool();
+	}
+	
 	private static Image getAppIcon() {
 		java.net.URL imgURL = ESD.class.getResource("/images/appicon.png");
 		if (imgURL != null) {

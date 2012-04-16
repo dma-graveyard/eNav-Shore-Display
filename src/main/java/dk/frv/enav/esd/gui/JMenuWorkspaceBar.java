@@ -35,7 +35,11 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		fm.add(toggleFullScreen);
 
 		JMenuItem mi = new JMenuItem("Exit");
+		JMenuItem t1 = new JMenuItem("Add button");
+		JMenuItem t2 = new JMenuItem("Lock/unlock toolbar");
 		fm.add(mi);
+		fm.add(t1);
+		fm.add(t2);
 
 		maps = new JMenu("Maps");
 		this.add(maps);
@@ -63,6 +67,18 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		addMap.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.addMapWindow();
+			}
+		});
+		
+		t1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mainFrame.addToolbarTool();
+			}
+		});
+		
+		t2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mainFrame.toggleToolbarLock();
 			}
 		});
 
