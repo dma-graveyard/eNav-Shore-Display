@@ -43,6 +43,7 @@ import java.beans.beancontext.BeanContextServicesSupport;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.Notification;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -51,6 +52,7 @@ import org.apache.log4j.Logger;
 
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.settings.GuiSettings;
+import dk.frv.enav.esd.gui.NotificationArea;
 //import dk.frv.enav.esd.settings.GuiSettings;
 
 /**
@@ -71,6 +73,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private List<JMapFrame> mapWindows;
 	private JMainDesktopPane desktop;
 	private JScrollPane scrollPane;
+	private NotificationArea notification;
 	
 	public MainFrame() {
 		super();
@@ -125,6 +128,9 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		topMenu = new JMenuWorkspaceBar(this);
 		this.setJMenuBar(topMenu);
+		
+		notification = new NotificationArea();
+		this.add(notification);
 
 //		dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
