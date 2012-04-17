@@ -32,10 +32,12 @@ package dk.frv.enav.esd.settings;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import com.bbn.openmap.proj.coords.LatLonPoint;
-import com.bbn.openmap.util.PropUtils;
 
 /**
  * Map/chart settings
@@ -45,32 +47,68 @@ public class Workspace implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String PREFIX = "map.";
 
-	private int id;
-	private String name;
-	private Dimension size = new Dimension(1280, 800);
-	private Point position = new Point(10, 10);
-	private boolean locked = false;
-	private LatLonPoint center = new LatLonPoint.Double(56, 11);
-	private float scale = 10000000;
+	boolean validWorkspace = false;
+	private List<String> name = new ArrayList<String>();
+	private List<Dimension> size = new ArrayList<Dimension>();
+	private List<Point> position = new ArrayList<Point>();
+//	private Point position = new Point(10, 10);
+	private List<Boolean> locked = new ArrayList<Boolean>();
+	private List<Boolean> alwaysInFront = new ArrayList<Boolean>();
+	private List<LatLonPoint> center = new ArrayList<LatLonPoint>();
+//	private LatLonPoint center = new LatLonPoint.Double(56, 11);
+	private List<Float> scale = new ArrayList<Float>();
 
 
 	public Workspace() {
 	}
 
 	public void readProperties(Properties props) {
-		id = PropUtils.intFromProperties(props, PREFIX + "id", id);
-		name = props.getProperty(PREFIX + "name");
-		double w = PropUtils.doubleFromProperties(props, PREFIX + "appDimensions_w", size.getWidth());
-		double h = PropUtils.doubleFromProperties(props, PREFIX + "appDimensions_h", size.getHeight());
-		size.setSize(w, h);
-		double x = PropUtils.doubleFromProperties(props, PREFIX + "appLocation_x", position.getX());
-		double y = PropUtils.doubleFromProperties(props, PREFIX + "appLocation_y", position.getY());
-		position.setLocation(x, y);
-		locked = PropUtils.booleanFromProperties(props, PREFIX + "locked", locked);
-		center.setLatitude(PropUtils.doubleFromProperties(props, PREFIX + "center_lat", center.getLatitude()));
-		center.setLongitude(PropUtils.doubleFromProperties(props, PREFIX + "center_lon", center.getLongitude()));
-		scale = PropUtils.floatFromProperties(props, PREFIX + "scale", scale);
 
+		
+		try {
+			Collections.addAll(name, (props.getProperty(PREFIX + "name").split("//"))); 
+
+			String[] w = props.getProperty(PREFIX + "size_w").split("//");
+			String[] h = props.getProperty(PREFIX + "size_h").split("//");
+			
+			for (int i = 0; i < w.length; i++) {
+				size.add(new Dimension(Integer.parseInt(w[i]), Integer.parseInt(h[i])));
+			}
+		
+			String[] x = props.getProperty(PREFIX + "position_x").split("//");
+			String[] y = props.getProperty(PREFIX + "position_y").split("//");
+			
+			for (int i = 0; i < x.length; i++) {
+				position.add(new Point(Integer.parseInt(x[i]), Integer.parseInt(y[i])));
+			}
+			
+			String[] lockedInput = props.getProperty(PREFIX + "locked").split("//");
+			for (int i = 0; i < lockedInput.length; i++) {
+				locked.add(   Boolean.parseBoolean(lockedInput[i]) );
+			}
+			
+			String[] alwaysInFrontInput = props.getProperty(PREFIX + "alwaysInFront").split("//");
+			for (int i = 0; i < alwaysInFrontInput.length; i++) {
+				alwaysInFront.add(   Boolean.parseBoolean(alwaysInFrontInput[i]) );
+			}
+			
+			String[] center_lat = props.getProperty(PREFIX + "center_lat").split("//");
+			String[] center_lon = props.getProperty(PREFIX + "center_lon").split("//");
+
+			for (int i = 0; i < w.length; i++) {
+				center.add(new LatLonPoint.Double(Double.parseDouble(center_lat[i]), Double.parseDouble(center_lon[i])));
+			}
+			
+			String[] scaleInput = props.getProperty(PREFIX + "scale").split("//");
+			for (int i = 0; i < scaleInput.length; i++) {
+				scale.add(   Float.parseFloat(scaleInput[i]) );
+			}
+			validWorkspace = true;
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		
 	}
 
 	public void setProperties(Properties props) {
@@ -81,61 +119,73 @@ public class Workspace implements Serializable {
 
 	}
 
-	public int getId() {
-		return id;
+	public boolean isValidWorkspace() {
+		return validWorkspace;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setValidWorkspace(boolean validWorkspace) {
+		this.validWorkspace = validWorkspace;
 	}
 
-	public String getName() {
+	public List<Boolean> getAlwaysInFront() {
+		return alwaysInFront;
+	}
+
+	public void setAlwaysInFront(List<Boolean> alwaysInFront) {
+		this.alwaysInFront = alwaysInFront;
+	}
+
+	public List<String> getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(List<String> name) {
 		this.name = name;
 	}
 
-	public Dimension getSize() {
+	public List<Dimension> getSize() {
 		return size;
 	}
 
-	public void setSize(Dimension size) {
+	public void setSize(List<Dimension> size) {
 		this.size = size;
 	}
 
-	public Point getPosition() {
+	public List<Point> getPosition() {
 		return position;
 	}
 
-	public void setPosition(Point position) {
+	public void setPosition(List<Point> position) {
 		this.position = position;
 	}
 
-	public boolean isLocked() {
+	public List<Boolean> isLocked() {
 		return locked;
 	}
 
-	public void setLocked(boolean locked) {
+	public void setLocked(List<Boolean> locked) {
 		this.locked = locked;
 	}
 
-	public LatLonPoint getCenter() {
+	public List<LatLonPoint> getCenter() {
 		return center;
 	}
 
-	public void setCenter(LatLonPoint center) {
+	public void setCenter(List<LatLonPoint> center) {
 		this.center = center;
 	}
 
-	public float getScale() {
+	public List<Float> getScale() {
 		return scale;
 	}
 
-	public void setScale(float scale) {
+	public void setScale(List<Float> scale) {
 		this.scale = scale;
 	}
+
+
+
+	
 
 	
 

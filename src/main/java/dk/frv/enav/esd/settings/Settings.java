@@ -54,7 +54,7 @@ public class Settings implements Serializable {
 	
 	private String settingsFile = "settings.properties";
 	private String defaultWorkSpace = "workspaces/default.properties";
-	
+	private String workspaceFile = "";
 	
 	private GuiSettings guiSettings = new GuiSettings();
 	
@@ -90,17 +90,27 @@ public class Settings implements Serializable {
 		sensorSettings.readProperties(props);
 		
 		
+		workspaceFile = guiSettings.getWorkspace();
 		
 		//Load default workspace
-		Properties defaultworkspace = new Properties();
-		if (!PropUtils.loadProperties(defaultworkspace, ".", defaultWorkSpace)) {
-			LOG.info("No workspace file found");
-			return;
+		Properties workspaceProp = new Properties();
+		if (!PropUtils.loadProperties(workspaceProp, ".", workspaceFile)) {
+			LOG.info("No workspace file found - reverting to default");
+			System.out.println("No workspace file found - reverting to default - " + workspaceFile + " was invalid");
+			PropUtils.loadProperties(workspaceProp, ".", defaultWorkSpace);
 		}		
-		workspace.readProperties(defaultworkspace);
-		
-		
-		
+		workspace.readProperties(workspaceProp);
+	}
+
+	public Workspace loadWorkspace(String path){
+		Properties workspaceProp = new Properties();
+		if (!PropUtils.loadProperties(workspaceProp, ".", path)) {
+			LOG.info("No workspace file found - reverting to default");
+			System.out.println("No workspace file found - reverting to default - " + path + " was invalid");
+			PropUtils.loadProperties(workspaceProp, ".", defaultWorkSpace);
+		}		
+		workspace.readProperties(workspaceProp);
+		return workspace;
 	}
 	
 	public void saveToFile() {
