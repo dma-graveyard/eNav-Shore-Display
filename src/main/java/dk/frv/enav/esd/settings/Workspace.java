@@ -39,6 +39,8 @@ import java.util.Properties;
 
 import com.bbn.openmap.proj.coords.LatLonPoint;
 
+import dk.frv.enav.esd.gui.JMapFrame;
+
 /**
  * Map/chart settings
  */
@@ -71,14 +73,16 @@ public class Workspace implements Serializable {
 			String[] h = props.getProperty(PREFIX + "size_h").split("//");
 			
 			for (int i = 0; i < w.length; i++) {
-				size.add(new Dimension(Integer.parseInt(w[i]), Integer.parseInt(h[i])));
+				System.out.println(w[i]);
+
+				size.add(new Dimension((int) Double.parseDouble(w[i]), (int) Double.parseDouble(h[i])));
 			}
 		
 			String[] x = props.getProperty(PREFIX + "position_x").split("//");
 			String[] y = props.getProperty(PREFIX + "position_y").split("//");
 			
 			for (int i = 0; i < x.length; i++) {
-				position.add(new Point(Integer.parseInt(x[i]), Integer.parseInt(y[i])));
+				position.add(new Point((int) Double.parseDouble(x[i]), (int) Double.parseDouble(y[i])));
 			}
 			
 			String[] lockedInput = props.getProperty(PREFIX + "locked").split("//");
@@ -88,7 +92,7 @@ public class Workspace implements Serializable {
 			
 			String[] alwaysInFrontInput = props.getProperty(PREFIX + "alwaysInFront").split("//");
 			for (int i = 0; i < alwaysInFrontInput.length; i++) {
-				alwaysInFront.add(   Boolean.parseBoolean(alwaysInFrontInput[i]) );
+				alwaysInFront.add(   Boolean.parseBoolean(alwaysInFrontInput[i]));
 			}
 			
 			String[] center_lat = props.getProperty(PREFIX + "center_lat").split("//");
@@ -110,7 +114,56 @@ public class Workspace implements Serializable {
 		
 	}
 
-	public void setProperties(Properties props) {
+	public void setProperties(Properties props, List<JMapFrame> mapWindows) {
+		System.out.println("Saving workspace");
+		String name = "";
+		String size_h = "";
+		String size_w = "";
+		String position_x = "";
+		String position_y = "";
+		String locked = "";
+		String center_lat = "";
+		String center_lon = "";
+		String scale = "";
+		String alwaysInFront = "";
+		
+		for (int i = 0; i < mapWindows.size(); i++) {
+			name = name + mapWindows.get(i).getTitle() + "//";
+			size_h = size_h + mapWindows.get(i).getSize().getHeight() + "//";
+			size_w = size_w + mapWindows.get(i).getSize().getWidth() + "//";
+			position_x = position_x + mapWindows.get(i).getLocation().getX() + "//";
+			position_y = position_y + mapWindows.get(i).getLocation().getY() + "//";
+			locked = locked + mapWindows.get(i).isLocked() + "//";
+			center_lat = center_lat + 0.0 + "//";
+			center_lon = center_lon + 0.0 + "//";
+			scale = scale + 1.0 + "//";
+			alwaysInFront = alwaysInFront + mapWindows.get(i).isInFront() + "//";
+			
+		}
+		props.put(PREFIX + "name", name);
+		props.put(PREFIX + "size_h", size_h);
+		props.put(PREFIX + "size_w", size_w);
+		props.put(PREFIX + "position_x", position_x);
+		props.put(PREFIX + "position_y", position_y);
+		props.put(PREFIX + "locked", locked);
+		props.put(PREFIX + "center_lat", center_lat);
+		props.put(PREFIX + "center_lon", center_lon);
+		props.put(PREFIX + "scale", scale);
+		props.put(PREFIX + "alwaysInFront", alwaysInFront);
+		
+		
+//		map.name = test window
+//		map.size_h = 700
+//		map.size_w = 400
+//		map.position_x = 0
+//		map.position_y = 0
+//		map.locked = false
+//		map.center_lat = 0
+//		map.center_lon = 0
+//		map.scale = 1
+//		map.alwaysInFront = false
+		
+		
 //		props.put(PREFIX + "center_lat", Double.toString(center.getLatitude()));
 //		props.put(PREFIX + "center_lon", Double.toString(center.getLongitude()));
 //		props.put(PREFIX + "scale", Double.toString(scale));

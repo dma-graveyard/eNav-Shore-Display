@@ -24,6 +24,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 //	private static final InternalFrameListener JMapFrameMouseListener = null;	
 	private ChartPanel chartPanel;
 	boolean locked = false;
+	boolean alwaysInFront = false;
 //	private JComponent northPanel;
 	MouseMotionListener[] actions;
 	private int id;
@@ -122,11 +123,20 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	}
 	
 	public void alwaysFront(){
+		if (alwaysInFront){
+			alwaysInFront = false;
+		}else{
+			alwaysInFront = true;
+		}
 		mainFrame.getDesktop().getManager().addToFront(id, this);
 	}
 	
 	public boolean isLocked(){
 		return locked;
+	}
+	
+	public boolean isInFront(){
+		return alwaysInFront;
 	}
 	
 	private void makeKeyBindings(){

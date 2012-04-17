@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.TreeSet;
 
@@ -41,6 +42,7 @@ import org.apache.log4j.Logger;
 
 import com.bbn.openmap.util.PropUtils;
 
+import dk.frv.enav.esd.gui.JMapFrame;
 import dk.frv.enav.ins.settings.AisSettings;
 import dk.frv.enav.ins.settings.SensorSettings;
 
@@ -92,14 +94,18 @@ public class Settings implements Serializable {
 		
 		workspaceFile = guiSettings.getWorkspace();
 		
+		if (workspaceFile != null){
+		
 		//Load default workspace
 		Properties workspaceProp = new Properties();
 		if (!PropUtils.loadProperties(workspaceProp, ".", workspaceFile)) {
 			LOG.info("No workspace file found - reverting to default");
 			System.out.println("No workspace file found - reverting to default - " + workspaceFile + " was invalid");
 			PropUtils.loadProperties(workspaceProp, ".", defaultWorkSpace);
+			guiSettings.setWorkspace(defaultWorkSpace);
 		}		
 		workspace.readProperties(workspaceProp);
+		}
 	}
 
 	public Workspace loadWorkspace(String parent, String filename){
@@ -109,6 +115,7 @@ public class Settings implements Serializable {
 			System.out.println("No workspace file found - reverting to default - " + parent + filename + " was invalid");
 			PropUtils.loadProperties(workspaceProp, ".", defaultWorkSpace);
 		}		
+		guiSettings.setWorkspace(filename);
 		workspace = new Workspace();
 		workspace.readProperties(workspaceProp);
 		return workspace;
@@ -120,15 +127,34 @@ public class Settings implements Serializable {
 //		enavSettings.setProperties(props);
 		guiSettings.setProperties(props);
 		mapSettings.setProperties(props);
+
 //		navSettings.setProperties(props);
 //		sensorSettings.setProperties(props);
-		
-		
 		
 		try {
 			FileWriter outFile = new FileWriter(settingsFile);
 			PrintWriter out = new PrintWriter(outFile);
 			out.println("# esd settings saved: " + new Date());
+			TreeSet<String> keys = new TreeSet<String>();
+			for (Object key : props.keySet()) {
+				keys.add((String)key);
+			}
+			for (String key : keys) {
+				out.println(key + "=" + props.getProperty(key));
+			}						
+			out.close();
+		} catch (IOException e) {
+			LOG.error("Failed to save settings file");
+		}
+	}
+	
+	public void saveCurrentWorkspace(List<JMapFrame> mapWindows){
+		Properties props = new Properties();
+		workspace.setProperties(props, mapWindows);
+		try {
+			FileWriter outFile = new FileWriter(workspaceFile);
+			PrintWriter out = new PrintWriter(outFile);
+			out.println("# workspace settings saved: " + new Date());
 			TreeSet<String> keys = new TreeSet<String>();
 			for (Object key : props.keySet()) {
 				keys.add((String)key);

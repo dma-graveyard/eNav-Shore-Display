@@ -283,6 +283,9 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		// Save map settings
 		// chartPanel.saveSettings();
+		ESD.getSettings().saveCurrentWorkspace(mapWindows);
+
+
 	}
 
 	@Override
