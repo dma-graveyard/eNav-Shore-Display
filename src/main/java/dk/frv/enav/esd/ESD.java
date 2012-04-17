@@ -237,11 +237,7 @@ public class ESD {
         // Create and set up the main window        
 		mainFrame = new MainFrame();
 		mainFrame.setVisible(true);
-		
-	    // Create keybinding shortcuts
-//        makeKeyBindings();
-		
-
+	
 	}
 	
 		

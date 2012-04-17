@@ -47,7 +47,7 @@ public class JMainDesktopPane extends JDesktopPane {
 	    Component retval = super.add(frame);
 //	    checkDesktopSize();
 	    if (!workspaceWindow){
-	    	
+	    	System.out.println("normal window");
 
 	    if (array.length > 0) {
 	      p = array[0].getLocation();
@@ -75,7 +75,7 @@ public class JMainDesktopPane extends JDesktopPane {
 	    	  h = 400;
 	      }
 	      
-//	      frame.setSize(w, h);
+	      frame.setSize(w, h);
 	      
 	    }
 	      

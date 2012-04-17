@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -95,7 +96,12 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		//Action listeners
 		loadWorkspace.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				selectWorkspace();
+				try {
+					selectWorkspace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		
@@ -270,19 +276,14 @@ public class JMenuWorkspaceBar extends JMenuBar {
 	}
 
 	
-	public void selectWorkspace(){
+	public void selectWorkspace() throws IOException{
 		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir") + "\\workspaces");
         fc.setFileFilter(new WorkspaceFileFilter());	
         
         int returnVal = fc.showOpenDialog(mainFrame);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
-            mainFrame.loadNewWorkspace(file.getAbsolutePath());
-            System.out.println("Opening: " + file.getName() + ".\n");
-        } else {
-        	  System.out.println("Open command cancelled by user.\n");
+            mainFrame.loadNewWorkspace(file.getParent(), file.getName());
         }
-        
-		
 	}
 }

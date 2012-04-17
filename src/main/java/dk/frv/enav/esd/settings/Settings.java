@@ -102,13 +102,14 @@ public class Settings implements Serializable {
 		workspace.readProperties(workspaceProp);
 	}
 
-	public Workspace loadWorkspace(String path){
+	public Workspace loadWorkspace(String parent, String filename){
 		Properties workspaceProp = new Properties();
-		if (!PropUtils.loadProperties(workspaceProp, ".", path)) {
+		if (!PropUtils.loadProperties(workspaceProp, parent, filename)) {
 			LOG.info("No workspace file found - reverting to default");
-			System.out.println("No workspace file found - reverting to default - " + path + " was invalid");
+			System.out.println("No workspace file found - reverting to default - " + parent + filename + " was invalid");
 			PropUtils.loadProperties(workspaceProp, ".", defaultWorkSpace);
 		}		
+		workspace = new Workspace();
 		workspace.readProperties(workspaceProp);
 		return workspace;
 	}

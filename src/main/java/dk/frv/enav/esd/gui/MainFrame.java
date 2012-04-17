@@ -39,6 +39,7 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyVetoException;
 import java.beans.beancontext.BeanContextServicesSupport;
 import java.util.ArrayList;
 import java.util.List;
@@ -131,6 +132,8 @@ public class MainFrame extends JFrame implements WindowListener {
 		// Add self to bean handler
 		beanHandler.add(this);
 
+		
+		
 		setWorkSpace(workspace);
 
 	}
@@ -149,9 +152,12 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	public JMapFrame addMapWindow(boolean workspace, boolean locked, boolean alwaysInFront) {
+		
 		windowCount++;
 		JMapFrame window = new JMapFrame(windowCount, this);
+		
 		desktop.add(window, workspace);
+		
 		mapWindows.add(window);
 		window.toFront();
 
@@ -160,21 +166,29 @@ public class MainFrame extends JFrame implements WindowListener {
 		return window;
 	}
 
-	public void loadNewWorkspace(String path){
-		Workspace workspace = ESD.getSettings().loadWorkspace(path);
+	public void loadNewWorkspace(String parent, String filename){
+		Workspace workspace = ESD.getSettings().loadWorkspace(parent, filename);
 		setWorkSpace(workspace);
 	}
 	
 	public void setWorkSpace(Workspace workspace) {
 		
-		for (int i = 0; i < mapWindows.size(); i++) {
-			mapWindows.get(i).dispose();
-			windowCount = 0;
+		while(mapWindows.size() != 0){
+			try {
+				mapWindows.get(0).setClosed(true);
+			} catch (PropertyVetoException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		
+
+		//Reset the workspace
+		windowCount = 0;
+		mapWindows = new ArrayList<JMapFrame>();
 		
 		
 		if (workspace.isValidWorkspace()) {
-
 			for (int i = 0; i < workspace.getName().size(); i++) {
 				JMapFrame window = addMapWindow(true, workspace.isLocked().get(i), workspace.getAlwaysInFront().get(i));
 				window.setTitle(workspace.getName().get(i));
@@ -266,7 +280,6 @@ public class MainFrame extends JFrame implements WindowListener {
 		guiSettings.setAppLocation(getLocation());
 		guiSettings.setAppDimensions(getSize());
 
-		System.out.println(fullscreen);
 
 		// Save map settings
 		// chartPanel.saveSettings();
@@ -282,8 +295,6 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	@Override
 	public void windowClosing(WindowEvent we) {
-
-		System.out.println("Closing app");
 
 		// Close routine
 		ESD.closeApp();

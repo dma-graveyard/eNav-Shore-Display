@@ -63,7 +63,6 @@ public class Workspace implements Serializable {
 	}
 
 	public void readProperties(Properties props) {
-
 		
 		try {
 			Collections.addAll(name, (props.getProperty(PREFIX + "name").split("//"))); 
@@ -105,7 +104,7 @@ public class Workspace implements Serializable {
 			}
 			validWorkspace = true;
 		} catch (Exception e) {
-			// TODO: handle exception
+			System.out.println(e.getMessage());
 		}
 		
 		
