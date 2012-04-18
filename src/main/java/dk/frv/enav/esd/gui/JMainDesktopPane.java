@@ -95,6 +95,8 @@ public class JMainDesktopPane extends JDesktopPane {
 		    } catch (PropertyVetoException e) {
 		      frame.toBack();
 		    }
+		    
+		    
 		    return retval;
 		  }
 
@@ -105,7 +107,9 @@ public class JMainDesktopPane extends JDesktopPane {
 		  }
 		  
 	    super.remove(c);
-//	    checkDesktopSize();
+
+//	    manager.setFramesAlwaysOnTop();
+	    
 	  }
 
 	  /**

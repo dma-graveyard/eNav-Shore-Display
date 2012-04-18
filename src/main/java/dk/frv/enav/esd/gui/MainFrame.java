@@ -47,6 +47,7 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 
 import org.apache.log4j.Logger;
@@ -79,8 +80,6 @@ public class MainFrame extends JFrame implements WindowListener {
 		super();
 		initGUI();
 
-		// HARDCODED: Initialize with 1 map window
-		// addMapWindow();
 	}
 
 	private void initGUI() {
@@ -133,7 +132,14 @@ public class MainFrame extends JFrame implements WindowListener {
 		// Add self to bean handler
 		beanHandler.add(this);
 
+		
+		JInternalFrame toolbar = new JInternalFrame();
+		toolbar.setSize(100, 100);
+		desktop.add(toolbar, true);
+		desktop.getManager().setToolbar(toolbar);
+		
 		setWorkSpace(workspace);
+
 
 	}
 
@@ -169,7 +175,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		desktop.add(window);
 
 		mapWindows.add(window);
-		window.toFront();
+//		window.toFront();
 
 		topMenu.addMap(window, false, false);
 
