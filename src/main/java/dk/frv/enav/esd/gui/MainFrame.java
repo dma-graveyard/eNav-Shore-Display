@@ -62,6 +62,8 @@ public class MainFrame extends JFrame implements WindowListener {
 	private Point location;
 	private JMenuWorkspaceBar topMenu;
 	private ToolBar toolbar;
+	private NotificationArea notificationArea;
+	private StatusArea statusArea;
 	
 	List<JMapFrame> mapWindows;
 
@@ -112,15 +114,29 @@ public class MainFrame extends JFrame implements WindowListener {
 		// Toolbar testing
 		toolbar = new ToolBar(this);
 		this.add(toolbar);
+		
+		// Notification bar testing
+		notificationArea = new NotificationArea(this);
+		this.add(notificationArea);
+		
+		// Notifications testing
+		statusArea = new StatusArea(this);
+		this.add(statusArea);
 
-	}
-
-	public void toggleToolbarLock() {
-		toolbar.toggleToolbarLock();
 	}
 	
-	public void addToolbarTool() {
-		toolbar.addTool();
+	public ToolBar getToolbar() {
+		return toolbar;
+	}
+	
+	public NotificationArea getNotificationArea() {
+		return notificationArea;
+	}
+
+	public void toggleBarsLock() {
+		toolbar.toggleLock();
+		notificationArea.toggleLock();
+		statusArea.toggleLock();
 	}
 	
 	private static Image getAppIcon() {

@@ -17,7 +17,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class ToolBar extends JInternalFrame {
+public class StatusArea extends JInternalFrame {
 	
 	private static final long serialVersionUID = 1L;	
 	private Boolean locked = false;
@@ -31,10 +31,10 @@ public class ToolBar extends JInternalFrame {
 	public int width;
 	public int height;
 
-	public ToolBar(MainFrame mainFrame) {
+	public StatusArea(MainFrame mainFrame) {
 		
 		// Setup location
-		this.setLocation((10+moveHandlerHeight), 10);
+		this.setLocation((10+moveHandlerHeight), (80 + mainFrame.getToolbar().getHeight() + mainFrame.getNotificationArea().getHeight()));
 		this.setVisible(true);
 		this.setResizable(false);
 		
@@ -44,7 +44,7 @@ public class ToolBar extends JInternalFrame {
 		this.setBorder(null);
 		
         // Create the top movehandler (for dragging)
-        moveHandler = new JLabel("Toolbar", JLabel.CENTER);
+        moveHandler = new JLabel("Status", JLabel.CENTER);
         moveHandler.setForeground(Color.WHITE);
         moveHandler.setOpaque(true);
         moveHandler.setBackground(Color.DARK_GRAY);
@@ -55,20 +55,20 @@ public class ToolBar extends JInternalFrame {
 		
 		// Create the grid for the toolitems
         buttonPanel = new JPanel();
-		buttonPanel.setLayout(new GridLayout(0,2));
+		buttonPanel.setLayout(new GridLayout(0,1));
 		buttonPanel.setBorder(BorderFactory.createLineBorder (Color.DARK_GRAY, 2));
 		
 		
-		// Setup toolitems (add here for more toolitems)
-		// Tool: Zoom
-		JButton zoom = new JButton(new ImageIcon("images/toolbar/zoom.png"));
-		zoom.setToolTipText("Zoom in by clicking, hold shift for zoom out");
-		zoom.addActionListener(new ActionListener() {
+		// Setup notifications (add here for more notifications)
+		// Notification: MSI
+		JButton msi = new JButton(new ImageIcon("images/toolbar/zoom.png"));
+		msi.setToolTipText("Messages from MSI");
+		msi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("Zoom clicked");
+				System.out.println("MSI clicked");
 			}
         }); 
-		toolItems.add(zoom);
+		toolItems.add(msi);
 				
 
 	    // Create the masterpanel for aligning
