@@ -20,7 +20,7 @@ public class NotificationCenter extends JInternalFrame{
 	public NotificationCenter(){
 		super("Notification Center", true, true, true, true);
 		setSize(800, 600);
-		setLocation(600, 200);
+		setLocation(10, 10);
 		setVisible(false);
 		
 		// Add main container
