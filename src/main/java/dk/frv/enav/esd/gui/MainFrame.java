@@ -139,6 +139,10 @@ public class MainFrame extends JFrame implements WindowListener {
 
 
 	}
+	
+	public void toggleNotificationCenter(){
+		notificationCenter.toggleVisibility();
+	}
 
 	private static Image getAppIcon() {
 		java.net.URL imgURL = ESD.class.getResource("/images/appicon.png");

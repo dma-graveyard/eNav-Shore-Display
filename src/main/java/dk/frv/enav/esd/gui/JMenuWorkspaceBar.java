@@ -83,14 +83,26 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		JMenuItem unlockAll = new JMenuItem("Unlock all windows");
 		workspace.add(unlockAll);
 		
+		//Notifications
+		
+		JMenu notifications = new JMenu("Notifications");
+		this.add(notifications);
+		
+		JMenuItem notCenter = new JMenuItem("Notification Center");
+		notifications.add(notCenter);
+		
 		
 		//Action listeners
-		
-		
 		
 		toggleFullScreen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.toggleFullScreen();
+			}
+		});
+		
+		notCenter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mainFrame.toggleNotificationCenter();
 			}
 		});
 
