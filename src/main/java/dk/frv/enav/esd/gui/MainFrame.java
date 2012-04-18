@@ -78,6 +78,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private JMainDesktopPane desktop;
 	private JScrollPane scrollPane;
 	private NotificationCenter notificationCenter;
+	JInternalFrame toolbar = new JInternalFrame();
 
 	public MainFrame() {
 		super();
@@ -145,18 +146,17 @@ public class MainFrame extends JFrame implements WindowListener {
 		notificationCenter = new NotificationCenter();
 		desktop.add(notificationCenter, true);
 		desktop.getManager().setNotCenter(notificationCenter);
+		desktop.getManager().setToolbar(toolbar);
 
 		// dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
 		// Add self to bean handler
 		beanHandler.add(this);
 
-		
-		JInternalFrame toolbar = new JInternalFrame();
 		toolbar.setSize(100, 100);
 		toolbar.setVisible(true);
 		desktop.add(toolbar, true);
-		desktop.getManager().setToolbar(toolbar);
+
 		
 		setWorkSpace(workspace);
 
