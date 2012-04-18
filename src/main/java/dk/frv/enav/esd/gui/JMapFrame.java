@@ -33,7 +33,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 
 		this.mainFrame = mainFrame;
 		this.id = id;
-		chartPanel = new ChartPanel();
+		chartPanel = new ChartPanel(mainFrame);
 		this.setContentPane(chartPanel);
 		this.setVisible(true);
 	
@@ -50,7 +50,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 
 		this.mainFrame = mainFrame;
 		this.id = id;
-		chartPanel = new ChartPanel();
+		chartPanel = new ChartPanel(mainFrame);
 		this.setContentPane(chartPanel);
 		this.setVisible(true);
 	

@@ -58,6 +58,8 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		
 		maps = new JMenu("Maps");
 		this.add(maps);
+
+		
 		
 		JMenuItem addMap = new JMenuItem("New Map Window");
 		maps.add(addMap);
@@ -67,10 +69,6 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		
 		JMenuItem tile = new JMenuItem("Sort by Tile");
 		maps.add(tile);		
-
-//		JMenuItem lockMaps = new JMenuItem("Lock/Unlock all map windows");
-//		maps.add(lockMaps);
-
 		maps.addSeparator();
 		
 		//Workspace
@@ -93,7 +91,32 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		workspace.add(saveWorkspace);
 		
 		
+		JMenuItem dragMouse = new JMenuItem("Mouse Dragging");
+		maps.add(dragMouse);
+		
+		JMenuItem zoomMouse = new JMenuItem("Mouse Zoom");
+		maps.add(zoomMouse);
+		
+		
 		//Action listeners
+		dragMouse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
+					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(1);
+					mainFrame.setMouseMode(1);
+				}
+			}
+		});
+		
+		zoomMouse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
+					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(0);
+					mainFrame.setMouseMode(0);
+				}
+			}
+		});
+		
 		loadWorkspace.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {

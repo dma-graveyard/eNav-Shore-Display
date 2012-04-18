@@ -71,6 +71,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private Point location;
 	private JMenuWorkspaceBar topMenu;
 	private boolean fullscreen = false;
+	private int mouseMode = 1;
 
 	private List<JMapFrame> mapWindows;
 	private JMainDesktopPane desktop;
@@ -81,6 +82,18 @@ public class MainFrame extends JFrame implements WindowListener {
 		initGUI();
 
 	}
+	
+	public int getMouseMode() {
+		return mouseMode;
+	}
+
+
+
+	public void setMouseMode(int mouseMode) {
+		this.mouseMode = mouseMode;
+	}
+
+
 
 	private void initGUI() {
 		this.setSize(1000, 700);
