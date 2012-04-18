@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.TreeSet;
 
@@ -41,6 +42,7 @@ import org.apache.log4j.Logger;
 
 import com.bbn.openmap.util.PropUtils;
 
+import dk.frv.enav.esd.gui.JMapFrame;
 import dk.frv.enav.ins.settings.AisSettings;
 import dk.frv.enav.ins.settings.SensorSettings;
 
@@ -53,6 +55,8 @@ public class Settings implements Serializable {
 	private static final Logger LOG = Logger.getLogger(Settings.class);
 	
 	private String settingsFile = "settings.properties";
+	private String defaultWorkSpace = "workspaces/default.workspace";
+	private String workspaceFile = "";
 	
 	private GuiSettings guiSettings = new GuiSettings();
 	
@@ -62,6 +66,7 @@ public class Settings implements Serializable {
 //	private NavSettings navSettings = new NavSettings();
 	private AisSettings aisSettings = new AisSettings();
 //	private EnavSettings enavSettings = new EnavSettings();
+	private Workspace workspace = new Workspace();
 	
 	
 	public Settings() {
@@ -85,6 +90,35 @@ public class Settings implements Serializable {
 		mapSettings.readProperties(props);
 //		navSettings.readProperties(props);
 		sensorSettings.readProperties(props);
+		
+		
+		workspaceFile = guiSettings.getWorkspace();
+		
+		if (workspaceFile != null){
+		
+		//Load default workspace - will ALWAYS load from workspaces folder
+		Properties workspaceProp = new Properties();
+		if (!PropUtils.loadProperties(workspaceProp, ".", workspaceFile)) {
+			LOG.info("No workspace file found - reverting to default");
+			System.out.println("No workspace file found - reverting to default - " + workspaceFile + " was invalid");
+			PropUtils.loadProperties(workspaceProp, ".", defaultWorkSpace);
+			guiSettings.setWorkspace(defaultWorkSpace);
+		}		
+		workspace.readProperties(workspaceProp);
+		}
+	}
+
+	public Workspace loadWorkspace(String parent, String filename){
+		Properties workspaceProp = new Properties();
+		if (!PropUtils.loadProperties(workspaceProp, parent, filename)) {
+			LOG.info("No workspace file found - reverting to default");
+			System.out.println("No workspace file found - reverting to default - " + parent + filename + " was invalid");
+			PropUtils.loadProperties(workspaceProp, ".", defaultWorkSpace);
+		}		
+		guiSettings.setWorkspace("workspaces/" + filename);
+		workspace = new Workspace();
+		workspace.readProperties(workspaceProp);
+		return workspace;
 	}
 	
 	public void saveToFile() {
@@ -93,10 +127,9 @@ public class Settings implements Serializable {
 //		enavSettings.setProperties(props);
 		guiSettings.setProperties(props);
 		mapSettings.setProperties(props);
+
 //		navSettings.setProperties(props);
 //		sensorSettings.setProperties(props);
-		
-		
 		
 		try {
 			FileWriter outFile = new FileWriter(settingsFile);
@@ -111,6 +144,31 @@ public class Settings implements Serializable {
 			}						
 			out.close();
 		} catch (IOException e) {
+			LOG.error("Failed to save settings file");
+		}
+	}
+	
+	
+	public void saveCurrentWorkspace(List<JMapFrame> mapWindows, String filename){
+		Properties props = new Properties();
+		workspace.setProperties(props, mapWindows);
+		try {
+			filename = "workspaces/" + filename; 
+			System.out.println("Trying to save to: " + filename);
+			FileWriter outFile = new FileWriter(filename);
+			PrintWriter out = new PrintWriter(outFile);
+			out.println("# workspace settings saved: " + new Date());
+			TreeSet<String> keys = new TreeSet<String>();
+			for (Object key : props.keySet()) {
+				keys.add((String)key);
+			}
+			for (String key : keys) {
+				out.println(key + "=" + props.getProperty(key));
+			}						
+			out.close();
+			guiSettings.setWorkspace(filename);
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
 			LOG.error("Failed to save settings file");
 		}
 	}
@@ -135,4 +193,7 @@ public class Settings implements Serializable {
 		return aisSettings;
 	}
 
+	public Workspace getWorkspace(){
+		return workspace;
+	}
 }

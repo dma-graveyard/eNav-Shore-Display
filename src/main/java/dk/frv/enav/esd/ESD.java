@@ -42,16 +42,13 @@ import javax.swing.UIManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import com.bbn.openmap.MapHandler;
 import com.bbn.openmap.PropertyConsumer;
-import com.bbn.openmap.tools.beanbox.BeanBoxHandler;
 
 import dk.frv.enav.esd.ais.AisHandler;
 import dk.frv.enav.esd.ais.VesselAisHandler;
 import dk.frv.enav.esd.gui.MainFrame;
 import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.nmea.NmeaTcpSensor;
-import dk.frv.enav.esd.settings.GuiSettings;
 import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.esd.test.TestHandler;
 import dk.frv.enav.esd.util.OneInstanceGuard;
@@ -240,11 +237,7 @@ public class ESD {
         // Create and set up the main window        
 		mainFrame = new MainFrame();
 		mainFrame.setVisible(true);
-		
-	    // Create keybinding shortcuts
-//        makeKeyBindings();
-		
-
+	
 	}
 	
 		

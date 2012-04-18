@@ -39,6 +39,8 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.geom.Point2D;
+import java.beans.PropertyVetoException;
 import java.beans.beancontext.BeanContextServicesSupport;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +48,7 @@ import java.util.List;
 import javax.management.Notification;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 
 import org.apache.log4j.Logger;
@@ -53,6 +56,7 @@ import org.apache.log4j.Logger;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.settings.GuiSettings;
 //import dk.frv.enav.esd.settings.GuiSettings;
+import dk.frv.enav.esd.settings.Workspace;
 
 /**
  * The main frame containing map and panels
@@ -68,21 +72,16 @@ public class MainFrame extends JFrame implements WindowListener {
 	private Point location;
 	private JMenuWorkspaceBar topMenu;
 	private boolean fullscreen = false;
-	
+
 	private List<JMapFrame> mapWindows;
 	private JMainDesktopPane desktop;
 	private JScrollPane scrollPane;
-	
 	private NotificationCenter notificationCenter;
-	
+
 	public MainFrame() {
 		super();
 		initGUI();
-		
 
-
-		// HARDCODED: Initialize with 1 map window
-//		addMapWindow();
 	}
 
 	private void initGUI() {
@@ -90,6 +89,9 @@ public class MainFrame extends JFrame implements WindowListener {
 		BeanContextServicesSupport beanHandler = ESD.getBeanHandler();
 		// Get settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
+
+		Workspace workspace = ESD.getSettings().getWorkspace();
+
 		setTitle(TITLE);
 
 		// Set location and size
@@ -98,32 +100,30 @@ public class MainFrame extends JFrame implements WindowListener {
 		} else {
 			setLocation(guiSettings.getAppLocation());
 		}
-		if (guiSettings.isFullscreen()){
+		if (guiSettings.isFullscreen()) {
 			toggleFullScreen();
-		}else{
+		} else {
 			setSize(guiSettings.getAppDimensions());
 		}
 
-		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setIconImage(getAppIcon());
 		addWindowListener(this);
 
 		desktop = new JMainDesktopPane(this);
 		scrollPane = new JScrollPane();
-		
-//		pack();
 
-//		desktop.setSize(1000, 700);
-//		scrollPane.setSize(1000, 700);
-		
+		// pack();
+
+		// desktop.setSize(1000, 700);
+		// scrollPane.setSize(1000, 700);
+
 		scrollPane.getViewport().add(desktop);
-//	    getContentPane().add(scrollPane);
-	    this.setContentPane(scrollPane);
-		
+		// getContentPane().add(scrollPane);
+		this.setContentPane(scrollPane);
+
 		desktop.setBackground(Color.LIGHT_GRAY);
 
-		
 		mapWindows = new ArrayList<JMapFrame>();
 
 		topMenu = new JMenuWorkspaceBar(this);
@@ -132,10 +132,18 @@ public class MainFrame extends JFrame implements WindowListener {
 		notificationCenter = new NotificationCenter();
 		desktop.add(notificationCenter);
 
-//		dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+		// dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
 		// Add self to bean handler
 		beanHandler.add(this);
+
+		
+		JInternalFrame toolbar = new JInternalFrame();
+		toolbar.setSize(100, 100);
+		desktop.add(toolbar, true);
+		desktop.getManager().setToolbar(toolbar);
+		
+		setWorkSpace(workspace);
 
 
 	}
@@ -157,71 +165,137 @@ public class MainFrame extends JFrame implements WindowListener {
 		return mapWindows;
 	}
 
-	public void addMapWindow() {
+	public JMapFrame addMapWindow(boolean workspace, boolean locked, boolean alwaysInFront, Point2D center, float scale) {
+
 		windowCount++;
-		JMapFrame window = new JMapFrame(windowCount, this);
-		desktop.add(window);
+		JMapFrame window = new JMapFrame(windowCount, this, center, scale);
+		desktop.add(window, workspace);
 		mapWindows.add(window);
 		window.toFront();
-		
-		topMenu.addMap(window);
+		topMenu.addMap(window, locked, alwaysInFront);
+
+		return window;
 	}
-	
-	public void removeMapWindow(JMapFrame window){
+
+	public JMapFrame addMapWindow() {
+		windowCount++;
+		JMapFrame window = new JMapFrame(windowCount, this);
+
+		desktop.add(window);
+
+		mapWindows.add(window);
+//		window.toFront();
+
+		topMenu.addMap(window, false, false);
+
+		return window;
+	}
+
+	public void loadNewWorkspace(String parent, String filename) {
+		Workspace workspace = ESD.getSettings().loadWorkspace(parent, filename);
+		setWorkSpace(workspace);
+	}
+
+	public void setWorkSpace(Workspace workspace) {
+
+		while (mapWindows.size() != 0) {
+			try {
+				mapWindows.get(0).setClosed(true);
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
+		}
+
+		// Reset the workspace
+		windowCount = 0;
+		mapWindows = new ArrayList<JMapFrame>();
+
+		if (workspace.isValidWorkspace()) {
+			for (int i = 0; i < workspace.getName().size(); i++) {
+				JMapFrame window = addMapWindow(true, workspace.isLocked().get(i), workspace.getAlwaysInFront().get(i),
+						workspace.getCenter().get(i), workspace.getScale().get(i));
+				window.setTitle(workspace.getName().get(i));
+				topMenu.renameMapMenu(window);
+				window.setSize(workspace.getSize().get(i));
+				window.setLocation(workspace.getPosition().get(i));
+
+				try {
+					window.setMaximum(workspace.isMaximized().get(i));
+				} catch (PropertyVetoException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				if (workspace.isLocked().get(i)) {
+					window.lockUnlockWindow();
+				}
+
+				if (workspace.getAlwaysInFront().get(i)) {
+					window.alwaysFront();
+				}
+
+				// window.getChartPanel().getMap().setScale(0.001f);
+				// window.getChartPanel().getMap().setCenter(workspace.getCenter().get(i));
+
+			}
+
+		}
+	}
+
+	public void removeMapWindow(JMapFrame window) {
 		topMenu.removeMapMenu(window);
 		mapWindows.remove(window);
 	}
-	
-	public void renameMapWindow(JMapFrame window){
+
+	public void renameMapWindow(JMapFrame window) {
 		topMenu.renameMapMenu(window);
 	}
 
-	public JMainDesktopPane getDesktop(){
+	public JMainDesktopPane getDesktop() {
 		return desktop;
 	}
-	
-	public Dimension getMaxResolution(){
+
+	public Dimension getMaxResolution() {
 		int width = 0;
 		int height = 0;
-		
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice[] gs = ge.getScreenDevices();
 
-		for (GraphicsDevice curGs : gs)
-		{
-		  DisplayMode mode = curGs.getDisplayMode();
-		  width += mode.getWidth();
-		  
-//		  System.out.println("Width: " + width);
-		  
-		  if (height < mode.getHeight()){
-			  height = mode.getHeight();  
-		  }
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+
+		for (GraphicsDevice curGs : gs) {
+			DisplayMode mode = curGs.getDisplayMode();
+			width += mode.getWidth();
+
+			// System.out.println("Width: " + width);
+
+			if (height < mode.getHeight()) {
+				height = mode.getHeight();
+			}
 
 		}
-		  return new Dimension(width, height);
-		
+		return new Dimension(width, height);
+
 	}
-	
+
 	public void toggleFullScreen() {
-		
-//		System.out.println(this.getLocationOnScreen());
-//		System.out.println("fullscreen toggle");
-		
+
+		// System.out.println(this.getLocationOnScreen());
+		// System.out.println("fullscreen toggle");
+
 		if (!fullscreen) {
 			location = this.getLocation();
 			size = this.getSize();
-			
+
 			this.setSize(getMaxResolution());
-//			setLocationRelativeTo(null);
-			this.setLocation(0,0);
-//			setExtendedState(JFrame.MAXIMIZED_BOTH);
+			// setLocationRelativeTo(null);
+			this.setLocation(0, 0);
+			// setExtendedState(JFrame.MAXIMIZED_BOTH);
 			dispose();
 			this.setUndecorated(true);
 			setVisible(true);
 			fullscreen = true;
 		} else {
-//			setExtendedState(JFrame.NORMAL);
+			// setExtendedState(JFrame.NORMAL);
 			fullscreen = false;
 			this.setSize(size);
 			this.setLocation(location);
@@ -238,11 +312,14 @@ public class MainFrame extends JFrame implements WindowListener {
 		guiSettings.setMaximized((getExtendedState() & MAXIMIZED_BOTH) > 0);
 		guiSettings.setAppLocation(getLocation());
 		guiSettings.setAppDimensions(getSize());
-		
-		System.out.println(fullscreen);
-		
+
 		// Save map settings
 		// chartPanel.saveSettings();
+
+	}
+
+	public void saveWorkSpace(String filename) {
+		ESD.getSettings().saveCurrentWorkspace(mapWindows, filename);
 	}
 
 	@Override
@@ -255,9 +332,7 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	@Override
 	public void windowClosing(WindowEvent we) {
-		
-		System.out.println("Closing app");
-		
+
 		// Close routine
 		ESD.closeApp();
 	}

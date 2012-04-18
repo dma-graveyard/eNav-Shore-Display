@@ -49,6 +49,7 @@ public class GuiSettings implements Serializable {
 	private Dimension appDimensions = new Dimension(1280, 800);
 	private boolean fullscreen = false;
 	private boolean multipleInstancesAllowed = false;
+	private String workspace = "";
 
 	
 	public GuiSettings() {
@@ -63,7 +64,8 @@ public class GuiSettings implements Serializable {
 		double w = PropUtils.doubleFromProperties(props, PREFIX + "appDimensions_w", appDimensions.getWidth());
 		double h = PropUtils.doubleFromProperties(props, PREFIX + "appDimensions_h", appDimensions.getHeight());
 		appDimensions.setSize(w, h);
-		fullscreen = PropUtils.booleanFromProperties(props, PREFIX + "fullscreen", fullscreen);		
+		fullscreen = PropUtils.booleanFromProperties(props, PREFIX + "fullscreen", fullscreen);
+		workspace = props.getProperty(PREFIX + "workspace");
 	}
 
 	public void setProperties(Properties props) {
@@ -74,6 +76,17 @@ public class GuiSettings implements Serializable {
 		props.put(PREFIX + "appDimensions_h", Double.toString(appDimensions.getHeight()));
 		props.put(PREFIX + "multipleInstancesAllowed", Boolean.toString(multipleInstancesAllowed));
 		props.put(PREFIX + "fullscreen", Boolean.toString(fullscreen));
+		props.put(PREFIX + "workspace", workspace);
+	}
+
+	
+	
+	public String getWorkspace() {
+		return workspace;
+	}
+
+	public void setWorkspace(String workspace) {
+		this.workspace = workspace;
 	}
 
 	public Point getAppLocation() {

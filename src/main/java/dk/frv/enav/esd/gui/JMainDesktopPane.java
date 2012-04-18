@@ -36,44 +36,11 @@ public class JMainDesktopPane extends JDesktopPane {
 			return manager;
 		}
 	  
-	  public Component add(JInternalFrame frame) {
-	    JInternalFrame[] array = getAllFrames();
-	    Point p;
-	    int w;
-	    int h;
-
+	  public Component add(JInternalFrame frame, boolean workspaceWindow) {
 	    Component retval = super.add(frame);
 //	    checkDesktopSize();
-	    if (array.length > 0) {
-	      p = array[0].getLocation();
-	      p.x = p.x + FRAME_OFFSET;
-	      p.y = p.y + FRAME_OFFSET;
-	    } else {
-	      p = new Point(0, 0);
-	    }
-	    //frame.setLocation(p.x, p.y);
-	    if (frame.isResizable()) {
-	    	
-	      w = getWidth() - (getWidth() / 3);
-	      h = getHeight() - (getHeight() / 3);
-//System.out.println(getWidth());
-//System.out.println(getHeight());
-	      if (w < frame.getMinimumSize().getWidth())
-	        w = (int) frame.getMinimumSize().getWidth();
-	      if (h < frame.getMinimumSize().getHeight())
-	        h = (int) frame.getMinimumSize().getHeight();
-	      
-	      if (w > 700){
-	    	  w = 400;
-	      }
-	      if (h > 700){
-	    	  h = 400;
-	      }
-	      
-	      //frame.setSize(w, h);
-	      
-	      
-	    }
+
+
 	    moveToFront(frame);
 	    //frame.setVisible(true);
 	    try {
@@ -83,6 +50,56 @@ public class JMainDesktopPane extends JDesktopPane {
 	    }
 	    return retval;
 	  }
+	  
+	  public Component add(JInternalFrame frame) {
+		    JInternalFrame[] array = getAllFrames();
+		    Point p;
+		    int w;
+		    int h;
+
+		    Component retval = super.add(frame);
+//		    checkDesktopSize();
+
+		    if (array.length > 0) {
+		      p = array[0].getLocation();
+		      p.x = p.x + FRAME_OFFSET;
+		      p.y = p.y + FRAME_OFFSET;
+		    } else {
+		      p = new Point(0, 0);
+		    }
+		    frame.setLocation(p.x, p.y);
+		    if (frame.isResizable()) {
+		    	
+		      w = getWidth() - (getWidth() / 3);
+		      h = getHeight() - (getHeight() / 3);
+	//System.out.println(getWidth());
+	//System.out.println(getHeight());
+		      if (w < frame.getMinimumSize().getWidth())
+		        w = (int) frame.getMinimumSize().getWidth();
+		      if (h < frame.getMinimumSize().getHeight())
+		        h = (int) frame.getMinimumSize().getHeight();
+		      
+		      if (w > 700){
+		    	  w = 400;
+		      }
+		      if (h > 700){
+		    	  h = 400;
+		      }
+		      
+		      frame.setSize(w, h);
+		      
+		    }
+		    moveToFront(frame);
+		    frame.setVisible(true);
+		    try {
+		      frame.setSelected(true);
+		    } catch (PropertyVetoException e) {
+		      frame.toBack();
+		    }
+		    
+		    
+		    return retval;
+		  }
 
 	  public void remove(Component c) {
 
@@ -96,7 +113,9 @@ public class JMainDesktopPane extends JDesktopPane {
 		  }
 		  
 	    super.remove(c);
-//	    checkDesktopSize();
+
+//	    manager.setFramesAlwaysOnTop();
+	    
 	  }
 
 	  /**

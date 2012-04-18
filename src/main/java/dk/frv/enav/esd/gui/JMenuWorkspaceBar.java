@@ -3,6 +3,8 @@ package dk.frv.enav.esd.gui;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,11 +12,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.gui.fileselection.WorkspaceFileFilter;
 
 public class JMenuWorkspaceBar extends JMenuBar {
 
@@ -68,9 +72,6 @@ public class JMenuWorkspaceBar extends JMenuBar {
 //		maps.add(lockMaps);
 
 		maps.addSeparator();
-
-		
-		
 		
 		//Workspace
 		
@@ -83,6 +84,7 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		JMenuItem unlockAll = new JMenuItem("Unlock all windows");
 		workspace.add(unlockAll);
 		
+
 		//Notifications
 		
 		JMenu notifications = new JMenu("Notifications");
@@ -90,7 +92,39 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		
 		JMenuItem notCenter = new JMenuItem("Notification Center");
 		notifications.add(notCenter);
+
+		workspace.addSeparator();
 		
+		JMenuItem loadWorkspace = new JMenuItem("Load workspace");
+		workspace.add(loadWorkspace);
+
+		JMenuItem saveWorkspace = new JMenuItem("Save workspace");
+		workspace.add(saveWorkspace);
+		
+		
+		//Action listeners
+		loadWorkspace.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					selectWorkspace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+
+		
+		saveWorkspace.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					saveWorkspace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		
 		//Action listeners
 		
@@ -108,7 +142,6 @@ public class JMenuWorkspaceBar extends JMenuBar {
 
 		mi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-//				System.exit(0);
 				ESD.closeApp();
 			}
 		});
@@ -163,14 +196,6 @@ public class JMenuWorkspaceBar extends JMenuBar {
 			if (mapWindows.get(i).isLocked()){
 				mapWindows.get(i).lockUnlockWindow();	
 			}
-			
-			
-			
-			
-
-
-			
-			
 		}
 		
 	    Iterator<Entry<Integer, JMenu>> it = mapMenus.entrySet().iterator();
@@ -201,19 +226,11 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		
 	    Iterator<Entry<Integer, JMenu>> it = mapMenus.entrySet().iterator();
 	    while (it.hasNext()) {
-//	    	JMenu menu = it.next().getValue();
-//	    	menu.getItem(0);
 	    	((JCheckBoxMenuItem) it.next().getValue().getItem(0)).setSelected(true);
-//	    	locked.setSelected(true);
-//	        Map.Entry pairs = (Map.Entry)it.next();
-//	        pairs
-//	        
-//	        System.out.println(pairs.getKey() + " = " + pairs.getValue());
-//	        it.remove(); // avoids a ConcurrentModificationException
 	    }
 	}
 
-	public void addMap(final JMapFrame window) {
+	public void addMap(final JMapFrame window, boolean locked, boolean alwaysInFront) {
 		JMenu mapWindow = new JMenu(window.getTitle());
 
 		JCheckBoxMenuItem toggleLock = new JCheckBoxMenuItem("Lock/Unlock");
@@ -235,6 +252,10 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		mapMenus.put(window.getId(), mapWindow);
 
 		maps.add(mapWindow);
+		
+		alwaysFront.setSelected(alwaysInFront);
+		
+		toggleLock.setSelected(locked);
 
 		toggleLock.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -276,12 +297,37 @@ public class JMenuWorkspaceBar extends JMenuBar {
 			if (maps.getItem(i) == menuItem) {
 				menuPosition = i;
 			}
-
 		}
-
 		maps.remove(menuItem);
 		menuItem.setText(window.getTitle());
 		maps.insert(menuItem, menuPosition);
 	}
 
+	
+	public void selectWorkspace() throws IOException{
+		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir") + "\\workspaces");
+        fc.setFileFilter(new WorkspaceFileFilter());	
+        
+        int returnVal = fc.showOpenDialog(mainFrame);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            mainFrame.loadNewWorkspace(file.getParent(), file.getName());
+        }
+	}
+	
+	public void saveWorkspace() throws IOException{
+		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir") + "\\workspaces");
+        fc.setFileFilter(new WorkspaceFileFilter());	
+        
+        int returnVal = fc.showSaveDialog(mainFrame);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            String filename = file.getName();
+            if(!filename.endsWith(".workspace")){
+            	System.out.println("Appending .workspace");
+            	filename = filename + ".workspace";
+            }
+            mainFrame.saveWorkSpace(filename);
+        }
+	}
 }
