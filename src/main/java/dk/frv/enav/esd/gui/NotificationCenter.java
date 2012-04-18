@@ -78,6 +78,8 @@ public class NotificationCenter extends JInternalFrame{
 	
 	private class RowListener implements ListSelectionListener {
         public void valueChanged(ListSelectionEvent event) {
+        	DefaultListSelectionModel values = (DefaultListSelectionModel) event.getSource();
+        	System.out.println(values.getAnchorSelectionIndex());
             if (event.getValueIsAdjusting()) {
                 return;
             }
