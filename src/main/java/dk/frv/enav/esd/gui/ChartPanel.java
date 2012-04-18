@@ -34,6 +34,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.Properties;
 
@@ -109,19 +110,13 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		aisLayer.setVisible(true);
 		mapHandler.add(aisLayer);
 
-		// Create a MapBean, and add it to the MapHandler.
 		map = new BufferedLayerMapBean();
 		map.setDoubleBuffered(true);
 
 		mouseDelegator = new MouseDelegator();
 		mapHandler.add(mouseDelegator);
-
-		// Add MouseMode. The MouseDelegator will find it via the
-		// MapHandler.
-		// Adding NavMouseMode first makes it active.
-		 mapHandler.add(new NavMouseMode());
+		mapHandler.add(new NavMouseMode());
 		 
-		 //Mouse mode
 		mapNavMouseMode = new NavigationMouseMode(this);
 		 
 
@@ -130,10 +125,6 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 		mapHandler.add(mapNavMouseMode);
 
-
-		// Use the LayerHandler to manage all layers, whether they are
-		// on the map or not. You can add a layer to the map by
-		// setting layer.setVisible(true).
 		layerHandler = new LayerHandler();
 		
 		// Get plugin layers
@@ -162,6 +153,63 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 		// Get from settings
 		map.setScale(mapSettings.getScale());
+
+		add(map);
+	
+		getMap().addMouseWheelListener(this);
+	}
+	
+public void initChart(Point2D center, float scale) {
+		
+		Properties props = ESD.getProperties();
+
+		aisLayer = new AisLayer();
+		aisLayer.setVisible(true);
+		mapHandler.add(aisLayer);
+
+		map = new BufferedLayerMapBean();
+		map.setDoubleBuffered(true);
+
+		mouseDelegator = new MouseDelegator();
+		mapHandler.add(mouseDelegator);
+		mapHandler.add(new NavMouseMode());
+		 
+		mapNavMouseMode = new NavigationMouseMode(this);
+		 
+
+		mouseDelegator.addMouseMode(mapNavMouseMode);
+		mouseDelegator.setActive(mapNavMouseMode);
+
+		mapHandler.add(mapNavMouseMode);
+
+		layerHandler = new LayerHandler();
+		
+		// Get plugin layers
+		createPluginLayers(props);
+
+		// Add layer handler to map handler
+		mapHandler.add(layerHandler);
+
+		// Create background layer
+		String layerName = "background";
+		bgLayer = new ShapeLayer();
+		bgLayer.setProperties(layerName, props);
+		bgLayer.setAddAsBackground(true);
+		bgLayer.setVisible(true);
+		mapHandler.add(bgLayer);
+
+		if (encLayer != null) {
+			mapHandler.add(encLayer);
+		}
+
+		// Add map to map handler
+		mapHandler.add(map);
+
+		// Set last postion
+		map.setCenter(center);
+
+		// Get from settings
+		map.setScale(scale);
 
 		add(map);
 	

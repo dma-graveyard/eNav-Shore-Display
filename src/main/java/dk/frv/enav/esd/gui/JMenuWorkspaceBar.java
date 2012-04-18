@@ -105,6 +105,17 @@ public class JMenuWorkspaceBar extends JMenuBar {
 			}
 		});
 		
+		saveWorkspace.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					saveWorkspace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		
 		
 		toggleFullScreen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -120,7 +131,7 @@ public class JMenuWorkspaceBar extends JMenuBar {
 
 		addMap.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mainFrame.addMapWindow(false, false, false);
+				mainFrame.addMapWindow();
 			}
 		});
 
@@ -284,6 +295,22 @@ public class JMenuWorkspaceBar extends JMenuBar {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             mainFrame.loadNewWorkspace(file.getParent(), file.getName());
+        }
+	}
+	
+	public void saveWorkspace() throws IOException{
+		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir") + "\\workspaces");
+        fc.setFileFilter(new WorkspaceFileFilter());	
+        
+        int returnVal = fc.showSaveDialog(mainFrame);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            String filename = file.getName();
+            if(!filename.endsWith(".workspace")){
+            	System.out.println("Appending .workspace");
+            	filename = filename + ".workspace";
+            }
+            mainFrame.saveWorkSpace(filename);
         }
 	}
 }

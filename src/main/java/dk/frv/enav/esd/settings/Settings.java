@@ -55,7 +55,7 @@ public class Settings implements Serializable {
 	private static final Logger LOG = Logger.getLogger(Settings.class);
 	
 	private String settingsFile = "settings.properties";
-	private String defaultWorkSpace = "workspaces/default.properties";
+	private String defaultWorkSpace = "workspaces/default.workspace";
 	private String workspaceFile = "";
 	
 	private GuiSettings guiSettings = new GuiSettings();
@@ -96,7 +96,7 @@ public class Settings implements Serializable {
 		
 		if (workspaceFile != null){
 		
-		//Load default workspace
+		//Load default workspace - will ALWAYS load from workspaces folder
 		Properties workspaceProp = new Properties();
 		if (!PropUtils.loadProperties(workspaceProp, ".", workspaceFile)) {
 			LOG.info("No workspace file found - reverting to default");
@@ -115,7 +115,7 @@ public class Settings implements Serializable {
 			System.out.println("No workspace file found - reverting to default - " + parent + filename + " was invalid");
 			PropUtils.loadProperties(workspaceProp, ".", defaultWorkSpace);
 		}		
-		guiSettings.setWorkspace(filename);
+		guiSettings.setWorkspace("workspaces/" + filename);
 		workspace = new Workspace();
 		workspace.readProperties(workspaceProp);
 		return workspace;
@@ -148,11 +148,14 @@ public class Settings implements Serializable {
 		}
 	}
 	
-	public void saveCurrentWorkspace(List<JMapFrame> mapWindows){
+	
+	public void saveCurrentWorkspace(List<JMapFrame> mapWindows, String filename){
 		Properties props = new Properties();
 		workspace.setProperties(props, mapWindows);
 		try {
-			FileWriter outFile = new FileWriter(workspaceFile);
+			filename = "workspaces/" + filename; 
+			System.out.println("Trying to save to: " + filename);
+			FileWriter outFile = new FileWriter(filename);
 			PrintWriter out = new PrintWriter(outFile);
 			out.println("# workspace settings saved: " + new Date());
 			TreeSet<String> keys = new TreeSet<String>();
@@ -163,7 +166,9 @@ public class Settings implements Serializable {
 				out.println(key + "=" + props.getProperty(key));
 			}						
 			out.close();
+			guiSettings.setWorkspace(filename);
 		} catch (IOException e) {
+			System.out.println(e.getMessage());
 			LOG.error("Failed to save settings file");
 		}
 	}

@@ -10,7 +10,7 @@ public class WorkspaceFileFilter extends FileFilter {
 
 	@Override
 	public boolean accept(File f) {
-		return f.isDirectory() || f.getName().toLowerCase().endsWith(".properties");
+		return f.isDirectory() || f.getName().toLowerCase().endsWith(".workspace");
 	}
 
 	// Set description for the type of file that should be display

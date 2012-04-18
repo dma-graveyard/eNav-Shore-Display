@@ -39,6 +39,7 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.geom.Point2D;
 import java.beans.PropertyVetoException;
 import java.beans.beancontext.BeanContextServicesSupport;
 import java.util.ArrayList;
@@ -132,8 +133,6 @@ public class MainFrame extends JFrame implements WindowListener {
 		// Add self to bean handler
 		beanHandler.add(this);
 
-		
-		
 		setWorkSpace(workspace);
 
 	}
@@ -151,50 +150,66 @@ public class MainFrame extends JFrame implements WindowListener {
 		return mapWindows;
 	}
 
-	public JMapFrame addMapWindow(boolean workspace, boolean locked, boolean alwaysInFront) {
-		
+	public JMapFrame addMapWindow(boolean workspace, boolean locked, boolean alwaysInFront, Point2D center, float scale) {
+
 		windowCount++;
-		JMapFrame window = new JMapFrame(windowCount, this);
-		
+		JMapFrame window = new JMapFrame(windowCount, this, center, scale);
 		desktop.add(window, workspace);
-		
 		mapWindows.add(window);
 		window.toFront();
-
 		topMenu.addMap(window, locked, alwaysInFront);
 
 		return window;
 	}
 
-	public void loadNewWorkspace(String parent, String filename){
+	public JMapFrame addMapWindow() {
+		windowCount++;
+		JMapFrame window = new JMapFrame(windowCount, this);
+
+		desktop.add(window);
+
+		mapWindows.add(window);
+		window.toFront();
+
+		topMenu.addMap(window, false, false);
+
+		return window;
+	}
+
+	public void loadNewWorkspace(String parent, String filename) {
 		Workspace workspace = ESD.getSettings().loadWorkspace(parent, filename);
 		setWorkSpace(workspace);
 	}
-	
+
 	public void setWorkSpace(Workspace workspace) {
-		
-		while(mapWindows.size() != 0){
+
+		while (mapWindows.size() != 0) {
 			try {
 				mapWindows.get(0).setClosed(true);
 			} catch (PropertyVetoException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
 
-		//Reset the workspace
+		// Reset the workspace
 		windowCount = 0;
 		mapWindows = new ArrayList<JMapFrame>();
-		
-		
+
 		if (workspace.isValidWorkspace()) {
 			for (int i = 0; i < workspace.getName().size(); i++) {
-				JMapFrame window = addMapWindow(true, workspace.isLocked().get(i), workspace.getAlwaysInFront().get(i));
+				JMapFrame window = addMapWindow(true, workspace.isLocked().get(i), workspace.getAlwaysInFront().get(i),
+						workspace.getCenter().get(i), workspace.getScale().get(i));
 				window.setTitle(workspace.getName().get(i));
 				topMenu.renameMapMenu(window);
 				window.setSize(workspace.getSize().get(i));
 				window.setLocation(workspace.getPosition().get(i));
+
+				try {
+					window.setMaximum(workspace.isMaximized().get(i));
+				} catch (PropertyVetoException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 				if (workspace.isLocked().get(i)) {
 					window.lockUnlockWindow();
@@ -203,6 +218,9 @@ public class MainFrame extends JFrame implements WindowListener {
 				if (workspace.getAlwaysInFront().get(i)) {
 					window.alwaysFront();
 				}
+
+				// window.getChartPanel().getMap().setScale(0.001f);
+				// window.getChartPanel().getMap().setCenter(workspace.getCenter().get(i));
 
 			}
 
@@ -280,12 +298,13 @@ public class MainFrame extends JFrame implements WindowListener {
 		guiSettings.setAppLocation(getLocation());
 		guiSettings.setAppDimensions(getSize());
 
-
 		// Save map settings
 		// chartPanel.saveSettings();
-		ESD.getSettings().saveCurrentWorkspace(mapWindows);
 
+	}
 
+	public void saveWorkSpace(String filename) {
+		ESD.getSettings().saveCurrentWorkspace(mapWindows, filename);
 	}
 
 	@Override

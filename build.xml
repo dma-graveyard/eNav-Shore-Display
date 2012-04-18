@@ -69,7 +69,7 @@
 			</manifest>
 		</jar>
 	</target>
-	<target name="dist" depends="jar, enc">
+	<target name="dist" depends="jar">
 		<mkdir dir="${distdir}" />
 		<mkdir dir="${distdir}/lib" />
 		<mkdir dir="${distdir}/log" />
@@ -100,29 +100,7 @@
 		</java>
 	</target>
 
-	<target name="enc" depends="navicon_enc" />
 	
-	<condition property="use_navicon_enc">
-		<equals arg1="${navicon_enc}" arg2="true" />
-	</condition>
-	
-	<target name="navicon_enc" if="use_navicon_enc">
-		<echo>Using Navicon ENC layer</echo>
-		<copy todir="${distdir}/lib" overwrite="false">
-			<fileset dir="${navicon_enc_path}/lib">
-				<include name="/*.jar" />
-			</fileset>
-		</copy>
-		<copy todir="${distdir}/navicon" overwrite="false">
-			<resources>
-				<fileset dir="${navicon_enc_path}">
- 					<include name="native/**" />
-					<include name="data/**" />
-				</fileset>
-			</resources>
-		</copy>
-		<copy file="${src.main.resources.dir}/enc_navicon.properties" tofile="${distdir}/enc.properties" overwrite="false"/>
-	</target>
 
 	<target name="javadoc">
 		<mkdir dir="${javadoc.dir}" />

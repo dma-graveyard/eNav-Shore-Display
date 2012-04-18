@@ -47,7 +47,7 @@ import dk.frv.enav.esd.gui.JMapFrame;
 public class Workspace implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static final String PREFIX = "map.";
+	private static final String PREFIX = "workspace.";
 
 	boolean validWorkspace = false;
 	private List<String> name = new ArrayList<String>();
@@ -59,6 +59,8 @@ public class Workspace implements Serializable {
 	private List<LatLonPoint> center = new ArrayList<LatLonPoint>();
 //	private LatLonPoint center = new LatLonPoint.Double(56, 11);
 	private List<Float> scale = new ArrayList<Float>();
+	private List<Boolean> maximized = new ArrayList<Boolean>();
+	
 
 
 	public Workspace() {
@@ -73,8 +75,6 @@ public class Workspace implements Serializable {
 			String[] h = props.getProperty(PREFIX + "size_h").split("//");
 			
 			for (int i = 0; i < w.length; i++) {
-				System.out.println(w[i]);
-
 				size.add(new Dimension((int) Double.parseDouble(w[i]), (int) Double.parseDouble(h[i])));
 			}
 		
@@ -89,6 +89,12 @@ public class Workspace implements Serializable {
 			for (int i = 0; i < lockedInput.length; i++) {
 				locked.add(   Boolean.parseBoolean(lockedInput[i]) );
 			}
+			
+			String[] maximizedInput = props.getProperty(PREFIX + "maximized").split("//");
+			for (int i = 0; i < maximizedInput.length; i++) {
+				maximized.add(   Boolean.parseBoolean(maximizedInput[i]) );
+			}
+			
 			
 			String[] alwaysInFrontInput = props.getProperty(PREFIX + "alwaysInFront").split("//");
 			for (int i = 0; i < alwaysInFrontInput.length; i++) {
@@ -115,7 +121,6 @@ public class Workspace implements Serializable {
 	}
 
 	public void setProperties(Properties props, List<JMapFrame> mapWindows) {
-		System.out.println("Saving workspace");
 		String name = "";
 		String size_h = "";
 		String size_w = "";
@@ -126,6 +131,7 @@ public class Workspace implements Serializable {
 		String center_lon = "";
 		String scale = "";
 		String alwaysInFront = "";
+		String maximized = "";
 		
 		for (int i = 0; i < mapWindows.size(); i++) {
 			name = name + mapWindows.get(i).getTitle() + "//";
@@ -134,9 +140,10 @@ public class Workspace implements Serializable {
 			position_x = position_x + mapWindows.get(i).getLocation().getX() + "//";
 			position_y = position_y + mapWindows.get(i).getLocation().getY() + "//";
 			locked = locked + mapWindows.get(i).isLocked() + "//";
-			center_lat = center_lat + 0.0 + "//";
-			center_lon = center_lon + 0.0 + "//";
-			scale = scale + 1.0 + "//";
+			maximized = maximized + mapWindows.get(i).isMaximum() + "//";
+			center_lat = center_lat + mapWindows.get(i).getChartPanel().getMap().getCenter().getY() + "//";
+			center_lon = center_lon + mapWindows.get(i).getChartPanel().getMap().getCenter().getX() + "//";
+			scale = scale + mapWindows.get(i).getChartPanel().getMap().getScale() + "//";
 			alwaysInFront = alwaysInFront + mapWindows.get(i).isInFront() + "//";
 			
 		}
@@ -146,28 +153,11 @@ public class Workspace implements Serializable {
 		props.put(PREFIX + "position_x", position_x);
 		props.put(PREFIX + "position_y", position_y);
 		props.put(PREFIX + "locked", locked);
+		props.put(PREFIX + "maximized", maximized);
 		props.put(PREFIX + "center_lat", center_lat);
 		props.put(PREFIX + "center_lon", center_lon);
 		props.put(PREFIX + "scale", scale);
 		props.put(PREFIX + "alwaysInFront", alwaysInFront);
-		
-		
-//		map.name = test window
-//		map.size_h = 700
-//		map.size_w = 400
-//		map.position_x = 0
-//		map.position_y = 0
-//		map.locked = false
-//		map.center_lat = 0
-//		map.center_lon = 0
-//		map.scale = 1
-//		map.alwaysInFront = false
-		
-		
-//		props.put(PREFIX + "center_lat", Double.toString(center.getLatitude()));
-//		props.put(PREFIX + "center_lon", Double.toString(center.getLongitude()));
-//		props.put(PREFIX + "scale", Double.toString(scale));
-//		props.put(PREFIX + "maxScale", Integer.toString(maxScale));
 
 	}
 
@@ -217,6 +207,14 @@ public class Workspace implements Serializable {
 
 	public void setLocked(List<Boolean> locked) {
 		this.locked = locked;
+	}
+	
+	public List<Boolean> isMaximized() {
+		return maximized;
+	}
+
+	public void setMaximized(List<Boolean> maximized) {
+		this.maximized = maximized;
 	}
 
 	public List<LatLonPoint> getCenter() {
