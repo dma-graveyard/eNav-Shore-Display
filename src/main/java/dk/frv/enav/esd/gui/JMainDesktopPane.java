@@ -51,7 +51,7 @@ public class JMainDesktopPane extends JDesktopPane {
 	    } else {
 	      p = new Point(0, 0);
 	    }
-	    frame.setLocation(p.x, p.y);
+	    //frame.setLocation(p.x, p.y);
 	    if (frame.isResizable()) {
 	    	
 	      w = getWidth() - (getWidth() / 3);
@@ -70,7 +70,7 @@ public class JMainDesktopPane extends JDesktopPane {
 	    	  h = 400;
 	      }
 	      
-	      frame.setSize(w, h);
+	      //frame.setSize(w, h);
 	      
 	      
 	    }

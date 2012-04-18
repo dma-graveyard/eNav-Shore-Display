@@ -52,7 +52,6 @@ import org.apache.log4j.Logger;
 
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.settings.GuiSettings;
-import dk.frv.enav.esd.gui.NotificationArea;
 //import dk.frv.enav.esd.settings.GuiSettings;
 
 /**
@@ -73,7 +72,8 @@ public class MainFrame extends JFrame implements WindowListener {
 	private List<JMapFrame> mapWindows;
 	private JMainDesktopPane desktop;
 	private JScrollPane scrollPane;
-	private NotificationArea notification;
+	
+	private NotificationCenter notificationCenter;
 	
 	public MainFrame() {
 		super();
@@ -129,8 +129,8 @@ public class MainFrame extends JFrame implements WindowListener {
 		topMenu = new JMenuWorkspaceBar(this);
 		this.setJMenuBar(topMenu);
 		
-		notification = new NotificationArea();
-		this.add(notification);
+		notificationCenter = new NotificationCenter();
+		desktop.add(notificationCenter);
 
 //		dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
