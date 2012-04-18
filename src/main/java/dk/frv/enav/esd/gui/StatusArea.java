@@ -5,14 +5,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,11 +20,11 @@ public class StatusArea extends JInternalFrame {
 	private Boolean locked = false;
 	private JLabel moveHandler;
 	private JPanel masterPanel;
-	private JPanel buttonPanel;
+	private JPanel statusPanel;
 	private static int moveHandlerHeight = 12;
-	private static int toolItemSize = 35;
-	private static int toolItemColumns = 2;
-	private ArrayList<JButton> toolItems = new ArrayList<JButton>();
+	private static int statusItemHeight = 15;
+	private static int statusItemWidth = 70;
+	private HashMap<String, String> statusItems = new HashMap<String, String>();
 	public int width;
 	public int height;
 
@@ -48,41 +45,40 @@ public class StatusArea extends JInternalFrame {
         moveHandler.setForeground(Color.WHITE);
         moveHandler.setOpaque(true);
         moveHandler.setBackground(Color.DARK_GRAY);
-        moveHandler.setPreferredSize(new Dimension((toolItemSize * toolItemColumns), moveHandlerHeight));
+        moveHandler.setPreferredSize(new Dimension(statusItemWidth, moveHandlerHeight));
         MoveMouseListener mml = new MoveMouseListener(this, mainFrame);
         moveHandler.addMouseListener(mml);
         moveHandler.addMouseMotionListener(mml);
 		
-		// Create the grid for the toolitems
-        buttonPanel = new JPanel();
-		buttonPanel.setLayout(new GridLayout(0,1));
-		buttonPanel.setBorder(BorderFactory.createLineBorder (Color.DARK_GRAY, 2));
+		// Create the grid for the status items
+        statusPanel = new JPanel();
+        statusPanel.setLayout(new GridLayout(0,1));
+        statusPanel.setBorder(BorderFactory.createLineBorder (Color.DARK_GRAY, 2));
 		
 		
-		// Setup notifications (add here for more notifications)
-		// Notification: MSI
-		JButton msi = new JButton(new ImageIcon("images/toolbar/zoom.png"));
-		msi.setToolTipText("Messages from MSI");
-		msi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("MSI clicked");
-			}
-        }); 
-		toolItems.add(msi);
+		// Add status items here
+		// Status: X coordinate
+		statusItems.put("X", "X: 342.32");
+		
+		// Status: Y coordinate
+		statusItems.put("Y", "Y: 34.234");
+		
+		// Status: Z coordinate
+		statusItems.put("Z", "Z: 3.122");
 				
 
 	    // Create the masterpanel for aligning
 	    masterPanel = new JPanel(new BorderLayout());
 	    masterPanel.add(moveHandler, BorderLayout.NORTH);
-	    masterPanel.add(buttonPanel, BorderLayout.SOUTH);
+	    masterPanel.add(statusPanel, BorderLayout.SOUTH);
 	    this.getContentPane().add(masterPanel);
 	 
-	    // And finally refresh the toolbar
+	    // And finally refresh the status bar
 	    repaintToolbar();
 	}
 	
 	/*
-	 * Function for locking/unlocking the toolbar
+	 * Function for locking/unlocking the status bar
 	 * Author: Steffen D. Sommer
 	 */
 	public void toggleLock() {
@@ -91,7 +87,7 @@ public class StatusArea extends JInternalFrame {
 			locked = false;
 			repaintToolbar();
 			
-			// Align the toolbar according to the height of the movehandler
+			// Align the status bar according to the height of the movehandler
 			int newX = (int) (this.getLocation().getX());
 			int newY = (int) (this.getLocation().getY());
 			Point new_location = new Point(newX, (newY - moveHandlerHeight));
@@ -102,7 +98,7 @@ public class StatusArea extends JInternalFrame {
 			locked = true;
 			repaintToolbar();
 			
-			// Align the toolbar according to the height of the movehandler
+			// Align the status bar according to the height of the movehandler
 			int newX = (int) (this.getLocation().getX());
 			int newY = (int) (this.getLocation().getY());
 			Point new_location = new Point(newX, (newY + moveHandlerHeight));
@@ -111,28 +107,27 @@ public class StatusArea extends JInternalFrame {
 	}
 	
 	/*
-	 * Function for refreshing the toolbar after editing toolitems, size etc.
+	 * Function for refreshing the status bar after editing status items, size etc.
 	 * Author: Steffen D. Sommer
 	 */
 	public void repaintToolbar() {
 		
-		// Lets start by adding all the toolitems
-		for(Iterator<JButton> i = toolItems.iterator();i.hasNext();) {
-			buttonPanel.add(i.next());
+		// Lets start by adding all the notifications
+		for(Iterator<Entry<String, String>> i = statusItems.entrySet().iterator();i.hasNext();) {
+			statusPanel.add(new JLabel(i.next().getValue()));
 		}
 		
-		// Then calculate the size of the toolbar according to the number of toolitems
-		double temp = (double) toolItems.size() / (double) toolItemColumns;
-		width = toolItemSize * toolItemColumns;
-		int innerHeight = (int) (Math.ceil(temp) * toolItemSize);
+		// Then calculate the size of the status bar according to the number of status items
+		width = statusItemWidth;
+		int innerHeight = statusItems.size() * statusItemHeight;
 		height = innerHeight;
 		
 		if(!locked)
 			height = innerHeight + moveHandlerHeight;
 		
 		// And finally set the size and repaint it
-		buttonPanel.setSize(width, innerHeight);
-		buttonPanel.setPreferredSize(new Dimension(width, innerHeight));
+		statusPanel.setSize(width, innerHeight);
+		statusPanel.setPreferredSize(new Dimension(width, innerHeight));
 		this.setSize(width, height);
 		this.revalidate();
 		this.repaint();
@@ -140,18 +135,20 @@ public class StatusArea extends JInternalFrame {
 	}
 	
 	/*
-	 * Function for getting the width of the toolbar
-	 * @return width Width of the toolbar
+	 * Function for getting the width of the status bar
+	 * @return width Width of the status bar
 	 */
 	public int getWidth() {
 		return width;
 	}
 	
 	/*
-	 * Function for getting the height of the toolbar
-	 * @return height Height of the toolbar
+	 * Function for getting the height of the status bar
+	 * @return height Height of the status bar
 	 */
 	public int getHeight() {
 		return height;
 	}
+	
+	// TODO: Add methods for updating the hashmap containing status values
 }
