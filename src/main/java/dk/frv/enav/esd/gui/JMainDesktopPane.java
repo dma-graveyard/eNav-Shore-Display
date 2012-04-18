@@ -40,8 +40,9 @@ public class JMainDesktopPane extends JDesktopPane {
 	    Component retval = super.add(frame);
 //	    checkDesktopSize();
 
+
 	    moveToFront(frame);
-	    frame.setVisible(true);
+	    //frame.setVisible(true);
 	    try {
 	      frame.setSelected(true);
 	    } catch (PropertyVetoException e) {
@@ -101,9 +102,14 @@ public class JMainDesktopPane extends JDesktopPane {
 		  }
 
 	  public void remove(Component c) {
-		  
+
 		  if (c instanceof JMapFrame){
 			  mainFrame.removeMapWindow((JMapFrame) c);
+		  }
+		  
+		  if (c instanceof NotificationCenter){
+			  mainFrame.toggleNotificationCenter();
+			  return;
 		  }
 		  
 	    super.remove(c);

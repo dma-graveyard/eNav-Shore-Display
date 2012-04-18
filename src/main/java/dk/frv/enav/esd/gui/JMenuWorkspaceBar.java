@@ -82,6 +82,15 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		JMenuItem unlockAll = new JMenuItem("Unlock all windows");
 		workspace.add(unlockAll);
 		
+
+		//Notifications
+		
+		JMenu notifications = new JMenu("Notifications");
+		this.add(notifications);
+		
+		JMenuItem notCenter = new JMenuItem("Notification Center");
+		notifications.add(notCenter);
+
 		workspace.addSeparator();
 		
 		JMenuItem loadWorkspace = new JMenuItem("Load workspace");
@@ -127,6 +136,7 @@ public class JMenuWorkspaceBar extends JMenuBar {
 				}
 			}
 		});
+
 		
 		saveWorkspace.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -139,10 +149,17 @@ public class JMenuWorkspaceBar extends JMenuBar {
 			}
 		});
 		
+		//Action listeners
 		
 		toggleFullScreen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.toggleFullScreen();
+			}
+		});
+		
+		notCenter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mainFrame.toggleNotificationCenter();
 			}
 		});
 

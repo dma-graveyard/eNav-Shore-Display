@@ -45,6 +45,7 @@ import java.beans.beancontext.BeanContextServicesSupport;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.Notification;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -76,6 +77,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private List<JMapFrame> mapWindows;
 	private JMainDesktopPane desktop;
 	private JScrollPane scrollPane;
+	private NotificationCenter notificationCenter;
 
 	public MainFrame() {
 		super();
@@ -139,6 +141,10 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		topMenu = new JMenuWorkspaceBar(this);
 		this.setJMenuBar(topMenu);
+		
+		notificationCenter = new NotificationCenter();
+		desktop.add(notificationCenter, true);
+		desktop.getManager().setNotCenter(notificationCenter);
 
 		// dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
@@ -148,12 +154,17 @@ public class MainFrame extends JFrame implements WindowListener {
 		
 		JInternalFrame toolbar = new JInternalFrame();
 		toolbar.setSize(100, 100);
+		toolbar.setLocation(new Point(0,0));
 		desktop.add(toolbar, true);
 		desktop.getManager().setToolbar(toolbar);
 		
 		setWorkSpace(workspace);
 
 
+	}
+	
+	public void toggleNotificationCenter(){
+		notificationCenter.toggleVisibility();
 	}
 
 	private static Image getAppIcon() {
