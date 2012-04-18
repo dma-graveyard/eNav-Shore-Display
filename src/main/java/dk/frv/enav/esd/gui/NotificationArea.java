@@ -17,7 +17,6 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
 public class NotificationArea extends JInternalFrame {
@@ -43,15 +42,10 @@ public class NotificationArea extends JInternalFrame {
 		this.setResizable(false);
 		
 		// Strip off window looks
-		//setRootPaneCheckingEnabled(false);
-		//((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).setNorthPane(null);
-		//this.setBorder(null);
+		setRootPaneCheckingEnabled(false);
+		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).setNorthPane(null);
+		this.setBorder(null);
 		
-		this.add(notification("Message1","5"));
-		this.add(notification("Message2","2"));
-		
-		
-		/*
         // Create the top movehandler (for dragging)
         moveHandler = new JLabel("Notifications", JLabel.CENTER);
         moveHandler.setForeground(Color.WHITE);
@@ -98,32 +92,7 @@ public class NotificationArea extends JInternalFrame {
 	 
 	    // And finally refresh the notification area
 	    repaintNotificationArea();
-	    */
-	}
-	
-	public JLayeredPane notification(String title,String count){
-		JLayeredPane lpane = new JLayeredPane();
-		this.setLayout(new BorderLayout());
-		this.add(lpane);
-		lpane.setBounds(0, 50, 100, 50);
-		
-		JPanel panelGray = new JPanel();
-		panelGray.add(new JLabel(title));
-		panelGray.setBackground(Color.GRAY);
-		panelGray.setBounds(0, 10, 90, 25);
-		panelGray.setOpaque(true);
-		
-		JLabel l = new JLabel(count);
-		l.setForeground(Color.WHITE);
-		JPanel panelRed = new JPanel();
-		panelRed.add(l);
-		panelRed.setBackground(Color.RED);
-		panelRed.setBounds(75, 5, 20, 20);
-		panelRed.setOpaque(true);
-		
-		lpane.add(panelGray, new Integer(0), 0);
-		lpane.add(panelRed, new Integer(1), 0);
-		return lpane;
+	    
 	}
 	
 	/*
