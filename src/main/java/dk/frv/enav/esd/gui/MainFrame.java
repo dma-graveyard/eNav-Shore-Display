@@ -130,7 +130,8 @@ public class MainFrame extends JFrame implements WindowListener {
 		this.setJMenuBar(topMenu);
 		
 		notificationCenter = new NotificationCenter();
-		desktop.add(notificationCenter);
+		desktop.add(notificationCenter, true);
+		desktop.getManager().setNotCenter(notificationCenter);
 
 		// dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
@@ -140,6 +141,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		
 		JInternalFrame toolbar = new JInternalFrame();
 		toolbar.setSize(100, 100);
+		toolbar.setLocation(new Point(0,0));
 		desktop.add(toolbar, true);
 		desktop.getManager().setToolbar(toolbar);
 		

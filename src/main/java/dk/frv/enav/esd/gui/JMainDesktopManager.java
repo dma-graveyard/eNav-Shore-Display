@@ -22,6 +22,13 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 	private JMainDesktopPane desktop;
 	private HashMap<Integer, JInternalFrame> toFront;
 	private JInternalFrame toolbar;
+	private NotificationCenter notCenter;
+	
+	
+
+	public void setNotCenter(NotificationCenter notCenter) {
+		this.notCenter = notCenter;
+	}
 
 	public void setToolbar(JInternalFrame toolbar) {
 		this.toolbar = toolbar;
@@ -60,6 +67,7 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 			}
 		}
 		super.activateFrame(toolbar);
+		super.activateFrame(notCenter);
 	}
 
 	public void addToFront(int id, JInternalFrame f) {
