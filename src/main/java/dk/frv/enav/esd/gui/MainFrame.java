@@ -154,7 +154,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		
 		JInternalFrame toolbar = new JInternalFrame();
 		toolbar.setSize(100, 100);
-		toolbar.setLocation(new Point(0,0));
+		toolbar.setVisible(true);
 		desktop.add(toolbar, true);
 		desktop.getManager().setToolbar(toolbar);
 		
