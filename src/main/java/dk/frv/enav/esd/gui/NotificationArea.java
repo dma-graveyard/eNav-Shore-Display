@@ -132,7 +132,26 @@ public class NotificationArea extends JInternalFrame {
 		
 		// Lets start by adding all the notifications
 		for(Iterator<JButton> i = notifications.iterator();i.hasNext();) {
+			//JLayeredPane lpane = new JLayeredPane();
+			//lpane.setBackground(Color.BLACK);
+			//notificationPanel.add(lpane);
+			//lpane.setBounds(0, 0, 50, 50);
+			//lpane.setPreferredSize(new Dimension(50, 50));
+			//lpane.setBounds(20, 10, 10, 10);
+			
+			//lpane.add(i.next());
 			notificationPanel.add(i.next());
+			
+			//JLabel l = new JLabel("13", new OvalIcon(15,15, Color.BLACK), SwingConstants.CENTER);
+		    //l.setHorizontalTextPosition(SwingConstants.CENTER);
+			//l.setForeground(Color.WHITE);
+			//l.setOpaque(false);
+			//l.setBounds(75, 12, 20, 20);
+			
+			//lpane.add(i.next(), new Integer(0), 0);
+			//lpane.add(l, new Integer(1), 0);
+			
+			//notificationPanel.add(lpane);
 		}
 		
 		// Then calculate the size of the notification area according to the number of notifications

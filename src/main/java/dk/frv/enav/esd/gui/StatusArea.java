@@ -24,7 +24,7 @@ public class StatusArea extends JInternalFrame {
 	private static int moveHandlerHeight = 12;
 	private static int statusItemHeight = 15;
 	private static int statusItemWidth = 70;
-	private HashMap<String, String> statusItems = new HashMap<String, String>();
+	private HashMap<String, JLabel> statusItems = new HashMap<String, JLabel>();
 	public int width;
 	public int height;
 
@@ -58,13 +58,13 @@ public class StatusArea extends JInternalFrame {
 		
 		// Add status items here
 		// Status: X coordinate
-		statusItems.put("X", "X: 342.32");
+		statusItems.put("X", new JLabel("X: 342.32"));
 		
 		// Status: Y coordinate
-		statusItems.put("Y", "Y: 34.234");
+		statusItems.put("Y", new JLabel("Y: 34.234"));
 		
 		// Status: Z coordinate
-		statusItems.put("Z", "Z: 3.122");
+		statusItems.put("Z", new JLabel("Z: 3.122"));
 				
 
 	    // Create the masterpanel for aligning
@@ -113,8 +113,8 @@ public class StatusArea extends JInternalFrame {
 	public void repaintToolbar() {
 		
 		// Lets start by adding all the notifications
-		for(Iterator<Entry<String, String>> i = statusItems.entrySet().iterator();i.hasNext();) {
-			statusPanel.add(new JLabel(i.next().getValue()));
+		for(Iterator<Entry<String, JLabel>> i = statusItems.entrySet().iterator();i.hasNext();) {
+			statusPanel.add(i.next().getValue());
 		}
 		
 		// Then calculate the size of the status bar according to the number of status items
