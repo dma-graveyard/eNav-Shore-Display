@@ -311,7 +311,6 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 				infoBox.setFillPaint(new Color(225, 225, 225));
 				list.add(boxSpeed);
 				list.add(infoBox);
-				System.out.println(sog);
 				closest = newClosest;
 				doPrepare();
 				return true;
