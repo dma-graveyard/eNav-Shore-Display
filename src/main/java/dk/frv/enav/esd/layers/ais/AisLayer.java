@@ -3,12 +3,21 @@ package dk.frv.enav.esd.layers.ais;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 import java.util.List;
+
+import javax.swing.SwingUtilities;
+
+import com.bbn.openmap.MapBean;
+import com.bbn.openmap.event.MapMouseListener;
 import com.bbn.openmap.layer.OMGraphicHandlerLayer;
 import com.bbn.openmap.omGraphics.OMCircle;
 import com.bbn.openmap.omGraphics.OMGraphic;
 import com.bbn.openmap.omGraphics.OMGraphicList;
 import com.bbn.openmap.omGraphics.OMLine;
+import com.bbn.openmap.omGraphics.OMList;
 import com.bbn.openmap.omGraphics.OMText;
 import com.bbn.openmap.proj.Length;
 import com.bbn.openmap.proj.coords.LatLonPoint;
@@ -21,15 +30,26 @@ import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.ins.ais.VesselPositionData;
 import dk.frv.enav.ins.ais.VesselStaticData;
 import dk.frv.enav.ins.ais.VesselTarget;
+import dk.frv.enav.esd.event.DragMouseMode;
+import dk.frv.enav.esd.event.NavigationMouseMode;
+import dk.frv.enav.ins.gui.MainFrame;
+import dk.frv.enav.ins.layers.ais.AisTargetInfoPanel;
+import dk.frv.enav.ins.layers.ais.IntendedRouteLegGraphic;
+import dk.frv.enav.ins.layers.ais.IntendedRouteWpCircle;
+import dk.frv.enav.ins.layers.ais.SartGraphic;
+import dk.frv.enav.ins.layers.ais.VesselTargetTriangle;
 import dk.frv.enav.esd.gui.ChartPanel;
 import dk.frv.enav.esd.layers.ais.VesselLayer;
 
-public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVesselAisListener {
+public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVesselAisListener, MapMouseListener {
 	private static final long serialVersionUID = 1L;
 	private OMGraphicList list = new OMGraphicList();
 	private static VesselAisHandler aisHandler;
 	private List<AisMessageExtended> shipList;
 	private ChartPanel chartPanel;
+	private AisTargetInfoPanel aisTargetInfoPanel = new AisTargetInfoPanel();
+	
+	private OMGraphic closest = null;
 
 	private VesselLayer heading;
 	private VesselLayer vesIcon;
@@ -44,7 +64,9 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private Font font = null;
 	private OMText label = null;
 	private int sizeOffset = 5;
+	private MainFrame mainFrame;
 	volatile boolean shouldRun = true;
+	private MapBean mapBean;
 
 	@Override
 	public void run() {
@@ -183,6 +205,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		return list;
 	}
 
+	public MapMouseListener getMapMouseListener() {
+		return this;
+	}
+	
 	@Override
 	public void findAndInit(Object obj) {
 		if (obj instanceof VesselAisHandler) {
@@ -190,6 +216,13 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		}
 		if (obj instanceof ChartPanel) {
 			chartPanel = (ChartPanel) obj;
+		}
+		if (obj instanceof MainFrame) {
+			mainFrame = (MainFrame) obj;
+			mainFrame.getGlassPanel().add(aisTargetInfoPanel);
+		}
+		if (obj instanceof MapBean) {
+			mapBean = (MapBean) obj;
 		}
 
 	}
@@ -204,5 +237,81 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	public void receiveOwnMessage(AisMessage aisMessage) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public String[] getMouseModeServiceList() {
+		String[] ret = new String[2];
+		ret[0] = DragMouseMode.modeID; // "Gestures"
+		ret[1] = NavigationMouseMode.modeID; // "Gestures"
+		return ret;
+	}
+
+	@Override
+	public boolean mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(MouseEvent e) {
+		if (!this.isVisible()) {
+			aisTargetInfoPanel.setVisible(false);
+			return false;
+		}
+		
+		OMGraphic newClosest = null;
+		OMList<OMGraphic> allClosest = list.findAll(e.getX(), e.getY(), 3.0f);
+		for (OMGraphic omGraphic : allClosest) {
+			System.out.println("omGraphic: " + omGraphic.getClass());
+		}
+
+		
+		if (newClosest != closest) {
+//			Point containerPoint = SwingUtilities.convertPoint(mapBean, e.getPoint(), mainFrame);
+			System.out.println(newClosest);
+			if (newClosest instanceof VesselLayer) {
+				System.out.println("This is where shit happens");
+				closest = newClosest;
+				return true;
+			} 
+		}
+		return false;
+	}
+
+	@Override
+	public void mouseMoved() {
+		// TODO Auto-generated method stub
+		
 	}
 }

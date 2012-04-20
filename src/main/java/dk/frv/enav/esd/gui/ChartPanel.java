@@ -48,7 +48,6 @@ import com.bbn.openmap.LayerHandler;
 import com.bbn.openmap.MapBean;
 import com.bbn.openmap.MapHandler;
 import com.bbn.openmap.MouseDelegator;
-import com.bbn.openmap.event.NavMouseMode;
 import com.bbn.openmap.gui.OMComponentPanel;
 import com.bbn.openmap.layer.shape.ShapeLayer;
 import com.bbn.openmap.proj.Proj;
@@ -136,29 +135,23 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 	public void initChartDefault() {
 		Properties props = ESD.getProperties();
-
-		aisLayer = new AisLayer();
-		aisLayer.setVisible(true);
-		mapHandler.add(aisLayer);
-
+		
 		map = new BufferedLayerMapBean();
 		map.setDoubleBuffered(true);
-
+		
 		mouseDelegator = new MouseDelegator();
 		mapHandler.add(mouseDelegator);
-		mapHandler.add(new NavMouseMode());
-
+		
 		mapNavMouseMode = new NavigationMouseMode(this);
 		dragMouseMode = new DragMouseMode();
-
+		
 		mouseDelegator.addMouseMode(mapNavMouseMode);
 		mouseDelegator.addMouseMode(dragMouseMode);
-
+		setMouseMode(mainFrame.getMouseMode());
+		
 		mapHandler.add(dragMouseMode);
 		mapHandler.add(mapNavMouseMode);
-
-		setMouseMode(mainFrame.getMouseMode());
-
+		
 		layerHandler = new LayerHandler();
 
 		// Get plugin layers
@@ -166,6 +159,11 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 		// Add layer handler to map handler
 		mapHandler.add(layerHandler);
+		
+		aisLayer = new AisLayer();
+		aisLayer.setVisible(true);
+		mapHandler.add(aisLayer);
+
 
 		// Create background layer
 		String layerName = "background";
@@ -320,7 +318,6 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 	@Override
 	public void findAndInit(Object obj) {
-
 	}
 
 	/**

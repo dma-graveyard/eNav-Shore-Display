@@ -27,6 +27,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	private int id;
 	private final MainFrame mainFrame;
 	JLabel name;
+	private JPanel glassPanel;
 	
 	public JMapFrame(int id, MainFrame mainFrame) {
 		super("New Window "+id, true, true, true, true);
@@ -37,6 +38,8 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		this.setContentPane(chartPanel);
 		this.setVisible(true);
 	
+		initGlassPane();
+		
 		chartPanel.initChart();
 		makeKeyBindings();
 		
@@ -59,7 +62,12 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		
 		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().addMouseListener(this);
 		actions = (MouseMotionListener[])((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().getListeners(MouseMotionListener.class);
-		
+	}
+	
+	private void initGlassPane() {
+		glassPanel = (JPanel)getGlassPane();
+		glassPanel.setLayout(null);
+		glassPanel.setVisible(false);
 	}
 
 	public int getId(){

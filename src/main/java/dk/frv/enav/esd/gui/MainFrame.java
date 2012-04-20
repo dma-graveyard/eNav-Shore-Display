@@ -69,7 +69,9 @@ public class MainFrame extends JFrame implements WindowListener {
 	private JMenuWorkspaceBar topMenu;
 	private boolean fullscreen = false;
 	private int mouseMode = 1;
-
+	private BeanContextServicesSupport beanHandler;
+	
+	
 	private List<JMapFrame> mapWindows;
 	private JMainDesktopPane desktop;
 	private JScrollPane scrollPane;
@@ -97,7 +99,7 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	private void initGUI() {
 
-		BeanContextServicesSupport beanHandler = ESD.getBeanHandler();
+		beanHandler = ESD.getBeanHandler();
 		// Get settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
 
