@@ -3,14 +3,9 @@ package dk.frv.enav.esd.layers.ais;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
 import java.util.List;
 
-import javax.swing.SwingUtilities;
-
-import com.bbn.openmap.MapBean;
 import com.bbn.openmap.event.MapMouseListener;
 import com.bbn.openmap.layer.OMGraphicHandlerLayer;
 import com.bbn.openmap.omGraphics.OMCircle;
@@ -18,6 +13,7 @@ import com.bbn.openmap.omGraphics.OMGraphic;
 import com.bbn.openmap.omGraphics.OMGraphicList;
 import com.bbn.openmap.omGraphics.OMLine;
 import com.bbn.openmap.omGraphics.OMList;
+import com.bbn.openmap.omGraphics.OMPoly;
 import com.bbn.openmap.omGraphics.OMText;
 import com.bbn.openmap.proj.Length;
 import com.bbn.openmap.proj.coords.LatLonPoint;
@@ -26,20 +22,15 @@ import dk.frv.ais.message.AisMessage;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.ais.AisHandler.AisMessageExtended;
 import dk.frv.enav.esd.ais.VesselAisHandler;
+import dk.frv.enav.esd.event.DragMouseMode;
+import dk.frv.enav.esd.event.NavigationMouseMode;
+import dk.frv.enav.esd.gui.ChartPanel;
 import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.ins.ais.VesselPositionData;
 import dk.frv.enav.ins.ais.VesselStaticData;
 import dk.frv.enav.ins.ais.VesselTarget;
-import dk.frv.enav.esd.event.DragMouseMode;
-import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.ins.gui.MainFrame;
 import dk.frv.enav.ins.layers.ais.AisTargetInfoPanel;
-import dk.frv.enav.ins.layers.ais.IntendedRouteLegGraphic;
-import dk.frv.enav.ins.layers.ais.IntendedRouteWpCircle;
-import dk.frv.enav.ins.layers.ais.SartGraphic;
-import dk.frv.enav.ins.layers.ais.VesselTargetTriangle;
-import dk.frv.enav.esd.gui.ChartPanel;
-import dk.frv.enav.esd.layers.ais.VesselLayer;
 
 public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVesselAisListener, MapMouseListener {
 	private static final long serialVersionUID = 1L;
@@ -66,7 +57,6 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private int sizeOffset = 5;
 	private MainFrame mainFrame;
 	volatile boolean shouldRun = true;
-	private MapBean mapBean;
 
 	@Override
 	public void run() {
@@ -120,7 +110,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 						// Zoom level is good. Display vessel icon
 						int[] xPos = { sizeOffset, -sizeOffset, 0 };
 						int[] yPos = { sizeOffset, sizeOffset, -2*sizeOffset };
-						vesIcon = new VesselLayer(xPos, yPos);
+						vesIcon = new VesselLayer(shipList.get(i).MMSI,xPos, yPos);
 						vesIcon.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, hdgR);
 						vesIcon.setFillPaint(new Color(0, 0, 255));
 						list.add(vesIcon);
@@ -135,7 +125,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					if (mapScale < 750000 && !noHeading && shouldDisplayHeading) {
 						int[] xPosh = { 0, 0 };
 						int[] yPosh = { 0, -30 };
-						heading = new VesselLayer(xPosh, yPosh);
+						heading = new VesselLayer(shipList.get(i).MMSI, xPosh, yPosh);
 						heading.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, hdgR);
 						heading.setFillPaint(new Color(0, 0, 0));
 						list.add(heading);
@@ -221,9 +211,6 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			mainFrame = (MainFrame) obj;
 			mainFrame.getGlassPanel().add(aisTargetInfoPanel);
 		}
-		if (obj instanceof MapBean) {
-			mapBean = (MapBean) obj;
-		}
 
 	}
 
@@ -284,25 +271,48 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	}
 
 	@Override
-	public boolean mouseMoved(MouseEvent e) {
-		if (!this.isVisible()) {
-			aisTargetInfoPanel.setVisible(false);
-			return false;
-		}
-		
+	public boolean mouseMoved(MouseEvent e) {		
 		OMGraphic newClosest = null;
 		OMList<OMGraphic> allClosest = list.findAll(e.getX(), e.getY(), 3.0f);
 		for (OMGraphic omGraphic : allClosest) {
-			System.out.println("omGraphic: " + omGraphic.getClass());
+			if(omGraphic instanceof VesselLayer){
+				newClosest = omGraphic;
+				break;
+			}
 		}
 
 		
 		if (newClosest != closest) {
-//			Point containerPoint = SwingUtilities.convertPoint(mapBean, e.getPoint(), mainFrame);
-			System.out.println(newClosest);
 			if (newClosest instanceof VesselLayer) {
-				System.out.println("This is where shit happens");
+				VesselLayer vessel = (VesselLayer) newClosest;
+				VesselTarget vesselTarget = aisHandler.getVesselTargets().get(vessel.getMMSI());
+				//VesselStaticData staticData = vesselTarget.getStaticData();
+				
+				// Add MouseOverBox
+				location = vesselTarget.getPositionData();
+				double lat = location.getPos().getLatitude();
+				double lon = location.getPos().getLongitude();
+				double trueHeading = location.getTrueHeading();
+				double sog = location.getSog();
+				int[] xpoints = { 10, 10, 200, 200 };
+				int[] ypoints = { 0, -50, -50, 0 };
+				OMPoly infoBox = new OMPoly(lat, lon, xpoints, ypoints, OMGraphic.DECIMAL_DEGREES);
+				OMText boxSpeed = new OMText(0, 0, 0, 0, "Speed: " + sog + " kn", font, OMText.JUSTIFY_LEFT);
+				boxSpeed.setLat(lat);
+				boxSpeed.setLon(lon);
+				boxSpeed.setX(15);
+				if (trueHeading > 90 && trueHeading < 270) {
+					int[] ypoints2 = { 0, 50, 50, 0 };
+					infoBox.setYs(ypoints2);
+					boxSpeed.setY(15);
+				} else {
+					boxSpeed.setY(-35);
+				}
+				infoBox.setFillPaint(new Color(225, 225, 225));
+				list.add(boxSpeed);
+				list.add(infoBox);
 				closest = newClosest;
+				doPrepare();
 				return true;
 			} 
 		}
