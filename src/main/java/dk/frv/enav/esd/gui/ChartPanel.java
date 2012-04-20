@@ -29,7 +29,6 @@
  */
 package dk.frv.enav.esd.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelEvent;
@@ -40,7 +39,6 @@ import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 
 import org.apache.log4j.Logger;
 
@@ -63,7 +61,6 @@ import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.layers.ais.AisLayer;
 import dk.frv.enav.esd.settings.MapSettings;
-import dk.frv.enav.ins.services.ais.AisServices;
 
 /**
  * The panel with chart. Initializes all layers to be shown on the map.
@@ -316,10 +313,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 	@Override
 	public void findAndInit(Object obj) {
-		if (obj instanceof MainFrame) {
-			System.out.println("Creating mainFrame object ");
-			mainFrame = (MainFrame) obj;
-		}
+
 	}
 
 	/**

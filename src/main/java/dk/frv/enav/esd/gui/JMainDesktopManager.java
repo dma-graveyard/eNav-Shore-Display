@@ -2,11 +2,9 @@ package dk.frv.enav.esd.gui;
 
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.beans.PropertyVetoException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.DefaultDesktopManager;
 import javax.swing.JComponent;
@@ -21,16 +19,26 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 	private static final long serialVersionUID = 1L;
 	private JMainDesktopPane desktop;
 	private HashMap<Integer, JInternalFrame> toFront;
-	private JInternalFrame toolbar;
+	private ToolBar toolbar;
 	private NotificationCenter notCenter;
+	private NotificationArea notificationArea;
+	private StatusArea statusArea;
 	
 	
+
+	public void setNotificationArea(NotificationArea notificationArea) {
+		this.notificationArea = notificationArea;
+	}
+
+	public void setStatusArea(StatusArea statusArea) {
+		this.statusArea = statusArea;
+	}
 
 	public void setNotCenter(NotificationCenter notCenter) {
 		this.notCenter = notCenter;
 	}
 
-	public void setToolbar(JInternalFrame toolbar) {
+	public void setToolbar(ToolBar toolbar) {
 		this.toolbar = toolbar;
 	}
 
@@ -56,8 +64,6 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 			if (toFront.containsKey(((JMapFrame) f).getId())) {
 				super.activateFrame(f);
 			} else {
-//				Map.Entry<Integer, JInternalFrame> entry = (Entry<Integer, JInternalFrame>) toFront.entrySet()
-//						.iterator().next();
 				super.activateFrame(f);
 				Iterator<Map.Entry<Integer, JInternalFrame>> it = toFront.entrySet().iterator();
 				while (it.hasNext()) {
@@ -66,6 +72,8 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 				}
 			}
 		}
+		super.activateFrame(notificationArea);
+		super.activateFrame(statusArea);
 		super.activateFrame(toolbar);
 		super.activateFrame(notCenter);
 	}

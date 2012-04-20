@@ -36,7 +36,6 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.Point2D;
@@ -45,17 +44,14 @@ import java.beans.beancontext.BeanContextServicesSupport;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.Notification;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 
 import org.apache.log4j.Logger;
 
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.settings.GuiSettings;
-//import dk.frv.enav.esd.settings.GuiSettings;
 import dk.frv.enav.esd.settings.Workspace;
 
 /**
@@ -78,28 +74,28 @@ public class MainFrame extends JFrame implements WindowListener {
 	private JMainDesktopPane desktop;
 	private JScrollPane scrollPane;
 	private NotificationCenter notificationCenter;
-	JInternalFrame toolbar = new JInternalFrame();
+
+	private ToolBar toolbar = new ToolBar(this);
+	private NotificationArea notificationArea = new NotificationArea(this);
+	private StatusArea statusArea = new StatusArea(this);
+
 
 	public MainFrame() {
 		super();
 		initGUI();
 
 	}
-	
+
 	public int getMouseMode() {
 		return mouseMode;
 	}
-
-
 
 	public void setMouseMode(int mouseMode) {
 		this.mouseMode = mouseMode;
 	}
 
-
-
 	private void initGUI() {
-		this.setSize(1000, 700);
+
 		BeanContextServicesSupport beanHandler = ESD.getBeanHandler();
 		// Get settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
@@ -142,29 +138,49 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		topMenu = new JMenuWorkspaceBar(this);
 		this.setJMenuBar(topMenu);
+
+		//Initiate the permanent window elements
 		
 		notificationCenter = new NotificationCenter();
 		desktop.add(notificationCenter, true);
 		desktop.getManager().setNotCenter(notificationCenter);
+		
+		desktop.add(toolbar, true);
 		desktop.getManager().setToolbar(toolbar);
 
+		desktop.add(statusArea, true);
+		desktop.getManager().setStatusArea(statusArea);
+		
+		desktop.add(notificationArea, true);
+		desktop.getManager().setNotificationArea(notificationArea);
+
+		
+		
 		// dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
 		// Add self to bean handler
 		beanHandler.add(this);
 
-		toolbar.setSize(100, 100);
-		toolbar.setVisible(true);
-		desktop.add(toolbar, true);
-
-		
 		setWorkSpace(workspace);
 
-
 	}
-	
-	public void toggleNotificationCenter(){
+
+	public void toggleNotificationCenter() {
 		notificationCenter.toggleVisibility();
+	}
+
+	public ToolBar getToolbar() {
+		return toolbar;
+	}
+
+	public NotificationArea getNotificationArea() {
+		return notificationArea;
+	}
+
+	public void toggleBarsLock() {
+		toolbar.toggleLock();
+		notificationArea.toggleLock();
+		statusArea.toggleLock();
 	}
 
 	private static Image getAppIcon() {
@@ -181,7 +197,6 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	public JMapFrame addMapWindow(boolean workspace, boolean locked, boolean alwaysInFront, Point2D center, float scale) {
-
 		windowCount++;
 		JMapFrame window = new JMapFrame(windowCount, this, center, scale);
 		desktop.add(window, workspace);
@@ -199,7 +214,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		desktop.add(window);
 
 		mapWindows.add(window);
-//		window.toFront();
+		// window.toFront();
 
 		topMenu.addMap(window, false, false);
 

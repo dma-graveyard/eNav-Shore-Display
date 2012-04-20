@@ -1,6 +1,5 @@
 package dk.frv.enav.esd.gui;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -8,7 +7,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -52,7 +50,9 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		fm.add(toggleFullScreen);
 
 		JMenuItem mi = new JMenuItem("Exit");
+		JMenuItem t2 = new JMenuItem("Lock/unlock bars");
 		fm.add(mi);
+		fm.add(t2);
 
 		//Maps menu
 		
@@ -172,6 +172,12 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		addMap.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.addMapWindow();
+			}
+		});
+		
+		t2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mainFrame.toggleBarsLock();
 			}
 		});
 
@@ -347,7 +353,7 @@ public class JMenuWorkspaceBar extends JMenuBar {
             File file = fc.getSelectedFile();
             String filename = file.getName();
             if(!filename.endsWith(".workspace")){
-            	System.out.println("Appending .workspace");
+//            	System.out.println("Appending .workspace");
             	filename = filename + ".workspace";
             }
             mainFrame.saveWorkSpace(filename);
