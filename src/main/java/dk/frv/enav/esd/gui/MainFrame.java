@@ -53,7 +53,6 @@ import org.apache.log4j.Logger;
 
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.settings.GuiSettings;
-//import dk.frv.enav.esd.settings.GuiSettings;
 import dk.frv.enav.esd.settings.Workspace;
 
 /**
@@ -70,22 +69,38 @@ public class MainFrame extends JFrame implements WindowListener {
 	private Point location;
 	private JMenuWorkspaceBar topMenu;
 	private boolean fullscreen = false;
-
+	private int mouseMode = 1;
+	private BeanContextServicesSupport beanHandler;
+	
+	
 	private List<JMapFrame> mapWindows;
 	private JMainDesktopPane desktop;
 	private JScrollPane scrollPane;
+	
+	private boolean toolbarsLocked = false;
+	private ToolBar toolbar = new ToolBar(this);
+	private NotificationArea notificationArea = new NotificationArea(this);
+	private NotificationCenter notificationCenter  = new NotificationCenter();
+	private StatusArea statusArea = new StatusArea(this);
+
 
 	public MainFrame() {
 		super();
 		initGUI();
 
-		// HARDCODED: Initialize with 1 map window
-		// addMapWindow();
+	}
+
+	public int getMouseMode() {
+		return mouseMode;
+	}
+
+	public void setMouseMode(int mouseMode) {
+		this.mouseMode = mouseMode;
 	}
 
 	private void initGUI() {
-		this.setSize(1000, 700);
-		BeanContextServicesSupport beanHandler = ESD.getBeanHandler();
+
+		beanHandler = ESD.getBeanHandler();
 		// Get settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
 
@@ -128,6 +143,24 @@ public class MainFrame extends JFrame implements WindowListener {
 		topMenu = new JMenuWorkspaceBar(this);
 		this.setJMenuBar(topMenu);
 
+		//Initiate the permanent window elements
+		desktop.getManager().setStatusArea(statusArea);
+
+		desktop.getManager().setNotificationArea(notificationArea);
+		
+		desktop.getManager().setToolbar(toolbar);
+
+		desktop.getManager().setNotCenter(notificationCenter);
+		
+		desktop.add(statusArea, true);
+		desktop.add(notificationCenter, true);
+		desktop.add(toolbar, true);
+		desktop.add(notificationArea, true);
+		
+
+
+		
+		
 		// dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
 		// Add self to bean handler
@@ -135,6 +168,40 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		setWorkSpace(workspace);
 
+	}
+
+	public void toggleNotificationCenter() {
+		notificationCenter.toggleVisibility();
+	}
+	
+	public boolean isToolbarsLocked() {
+		return toolbarsLocked;
+	}
+
+
+	public ToolBar getToolbar() {
+		return toolbar;
+	}
+	
+	public StatusArea getStatusArea() {
+		return statusArea;
+	}
+
+	public NotificationArea getNotificationArea() {
+		return notificationArea;
+	}
+
+	public void toggleBarsLock() {
+		
+		if (toolbarsLocked){
+			toolbarsLocked = false;
+		}else{
+			toolbarsLocked = true;
+		}
+		
+		toolbar.toggleLock();
+		notificationArea.toggleLock();
+		statusArea.toggleLock();
 	}
 
 	private static Image getAppIcon() {
@@ -151,7 +218,6 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	public JMapFrame addMapWindow(boolean workspace, boolean locked, boolean alwaysInFront, Point2D center, float scale) {
-
 		windowCount++;
 		JMapFrame window = new JMapFrame(windowCount, this, center, scale);
 		desktop.add(window, workspace);
@@ -169,7 +235,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		desktop.add(window);
 
 		mapWindows.add(window);
-		window.toFront();
+		// window.toFront();
 
 		topMenu.addMap(window, false, false);
 
@@ -269,8 +335,10 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		if (!fullscreen) {
 			location = this.getLocation();
-			size = this.getSize();
-
+			System.out.println("Size is: " + size);
+			
+			
+			
 			this.setSize(getMaxResolution());
 			// setLocationRelativeTo(null);
 			this.setLocation(0, 0);
@@ -282,6 +350,10 @@ public class MainFrame extends JFrame implements WindowListener {
 		} else {
 			// setExtendedState(JFrame.NORMAL);
 			fullscreen = false;
+			if (size.getHeight() != 0 && size.getWidth() != 0){
+				size = Toolkit.getDefaultToolkit().getScreenSize();
+//				size = new Dimension(1000, 700);	
+			}
 			this.setSize(size);
 			this.setLocation(location);
 			dispose();
