@@ -10,9 +10,11 @@ public class VesselLayer extends OMPoly {
 	private int[] origYPoints;
 	private int[] xPoints;
 	private int[] yPoints;
+	private long MMSI;
 
-	public VesselLayer(int[] origXPoints, int[] origYPoints) {
+	public VesselLayer(long MMSI, int[] origXPoints, int[] origYPoints) {
 		super();
+		this.MMSI = MMSI;
 		this.origXPoints = origXPoints;
 		this.origYPoints = origYPoints;
 		this.xPoints = new int[origXPoints.length];
@@ -30,4 +32,9 @@ public class VesselLayer extends OMPoly {
 		}
 		super.setLocation(latPoint, lonPoint, units, xPoints, yPoints);
 	}
+
+	public long getMMSI() {
+		return MMSI;
+	}
+	
 }
