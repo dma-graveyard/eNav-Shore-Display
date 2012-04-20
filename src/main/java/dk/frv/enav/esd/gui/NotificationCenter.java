@@ -70,7 +70,7 @@ public class NotificationCenter extends JInternalFrame{
 		area.setContentType("text/html");
 		area.setPreferredSize(new Dimension(530,400));
 		rightContainer.add(new JScrollPane(area,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),c2);		
-		doc.append("<table><tr><td><b>KOMÆLK</b></td><td style=\"color:red;\">FRA ARLA</td></tr></table>");
+		doc.append("<table><tr><td><b>Notification</b></td><td style=\"color:red;\">Center</td></tr></table>");
 		area.setText(doc.toString());
 		
 	}
@@ -101,20 +101,21 @@ public class NotificationCenter extends JInternalFrame{
             }
             DefaultListSelectionModel values = (DefaultListSelectionModel) event.getSource();
             doc.delete(0,doc.length());
-            doc.append("<font style=\"color:red;\">"+rt.getValueAt(values.getAnchorSelectionIndex(),5)+"</font>");
+            for (int i = 0; i <  rt.getColumnCount(); i++) {
+            	doc.append("<b>"+rt.getColumnName(i)+":</b> "+rt.getValueAt(values.getAnchorSelectionIndex(),i)+"<br /><br />");
+			}
             area.setText(doc.toString());
         }
     }
 	
 	class MenuTable extends AbstractTableModel {
 		private static final long serialVersionUID = 1L;
-		private String[] columnNames = {"Service name","Unread Messages"};
+		private String[] columnNames = {"Service name","Unread"};
         private Object[][] data = {
 		    {"MSI", new Integer(10)},
 		    {"Guard Zones", new Integer(2)},
-		    {"Skype", new Integer(2)},
-		    {"Risk Index", new Integer(0)},
-		    {"MSN", new Integer(1)}
+		    {"AIS", new Integer(2)},
+		    {"Risk Index", new Integer(0)}
         };
 
         public int getColumnCount() {
