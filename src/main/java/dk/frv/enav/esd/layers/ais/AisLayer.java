@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.List;
 import com.bbn.openmap.layer.OMGraphicHandlerLayer;
+import com.bbn.openmap.omGraphics.OMCircle;
 import com.bbn.openmap.omGraphics.OMGraphic;
 import com.bbn.openmap.omGraphics.OMGraphicList;
 import com.bbn.openmap.omGraphics.OMLine;
@@ -31,7 +32,8 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private ChartPanel chartPanel;
 
 	private VesselLayer heading;
-	private VesselLayer ves;
+	private VesselLayer vesIcon;
+	private OMCircle vesCirc;
 	
 	private OMLine speedVector;
 	private LatLonPoint startPos = null;
@@ -59,7 +61,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		if (aisHandler != null) {
 			list.clear();
 
-			System.out.println(chartPanel.getMap().getScale());
+			float mapScale = chartPanel.getMap().getScale();
 			
 			shipList = aisHandler.getShipList();
 			for (int i = 0; i < shipList.size(); i++) {
@@ -82,21 +84,30 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					double sog = location.getSog();
 					
 					// Draw Vessel
-					int[] xPos = { sizeOffset, -sizeOffset, 0 };
-					int[] yPos = { sizeOffset, sizeOffset, -sizeOffset };
-					ves = new VesselLayer(xPos, yPos);
-					ves.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, hdgR);
-					ves.setFillPaint(new Color(0, 0, 255));
-					list.add(ves);
-
+					if(mapScale < 750000.0){
+						// Zoom level is good. Display vessel icon
+						int[] xPos = { sizeOffset, -sizeOffset, 0 };
+						int[] yPos = { sizeOffset, sizeOffset, -sizeOffset };
+						vesIcon = new VesselLayer(xPos, yPos);
+						vesIcon.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, hdgR);
+						vesIcon.setFillPaint(new Color(0, 0, 255));
+						list.add(vesIcon);
+					} else {
+						// Zoom level is too large. Display only dots
+						vesCirc = new OMCircle(lat, lon, 10);
+						vesCirc.setFillPaint(new Color(0, 0, 255));
+						list.add(vesCirc);
+					}
+					
 					// Draw heading
-					int[] xPosh = { 0, 0 };
-					int[] yPosh = { 0, -30 };
-					heading = new VesselLayer(xPosh, yPosh);
-					heading.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, hdgR);
-					heading.setFillPaint(new Color(0, 0, 0));
-					if (!noHeading)
-						list.add(heading);					
+					if(mapScale < 750000.0 && !noHeading){
+						int[] xPosh = { 0, 0 };
+						int[] yPosh = { 0, -30 };
+						heading = new VesselLayer(xPosh, yPosh);
+						heading.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, hdgR);
+						heading.setFillPaint(new Color(0, 0, 0));
+						list.add(heading);
+					}					
 					
 					// Draw call sign
 					if (staticData != null) {
@@ -163,7 +174,6 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			aisHandler = (VesselAisHandler) obj;
 		}
 		if (obj instanceof ChartPanel) {
-			System.out.println("chartpanel initialized");
 			chartPanel = (ChartPanel) obj;
 		}
 
