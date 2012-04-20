@@ -34,12 +34,12 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private VesselLayer heading;
 	private VesselLayer vesIcon;
 	private OMCircle vesCirc;
-	
+
 	private OMLine speedVector;
 	private LatLonPoint startPos = null;
 	private LatLonPoint endPos = null;
 	public static final float STROKE_WIDTH = 1.5f;
-	
+
 	private VesselPositionData location;
 	private Font font = null;
 	private OMText label = null;
@@ -58,16 +58,21 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		(new Thread(this)).start();
 	}
 
-	public void stop(){
+	public void stop() {
 		shouldRun = false;
 	}
-	
+
 	private void drawVessels() {
 		if (aisHandler != null) {
 			list.clear();
 
 			float mapScale = chartPanel.getMap().getScale();
-			
+			boolean shouldDisplayVessel = true;
+			boolean shouldDisplayHeading = true;
+			boolean shouldDisplaySpeed = true;
+			boolean shouldDisplayMMSI = true;
+			boolean shouldDisplayCallSign = true;
+
 			shipList = aisHandler.getShipList();
 			for (int i = 0; i < shipList.size(); i++) {
 				if (aisHandler.getVesselTargets().containsKey(shipList.get(i).MMSI)) {
@@ -87,36 +92,37 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					double hdgR = Math.toRadians(trueHeading);
 					double cogR = Math.toRadians(location.getCog());
 					double sog = location.getSog();
-					
+
 					// Draw Vessel
-					if(mapScale < 750000.0){
+					if (mapScale < 1500000.0 && shouldDisplayVessel) {
 						// Zoom level is good. Display vessel icon
 						int[] xPos = { sizeOffset, -sizeOffset, 0 };
-						int[] yPos = { sizeOffset, sizeOffset, -sizeOffset };
+						int[] yPos = { sizeOffset, sizeOffset, -2*sizeOffset };
 						vesIcon = new VesselLayer(xPos, yPos);
 						vesIcon.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, hdgR);
 						vesIcon.setFillPaint(new Color(0, 0, 255));
 						list.add(vesIcon);
 					} else {
 						// Zoom level is too large. Display only dots
-						vesCirc = new OMCircle(lat, lon, 10);
+						vesCirc = new OMCircle(lat, lon, 0.01);
 						vesCirc.setFillPaint(new Color(0, 0, 255));
 						list.add(vesCirc);
 					}
-					
+
 					// Draw heading
-					if(mapScale < 750000.0 && !noHeading){
+					if (mapScale < 750000 && !noHeading && shouldDisplayHeading) {
 						int[] xPosh = { 0, 0 };
 						int[] yPosh = { 0, -30 };
 						heading = new VesselLayer(xPosh, yPosh);
 						heading.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, hdgR);
 						heading.setFillPaint(new Color(0, 0, 0));
 						list.add(heading);
-					}					
-					
+					}
+
 					// Draw call sign
-					if (staticData != null) {
-						label = new OMText(0, 0, 0, 0, Long.toString(shipList.get(i).MMSI), font, OMText.JUSTIFY_CENTER);
+					if (staticData != null && mapScale < 750000.0 && shouldDisplayCallSign) {
+						label = new OMText(0, 0, 0, 0, "Call Sign: " + staticData.getCallsign(), font,
+								OMText.JUSTIFY_CENTER);
 						label.setLat(lat);
 						label.setLon(lon);
 						if (trueHeading > 90 && trueHeading < 270) {
@@ -124,43 +130,47 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 						} else {
 							label.setY(35);
 						}
-						label.setData("Call Sign: " + staticData.getCallsign());
 						list.add(label);
 					}
-					
-					// Draw speed vector	
-					speedVector = new OMLine(0, 0, 0, 0, OMLine.LINETYPE_STRAIGHT);
-					speedVector.setStroke(new BasicStroke(STROKE_WIDTH, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, new float[] { 10.0f, 8.0f }, 0.0f));
-					speedVector.setLinePaint(new Color(255,0,0));
-					list.add(speedVector);
-					double[] speedLL = new double[4];
-					speedLL[0] = (float) lat;
-					speedLL[1] = (float) lon;
-					startPos = new LatLonPoint.Double(lat, lon);
-					float length = (float) Length.NM.toRadians(6.0 * (sog / 60.0));
-					endPos = startPos.getPoint(length, cogR);
-					speedLL[2] = endPos.getLatitude();
-					speedLL[3] = endPos.getLongitude();
-					speedVector.setLL(speedLL);
-					
+
+					// Draw speed vector
+					if (mapScale < 750000.0 && shouldDisplaySpeed) {
+						speedVector = new OMLine(0, 0, 0, 0, OMLine.LINETYPE_STRAIGHT);
+						speedVector.setStroke(new BasicStroke(STROKE_WIDTH, BasicStroke.CAP_SQUARE,
+								BasicStroke.JOIN_MITER, 10.0f, new float[] { 10.0f, 8.0f }, 0.0f));
+						speedVector.setLinePaint(new Color(255, 0, 0));
+						list.add(speedVector);
+						double[] speedLL = new double[4];
+						speedLL[0] = (float) lat;
+						speedLL[1] = (float) lon;
+						startPos = new LatLonPoint.Double(lat, lon);
+						float length = (float) Length.NM.toRadians(6.0 * (sog / 60.0));
+						endPos = startPos.getPoint(length, cogR);
+						speedLL[2] = endPos.getLatitude();
+						speedLL[3] = endPos.getLongitude();
+						speedVector.setLL(speedLL);
+					}
+
 					// Add MMSI/name tag
-					label = new OMText(0, 0, 0, 0, Long.toString(shipList.get(i).MMSI), font, OMText.JUSTIFY_CENTER);
-					label.setLat(lat);
-					label.setLon(lon);
-					if (trueHeading > 90 && trueHeading < 270) {
-						label.setY(-10);
-					} else {
-						label.setY(20);
+					if (mapScale < 750000.0 && shouldDisplayMMSI) {
+						label = new OMText(0, 0, 0, 0, Long.toString(shipList.get(i).MMSI), font, OMText.JUSTIFY_CENTER);
+						label.setLat(lat);
+						label.setLon(lon);
+						if (trueHeading > 90 && trueHeading < 270) {
+							label.setY(-10);
+						} else {
+							label.setY(20);
+						}
+						String name;
+						if (staticData != null) {
+							name = AisMessage.trimText(staticData.getName());
+						} else {
+							Long mmsi = shipList.get(i).MMSI;
+							name = "ID:" + mmsi.toString();
+						}
+						label.setData(name);
+						list.add(label);
 					}
-					String name;
-					if (staticData != null) {
-						name = AisMessage.trimText(staticData.getName());
-					} else {
-						Long mmsi = shipList.get(i).MMSI;
-						name = "ID:" + mmsi.toString();
-					}
-					label.setData(name);
-					list.add(label);
 				}
 			}
 			doPrepare();
