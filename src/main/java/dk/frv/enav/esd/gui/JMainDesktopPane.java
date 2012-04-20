@@ -145,18 +145,29 @@ public class JMainDesktopPane extends JDesktopPane {
 	  public void tileFrames() {
 	    java.awt.Component allFrames[] = getAllFrames();
 	    manager.setNormalSize();
-	    int frameWidth = getBounds().width / allFrames.length;
 	    
-	    int frameHeight = getBounds().height / allFrames.length;
+	    int jMapFramesCount = 0;
+	    
+	    for (int i = 0; i < allFrames.length; i++) {
+			if (allFrames[i] instanceof JMapFrame){
+				jMapFramesCount++;
+			}
+		}
+	    
+	    int frameWidth = getBounds().width / jMapFramesCount;
+	    
+	    int frameHeight = getBounds().height / jMapFramesCount;
 	    int y = 0;
 	    int x = 0;
 	    
 	    for (int i = 0; i < allFrames.length; i++) {
+	    	if (allFrames[i] instanceof JMapFrame){
 //	      allFrames[i].setSize(getBounds().width, frameHeight);
 	    	allFrames[i].setSize(frameWidth, getBounds().height);
 	      allFrames[i].setLocation(x, 0);
 	      y = y + frameHeight;
 	      x = x + frameWidth;
+	    	}
 	    }
 	  }
 
