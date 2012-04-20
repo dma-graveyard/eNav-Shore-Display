@@ -65,7 +65,7 @@ public class ToolBar extends JInternalFrame {
 		zoom.setToolTipText("Zoom in by clicking, hold shift for zoom out");
 		zoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("Zoom clicked");
+//				System.out.println("Zoom clicked");
 			}
         }); 
 		toolItems.add(zoom);

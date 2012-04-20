@@ -59,7 +59,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		if (aisHandler != null) {
 			list.clear();
 
-			System.out.println(getMaxScale()+getMinScale());
+			System.out.println(chartPanel.getMap().getScale());
 			
 			shipList = aisHandler.getShipList();
 			for (int i = 0; i < shipList.size(); i++) {

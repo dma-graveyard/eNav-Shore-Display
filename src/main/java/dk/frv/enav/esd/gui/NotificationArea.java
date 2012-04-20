@@ -68,7 +68,7 @@ public class NotificationArea extends JInternalFrame {
 		msi.setToolTipText("Messages from MSI");
 		msi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("MSI clicked");
+//				System.out.println("MSI clicked");
 			}
         }); 
 		notifications.add(msi);
@@ -78,7 +78,7 @@ public class NotificationArea extends JInternalFrame {
 		ais.setToolTipText("Messages from AIS");
 		ais.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("AIS clicked");
+//				System.out.println("AIS clicked");
 			}
         }); 
 		notifications.add(ais);
