@@ -58,10 +58,6 @@ public class MSITableDummy extends AbstractTableModel {
         return data[row][col];
     }
 
-    public Class getColumnClass(int c) {
-        return getValueAt(0, c).getClass();
-    }
-
     public void setValueAt(Object value, int row, int col) {
         data[row][col] = value;
         fireTableCellUpdated(row, col);

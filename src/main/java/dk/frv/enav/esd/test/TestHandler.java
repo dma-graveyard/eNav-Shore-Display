@@ -1,16 +1,12 @@
 package dk.frv.enav.esd.test;
 
-import java.util.List;
-
 import com.bbn.openmap.MapHandlerChild;
 
 import dk.frv.enav.esd.ESD;
-import dk.frv.enav.esd.ais.AisHandler.AisMessageExtended;
-import dk.frv.enav.esd.ais.VesselAisHandler;
 
 public class TestHandler extends MapHandlerChild implements Runnable {
 
-	private static VesselAisHandler aisHandler;
+//	private static VesselAisHandler aisHandler;
 
 	public TestHandler() {
 		ESD.startThread(this, "TestHandler");
@@ -41,9 +37,9 @@ public class TestHandler extends MapHandlerChild implements Runnable {
 
 	@Override
 	public void findAndInit(Object obj) {
-		if (obj instanceof VesselAisHandler) {
-			aisHandler = (VesselAisHandler) obj;
-		}
+//		if (obj instanceof VesselAisHandler) {
+//			aisHandler = (VesselAisHandler) obj;
+//		}
 
 	}
 

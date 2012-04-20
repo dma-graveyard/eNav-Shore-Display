@@ -20,6 +20,7 @@ import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.ins.ais.VesselPositionData;
 import dk.frv.enav.ins.ais.VesselStaticData;
 import dk.frv.enav.ins.ais.VesselTarget;
+import dk.frv.enav.esd.gui.ChartPanel;
 import dk.frv.enav.esd.layers.ais.VesselLayer;
 
 public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVesselAisListener {
@@ -27,6 +28,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private OMGraphicList list = new OMGraphicList();
 	private static VesselAisHandler aisHandler;
 	private List<AisMessageExtended> shipList;
+	private ChartPanel chartPanel;
 
 	private VesselLayer heading;
 	private VesselLayer ves;
@@ -57,6 +59,8 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		if (aisHandler != null) {
 			list.clear();
 
+			System.out.println(getMaxScale()+getMinScale());
+			
 			shipList = aisHandler.getShipList();
 			for (int i = 0; i < shipList.size(); i++) {
 				if (aisHandler.getVesselTargets().containsKey(shipList.get(i).MMSI)) {
@@ -157,6 +161,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	public void findAndInit(Object obj) {
 		if (obj instanceof VesselAisHandler) {
 			aisHandler = (VesselAisHandler) obj;
+		}
+		if (obj instanceof ChartPanel) {
+			System.out.println("chartpanel initialized");
+			chartPanel = (ChartPanel) obj;
 		}
 
 	}

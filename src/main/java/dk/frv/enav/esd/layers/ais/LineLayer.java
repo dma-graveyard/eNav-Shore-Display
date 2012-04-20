@@ -1,6 +1,5 @@
 package dk.frv.enav.esd.layers.ais;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 
 import com.bbn.openmap.omGraphics.OMLine;
@@ -29,7 +28,6 @@ public class LineLayer extends OMLine {
 		this.endPos = startPos.getPoint(length, heading);
 		speedLL[2] = endPos.getLatitude();
 		speedLL[3] = endPos.getLongitude();
-		//System.out.println(length);
 		super.setLL(speedLL);
 	}
 }
