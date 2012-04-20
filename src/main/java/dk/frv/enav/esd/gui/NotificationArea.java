@@ -33,7 +33,7 @@ public class NotificationArea extends JInternalFrame {
 	public int width;
 	public int height;
 
-	public NotificationArea(MainFrame mainFrame) {
+	public NotificationArea(final MainFrame mainFrame) {
 		
 		// Setup location
 		this.setLocation((10+moveHandlerHeight), (40 + mainFrame.getToolbar().getHeight()));
@@ -68,7 +68,7 @@ public class NotificationArea extends JInternalFrame {
 		msi.setToolTipText("Messages from MSI");
 		msi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-//				System.out.println("MSI clicked");
+				mainFrame.toggleNotificationCenter();
 			}
         }); 
 		notifications.add(msi);
@@ -78,7 +78,7 @@ public class NotificationArea extends JInternalFrame {
 		ais.setToolTipText("Messages from AIS");
 		ais.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-//				System.out.println("AIS clicked");
+				mainFrame.toggleNotificationCenter();
 			}
         }); 
 		notifications.add(ais);
