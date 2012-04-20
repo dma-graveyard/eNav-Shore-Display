@@ -105,6 +105,8 @@ public class JMainDesktopPane extends JDesktopPane {
 
 		  if (c instanceof JMapFrame){
 			  mainFrame.removeMapWindow((JMapFrame) c);
+//			  Thread(this)).start();
+		   ((JMapFrame) c).getChartPanel().getAisLayer().stop();
 		  }
 		  
 		  if (c instanceof NotificationCenter){
