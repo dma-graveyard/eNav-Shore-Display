@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.enav.esd.event.IMapCoordListener;
+import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 import dk.frv.enav.ins.common.text.Formatter;
 
 public class StatusArea extends JInternalFrame implements IMapCoordListener, BeanContextChild {
@@ -55,7 +56,7 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
         moveHandler.setOpaque(true);
         moveHandler.setBackground(Color.DARK_GRAY);
         moveHandler.setPreferredSize(new Dimension(statusItemWidth, moveHandlerHeight));
-        MoveMouseListener mml = new MoveMouseListener(this, mainFrame);
+        ToolbarMoveMouseListener mml = new ToolbarMoveMouseListener(this, mainFrame);
         moveHandler.addMouseListener(mml);
         moveHandler.addMouseMotionListener(mml);
 		
