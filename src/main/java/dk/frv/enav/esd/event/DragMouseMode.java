@@ -32,7 +32,7 @@ public class DragMouseMode extends AbstractCoordMouseMode {
 	private static final long serialVersionUID = 1L;
 	
 	/**
-     * Mouse Mode identifier, which is "RouteEdit".
+     * Mouse Mode identifier, which is "Drag".
      */
     public final static transient String modeID = "Drag";    
     public final static String OpaquenessProperty = "opaqueness";
@@ -51,7 +51,7 @@ public class DragMouseMode extends AbstractCoordMouseMode {
     private boolean useCursor;
 
     /**
-     * Construct a RouteEditMouseMode. Sets the ID of the mode to the modeID, the
+     * Construct a Drag Mouse Mode. Sets the ID of the mode to the modeID, the
      * consume mode to true, and the cursor to the crosshair.
      */
     public DragMouseMode() {
@@ -73,7 +73,16 @@ public class DragMouseMode extends AbstractCoordMouseMode {
         setLeaveShadow(true);
         setOpaqueness(DEFAULT_OPAQUENESS);
         // override the default cursor
-        setModeCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+//        
+//        //Get the default toolkit  
+//        Toolkit toolkit = Toolkit.getDefaultToolkit();  
+//          
+//        //Load an image for the cursor  
+//        Image image = toolkit.getImage("images/toolbar/drag.png");  
+//        Cursor dragCursor = toolkit.createCustomCursor(image, new Point(0,0), "Drag");  
+//        
+//        setModeCursor(dragCursor);
+        setModeCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
     }
 
     public void setActive(boolean val) {
