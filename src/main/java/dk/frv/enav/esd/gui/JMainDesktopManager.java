@@ -58,6 +58,9 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 	}
 
 	public void activateFrame(JInternalFrame f) {
+		
+		if (f instanceof JMapFrame){
+		
 		if (toFront.size() == 0) {
 			super.activateFrame(f);
 		} else {
@@ -71,6 +74,8 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 					super.activateFrame(pairs.getValue());
 				}
 			}
+		}
+		
 		}
 		super.activateFrame(statusArea);
 		super.activateFrame(notificationArea);
