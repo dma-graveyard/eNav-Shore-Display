@@ -1,6 +1,5 @@
 package dk.frv.enav.esd.gui;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -8,7 +7,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -58,6 +56,8 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		
 		maps = new JMenu("Maps");
 		this.add(maps);
+
+		
 		
 		JMenuItem addMap = new JMenuItem("New Map Window");
 		maps.add(addMap);
@@ -67,10 +67,6 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		
 		JMenuItem tile = new JMenuItem("Sort by Tile");
 		maps.add(tile);		
-
-//		JMenuItem lockMaps = new JMenuItem("Lock/Unlock all map windows");
-//		maps.add(lockMaps);
-
 		maps.addSeparator();
 		
 		//Workspace
@@ -84,6 +80,15 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		JMenuItem unlockAll = new JMenuItem("Unlock all windows");
 		workspace.add(unlockAll);
 		
+
+		//Notifications
+		
+		JMenu notifications = new JMenu("Notifications");
+		this.add(notifications);
+		
+		JMenuItem notCenter = new JMenuItem("Notification Center");
+		notifications.add(notCenter);
+
 		workspace.addSeparator();
 		
 		JMenuItem loadWorkspace = new JMenuItem("Load workspace");
@@ -91,9 +96,9 @@ public class JMenuWorkspaceBar extends JMenuBar {
 
 		JMenuItem saveWorkspace = new JMenuItem("Save workspace");
 		workspace.add(saveWorkspace);
-		
-		
+				
 		//Action listeners
+		
 		loadWorkspace.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -104,6 +109,7 @@ public class JMenuWorkspaceBar extends JMenuBar {
 				}
 			}
 		});
+
 		
 		saveWorkspace.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -116,10 +122,17 @@ public class JMenuWorkspaceBar extends JMenuBar {
 			}
 		});
 		
+		//Action listeners
 		
 		toggleFullScreen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.toggleFullScreen();
+			}
+		});
+		
+		notCenter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mainFrame.toggleNotificationCenter();
 			}
 		});
 
@@ -134,7 +147,6 @@ public class JMenuWorkspaceBar extends JMenuBar {
 				mainFrame.addMapWindow();
 			}
 		});
-
 		
 	    cascade.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent ae) {
@@ -150,6 +162,10 @@ public class JMenuWorkspaceBar extends JMenuBar {
 	    
 	    lockAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if(!mainFrame.isToolbarsLocked()){
+					mainFrame.toggleBarsLock();
+				}
+				
 				lockAll();
 			}
 		});
@@ -157,6 +173,9 @@ public class JMenuWorkspaceBar extends JMenuBar {
 	    unlockAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				unLockAll();
+				if(mainFrame.isToolbarsLocked()){
+					mainFrame.toggleBarsLock();
+				}
 			}
 		});
 	    
@@ -307,7 +326,7 @@ public class JMenuWorkspaceBar extends JMenuBar {
             File file = fc.getSelectedFile();
             String filename = file.getName();
             if(!filename.endsWith(".workspace")){
-            	System.out.println("Appending .workspace");
+//            	System.out.println("Appending .workspace");
             	filename = filename + ".workspace";
             }
             mainFrame.saveWorkSpace(filename);

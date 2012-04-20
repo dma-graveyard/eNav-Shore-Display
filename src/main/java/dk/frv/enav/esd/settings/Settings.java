@@ -154,7 +154,7 @@ public class Settings implements Serializable {
 		workspace.setProperties(props, mapWindows);
 		try {
 			filename = "workspaces/" + filename; 
-			System.out.println("Trying to save to: " + filename);
+//			System.out.println("Trying to save to: " + filename);
 			FileWriter outFile = new FileWriter(filename);
 			PrintWriter out = new PrintWriter(outFile);
 			out.println("# workspace settings saved: " + new Date());

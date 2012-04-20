@@ -29,7 +29,6 @@
  */
 package dk.frv.enav.esd.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.MouseWheelEvent;
@@ -40,7 +39,6 @@ import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 
 import org.apache.log4j.Logger;
 
@@ -50,7 +48,6 @@ import com.bbn.openmap.LayerHandler;
 import com.bbn.openmap.MapBean;
 import com.bbn.openmap.MapHandler;
 import com.bbn.openmap.MouseDelegator;
-import com.bbn.openmap.event.NavMouseMode;
 import com.bbn.openmap.gui.OMComponentPanel;
 import com.bbn.openmap.layer.shape.ShapeLayer;
 import com.bbn.openmap.proj.Proj;
@@ -59,94 +56,71 @@ import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.layers.ais.AisLayer;
 import dk.frv.enav.esd.settings.MapSettings;
 
 /**
- * The panel with chart. Initializes all layers to be shown on the map. 
+ * The panel with chart. Initializes all layers to be shown on the map.
  */
 public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(ChartPanel.class);
-	
+
 	private MapHandler mapHandler;
 	private LayerHandler layerHandler;
 	private BufferedLayerMapBean map;
 	private Layer encLayer;
 	private Layer bgLayer;
 	private NavigationMouseMode mapNavMouseMode;
+	private DragMouseMode dragMouseMode;
 	private MouseDelegator mouseDelegator;
 	public int maxScale = 5000;
 	private AisLayer aisLayer;
+	private MainFrame mainFrame;
 
-	public ChartPanel() {
+	public void setMouseMode(int mode) {
+		// Mode0 is mapNavMouseMode
+		if (mode == 0) {
+			mouseDelegator.setActive(mapNavMouseMode);
+		}
+
+		// Mode1 is DragNavMouseMode
+		if (mode == 1) {
+			mouseDelegator.setActive(dragMouseMode);
+		}
+	}
+
+	public ChartPanel(MainFrame mainFrame) {
 		super();
-		
+
+		this.mainFrame = mainFrame;
 		// Create the charts own maphandler
 		mapHandler = new MapHandler();
-		
+
 		// Add the aishandler to this bean
 		mapHandler.add(ESD.getAisHandler());
-		
+		mapHandler.add(this);
+		mapHandler.add(mainFrame);
+		mapHandler.add(mainFrame.getStatusArea());
+
 		// Set layout
-//		setLayout(new BorderLayout());
-		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS) );
+		// setLayout(new BorderLayout());
+		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		// Set border
 		setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		// Max scale
-		this.maxScale = ESD.getSettings().getMapSettings().getMaxScale(); 
+		this.maxScale = ESD.getSettings().getMapSettings().getMaxScale();
 
-		
 	}
 
 	public void initChart() {
-		
+
 		MapSettings mapSettings = ESD.getSettings().getMapSettings();
-		Properties props = ESD.getProperties();
 
-		aisLayer = new AisLayer();
-		aisLayer.setVisible(true);
-		mapHandler.add(aisLayer);
-
-		map = new BufferedLayerMapBean();
-		map.setDoubleBuffered(true);
-
-		mouseDelegator = new MouseDelegator();
-		mapHandler.add(mouseDelegator);
-		mapHandler.add(new NavMouseMode());
-		 
-		mapNavMouseMode = new NavigationMouseMode(this);
-		 
-
-		mouseDelegator.addMouseMode(mapNavMouseMode);
-		mouseDelegator.setActive(mapNavMouseMode);
-
-		mapHandler.add(mapNavMouseMode);
-
-		layerHandler = new LayerHandler();
-		
-		// Get plugin layers
-		createPluginLayers(props);
-
-		// Add layer handler to map handler
-		mapHandler.add(layerHandler);
-
-		// Create background layer
-		String layerName = "background";
-		bgLayer = new ShapeLayer();
-		bgLayer.setProperties(layerName, props);
-		bgLayer.setAddAsBackground(true);
-		bgLayer.setVisible(true);
-		mapHandler.add(bgLayer);
-
-		if (encLayer != null) {
-			mapHandler.add(encLayer);
-		}
-
-		// Add map to map handler
-		mapHandler.add(map);
+		initChartDefault();
 
 		// Set last postion
 		map.setCenter(mapSettings.getCenter());
@@ -155,40 +129,41 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		map.setScale(mapSettings.getScale());
 
 		add(map);
-	
+
 		getMap().addMouseWheelListener(this);
 	}
-	
-public void initChart(Point2D center, float scale) {
-		
+
+	public void initChartDefault() {
 		Properties props = ESD.getProperties();
-
-		aisLayer = new AisLayer();
-		aisLayer.setVisible(true);
-		mapHandler.add(aisLayer);
-
+		
 		map = new BufferedLayerMapBean();
 		map.setDoubleBuffered(true);
-
+		
 		mouseDelegator = new MouseDelegator();
 		mapHandler.add(mouseDelegator);
-		mapHandler.add(new NavMouseMode());
-		 
-		mapNavMouseMode = new NavigationMouseMode(this);
-		 
-
-		mouseDelegator.addMouseMode(mapNavMouseMode);
-		mouseDelegator.setActive(mapNavMouseMode);
-
-		mapHandler.add(mapNavMouseMode);
-
-		layerHandler = new LayerHandler();
 		
+		mapNavMouseMode = new NavigationMouseMode(this);
+		dragMouseMode = new DragMouseMode();
+		
+		mouseDelegator.addMouseMode(mapNavMouseMode);
+		mouseDelegator.addMouseMode(dragMouseMode);
+		setMouseMode(mainFrame.getMouseMode());
+		
+		mapHandler.add(dragMouseMode);
+		mapHandler.add(mapNavMouseMode);
+		
+		layerHandler = new LayerHandler();
+
 		// Get plugin layers
 		createPluginLayers(props);
 
 		// Add layer handler to map handler
 		mapHandler.add(layerHandler);
+		
+		aisLayer = new AisLayer();
+		aisLayer.setVisible(true);
+		mapHandler.add(aisLayer);
+
 
 		// Create background layer
 		String layerName = "background";
@@ -204,6 +179,15 @@ public void initChart(Point2D center, float scale) {
 
 		// Add map to map handler
 		mapHandler.add(map);
+	}
+	
+	public AisLayer getAisLayer() {
+		return aisLayer;
+	}
+
+	public void initChart(Point2D center, float scale) {
+
+		initChartDefault();
 
 		// Set last postion
 		map.setCenter(center);
@@ -212,7 +196,7 @@ public void initChart(Point2D center, float scale) {
 		map.setScale(scale);
 
 		add(map);
-	
+
 		getMap().addMouseWheelListener(this);
 	}
 
@@ -241,8 +225,6 @@ public void initChart(Point2D center, float scale) {
 		}
 		map.setScale(newScale);
 	}
-
-	
 
 	public void encVisible(boolean visible) {
 		if (encLayer != null) {
@@ -291,7 +273,7 @@ public void initChart(Point2D center, float scale) {
 		map.setCenter(centerLat, centerLon);
 
 	}
-	
+
 	public MouseDelegator getMouseDelegator() {
 		return mouseDelegator;
 	}
@@ -329,17 +311,13 @@ public void initChart(Point2D center, float scale) {
 			}
 		}
 	}
-	
+
 	public int getMaxScale() {
 		return maxScale;
 	}
-	
 
-	
-	
 	@Override
 	public void findAndInit(Object obj) {
-		//This is used in case we need to communicate with other handler objects such as AIS 
 	}
 
 	/**
@@ -349,39 +327,40 @@ public void initChart(Point2D center, float scale) {
 	public void mouseWheelMoved(MouseWheelEvent e) {
 
 	}
-	
+
 	/**
 	 * 
 	 * @param direction
-	 * 1 == Up
-	 * 2 == Down
-	 * 3 == Left
-	 * 4 == Right
+	 *            1 == Up 2 == Down 3 == Left 4 == Right
 	 * 
-	 * Moving by 100 units in each direction
-	 * Map center is [745, 445]
+	 *            Moving by 100 units in each direction Map center is [745, 445]
 	 */
-	  public void pan(int direction) {
+	public void pan(int direction) {
 		Point point = null;
 		Projection projection = map.getProjection();
 
 		int width = projection.getWidth();
 		int height = projection.getHeight();
-		
-	    switch (direction) {
-	    	case 1:  point = new Point(width/2,height/2-100);	break;
-        	case 2:  point = new Point(width/2,height/2+100);	break;
-            case 3:  point = new Point(width/2-100,height/2);	break;
-            case 4:  point = new Point(width/2+100,height/2);	break;
-	        }
-        
-        Proj p = (Proj) projection;
-        LatLonPoint llp = projection.inverse(point);
-        p.setCenter(llp);
-        map.setProjection(p);
-	   }
 
-	  
-	  
-	    
+		switch (direction) {
+		case 1:
+			point = new Point(width / 2, height / 2 - 100);
+			break;
+		case 2:
+			point = new Point(width / 2, height / 2 + 100);
+			break;
+		case 3:
+			point = new Point(width / 2 - 100, height / 2);
+			break;
+		case 4:
+			point = new Point(width / 2 + 100, height / 2);
+			break;
+		}
+
+		Proj p = (Proj) projection;
+		LatLonPoint llp = projection.inverse(point);
+		p.setCenter(llp);
+		map.setProjection(p);
+	}
+
 }
