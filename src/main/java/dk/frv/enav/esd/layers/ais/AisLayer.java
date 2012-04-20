@@ -45,6 +45,11 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private VesselLayer heading;
 	private VesselLayer vesIcon;
 	private OMCircle vesCirc;
+	
+	private OMPoly infoBox;
+	private OMText boxMMSI;
+	private OMText boxSog;
+	private OMText boxCog;
 
 	private OMLine speedVector;
 	private LatLonPoint startPos = null;
@@ -76,6 +81,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 
 	private void drawVessels() {
 		if (aisHandler != null) {
+			boolean putInfoBoxBackIn = false;
+			if(list.contains(infoBox)){
+				putInfoBoxBackIn = true;
+			}
 			list.clear();
 
 			float mapScale = chartPanel.getMap().getScale();
@@ -185,6 +194,12 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					}
 				}
 			}
+			if(putInfoBoxBackIn){
+				list.add(boxMMSI);
+				list.add(boxSog);
+				list.add(boxCog);
+				list.add(infoBox);
+			}
 			doPrepare();
 		}
 	}
@@ -281,35 +296,46 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			}
 		}
 
+		if(allClosest.size() == 0){
+			list.remove(infoBox);
+		}
 		
 		if (newClosest != closest) {
+			list.remove(boxMMSI);
+			list.remove(boxSog);
+			list.remove(boxCog);
+			list.remove(infoBox);
+			
 			if (newClosest instanceof VesselLayer) {
 				VesselLayer vessel = (VesselLayer) newClosest;
 				VesselTarget vesselTarget = aisHandler.getVesselTargets().get(vessel.getMMSI());
-				//VesselStaticData staticData = vesselTarget.getStaticData();
 				
 				// Add MouseOverBox
 				location = vesselTarget.getPositionData();
 				double lat = location.getPos().getLatitude();
 				double lon = location.getPos().getLongitude();
 				double trueHeading = location.getTrueHeading();
-				double sog = location.getSog();
 				int[] xpoints = { 10, 10, 200, 200 };
 				int[] ypoints = { 0, -50, -50, 0 };
-				OMPoly infoBox = new OMPoly(lat, lon, xpoints, ypoints, OMGraphic.DECIMAL_DEGREES);
-				OMText boxSpeed = new OMText(0, 0, 0, 0, "Speed: " + sog + " kn", font, OMText.JUSTIFY_LEFT);
-				boxSpeed.setLat(lat);
-				boxSpeed.setLon(lon);
-				boxSpeed.setX(15);
+				infoBox = new OMPoly(lat, lon, xpoints, ypoints, OMGraphic.DECIMAL_DEGREES);
+				boxMMSI = new OMText(lat, lon, 15, 0, "MMSI: " + vessel.getMMSI(), font, OMText.JUSTIFY_LEFT);
+				boxSog = new OMText(lat, lon, 15, 0, "Sog: " + location.getSog() + " kn", font, OMText.JUSTIFY_LEFT);
+				boxCog = new OMText(lat, lon, 15, 0, "Cog: " + location.getCog() + " degrees", font, OMText.JUSTIFY_LEFT);
 				if (trueHeading > 90 && trueHeading < 270) {
 					int[] ypoints2 = { 0, 50, 50, 0 };
 					infoBox.setYs(ypoints2);
-					boxSpeed.setY(15);
+					boxMMSI.setY(15);
+					boxSog.setY(25);
+					boxCog.setY(35);
 				} else {
-					boxSpeed.setY(-35);
+					boxMMSI.setY(-35);
+					boxSog.setY(-25);
+					boxCog.setY(-15);
 				}
 				infoBox.setFillPaint(new Color(225, 225, 225));
-				list.add(boxSpeed);
+				list.add(boxMMSI);
+				list.add(boxSog);
+				list.add(boxCog);
 				list.add(infoBox);
 				closest = newClosest;
 				doPrepare();
