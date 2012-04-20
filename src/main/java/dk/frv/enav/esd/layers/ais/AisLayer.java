@@ -44,10 +44,11 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private Font font = null;
 	private OMText label = null;
 	private int sizeOffset = 5;
+	volatile boolean shouldRun = true;
 
 	@Override
 	public void run() {
-		while (true) {
+		while (shouldRun) {
 			ESD.sleep(1000);
 			drawVessels();
 		}
@@ -57,6 +58,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		(new Thread(this)).start();
 	}
 
+	public void stop(){
+		shouldRun = false;
+	}
+	
 	private void drawVessels() {
 		if (aisHandler != null) {
 			list.clear();

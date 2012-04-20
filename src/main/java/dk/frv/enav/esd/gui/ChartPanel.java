@@ -180,6 +180,10 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		// Add map to map handler
 		mapHandler.add(map);
 	}
+	
+	public AisLayer getAisLayer() {
+		return aisLayer;
+	}
 
 	public void initChart(Point2D center, float scale) {
 
