@@ -17,6 +17,8 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
+
 public class ToolBar extends JInternalFrame {
 	
 	private static final long serialVersionUID = 1L;	
@@ -49,7 +51,7 @@ public class ToolBar extends JInternalFrame {
         moveHandler.setOpaque(true);
         moveHandler.setBackground(Color.DARK_GRAY);
         moveHandler.setPreferredSize(new Dimension((toolItemSize * toolItemColumns), moveHandlerHeight));
-        MoveMouseListener mml = new MoveMouseListener(this, mainFrame);
+        ToolbarMoveMouseListener mml = new ToolbarMoveMouseListener(this, mainFrame);
         moveHandler.addMouseListener(mml);
         moveHandler.addMouseMotionListener(mml);
 		

@@ -1,4 +1,4 @@
-package dk.frv.enav.esd.gui;
+package dk.frv.enav.esd.event;
 
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -7,13 +7,15 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.JInternalFrame;
 
-class MoveMouseListener implements MouseListener, MouseMotionListener {
+import dk.frv.enav.esd.gui.MainFrame;
+
+public class ToolbarMoveMouseListener implements MouseListener, MouseMotionListener {
 	JInternalFrame target;
 	MainFrame frame;
 	Point start_drag;
 	Point start_loc;
 
-	public MoveMouseListener(JInternalFrame toolBar, MainFrame frame) {
+	public ToolbarMoveMouseListener(JInternalFrame toolBar, MainFrame frame) {
 		this.target = toolBar;
 		this.frame = frame;
 	}
