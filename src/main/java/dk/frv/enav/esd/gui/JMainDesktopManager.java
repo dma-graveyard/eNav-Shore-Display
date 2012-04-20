@@ -72,8 +72,8 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 				}
 			}
 		}
-		super.activateFrame(notificationArea);
 		super.activateFrame(statusArea);
+		super.activateFrame(notificationArea);
 		super.activateFrame(toolbar);
 		super.activateFrame(notCenter);
 	}
