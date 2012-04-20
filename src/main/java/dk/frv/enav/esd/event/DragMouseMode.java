@@ -258,10 +258,10 @@ public class DragMouseMode extends AbstractCoordMouseMode {
                         opaqueness));
                 gr2d.drawImage(bufferedMapImage, x - oX, y - oY, null);
 
-                ((Graphics2D) mb.getGraphics(true)).drawImage(bufferedRenderingImage,
-                        0,
-                        0,
-                        null);
+//                ((Graphics2D) mb.getGraphics(true)).drawImage(bufferedRenderingImage,
+//                        0,
+//                        0,
+//                        null);
             }
         }
         super.mouseDragged(arg0);
