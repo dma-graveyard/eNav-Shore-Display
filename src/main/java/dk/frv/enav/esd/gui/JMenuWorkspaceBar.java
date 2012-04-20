@@ -50,9 +50,7 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		fm.add(toggleFullScreen);
 
 		JMenuItem mi = new JMenuItem("Exit");
-		JMenuItem t2 = new JMenuItem("Lock/unlock bars");
 		fm.add(mi);
-		fm.add(t2);
 
 		//Maps menu
 		
@@ -150,13 +148,6 @@ public class JMenuWorkspaceBar extends JMenuBar {
 			}
 		});
 		
-		t2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				mainFrame.toggleBarsLock();
-			}
-		});
-
-		
 	    cascade.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent ae) {
 	          desktop.cascadeFrames();
@@ -171,6 +162,10 @@ public class JMenuWorkspaceBar extends JMenuBar {
 	    
 	    lockAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if(!mainFrame.isToolbarsLocked()){
+					mainFrame.toggleBarsLock();
+				}
+				
 				lockAll();
 			}
 		});
@@ -178,6 +173,9 @@ public class JMenuWorkspaceBar extends JMenuBar {
 	    unlockAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				unLockAll();
+				if(mainFrame.isToolbarsLocked()){
+					mainFrame.toggleBarsLock();
+				}
 			}
 		});
 	    

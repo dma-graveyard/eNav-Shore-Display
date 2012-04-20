@@ -74,6 +74,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private JMainDesktopPane desktop;
 	private JScrollPane scrollPane;
 	
+	private boolean toolbarsLocked = false;
 	private ToolBar toolbar = new ToolBar(this);
 	private NotificationArea notificationArea = new NotificationArea(this);
 	private NotificationCenter notificationCenter  = new NotificationCenter();
@@ -169,9 +170,18 @@ public class MainFrame extends JFrame implements WindowListener {
 	public void toggleNotificationCenter() {
 		notificationCenter.toggleVisibility();
 	}
+	
+	public boolean isToolbarsLocked() {
+		return toolbarsLocked;
+	}
+
 
 	public ToolBar getToolbar() {
 		return toolbar;
+	}
+	
+	public StatusArea getStatusArea() {
+		return statusArea;
 	}
 
 	public NotificationArea getNotificationArea() {
@@ -179,6 +189,13 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	public void toggleBarsLock() {
+		
+		if (toolbarsLocked){
+			toolbarsLocked = false;
+		}else{
+			toolbarsLocked = true;
+		}
+		
 		toolbar.toggleLock();
 		notificationArea.toggleLock();
 		statusArea.toggleLock();

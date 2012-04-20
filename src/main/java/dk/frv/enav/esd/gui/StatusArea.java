@@ -5,6 +5,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.beans.beancontext.BeanContext;
+import java.beans.beancontext.BeanContextChild;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -14,7 +18,12 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class StatusArea extends JInternalFrame {
+import com.bbn.openmap.proj.coords.LatLonPoint;
+
+import dk.frv.enav.esd.event.IMapCoordListener;
+import dk.frv.enav.ins.common.text.Formatter;
+
+public class StatusArea extends JInternalFrame implements IMapCoordListener, BeanContextChild {
 	
 	private static final long serialVersionUID = 1L;	
 	private Boolean locked = false;
@@ -23,7 +32,7 @@ public class StatusArea extends JInternalFrame {
 	private JPanel statusPanel;
 	private static int moveHandlerHeight = 12;
 	private static int statusItemHeight = 15;
-	private static int statusItemWidth = 70;
+	private static int statusItemWidth = 90;
 	private HashMap<String, JLabel> statusItems = new HashMap<String, JLabel>();
 	public int width;
 	public int height;
@@ -57,14 +66,18 @@ public class StatusArea extends JInternalFrame {
 		
 		
 		// Add status items here
+        
 		// Status: X coordinate
-		statusItems.put("X", new JLabel("X: 342.32"));
-		
+		statusItems.put("LAT", new JLabel(" LAT: N/A"));
+        
 		// Status: Y coordinate
-		statusItems.put("Y", new JLabel("Y: 34.234"));
+		statusItems.put("LON", new JLabel(" LON: N/A"));
+
+		
+
 		
 		// Status: Z coordinate
-		statusItems.put("Z", new JLabel("Z: 3.122"));
+//		statusItems.put("Z", new JLabel("Z: 3.122"));
 				
 
 	    // Create the masterpanel for aligning
@@ -148,6 +161,38 @@ public class StatusArea extends JInternalFrame {
 	 */
 	public int getHeight() {
 		return height;
+	}
+
+	@Override
+	public void recieveCoord(LatLonPoint llp) {
+		statusItems.get("LAT").setText(" LAT  " + Formatter.latToPrintable(llp.getLatitude()));
+		statusItems.get("LON").setText(" LON " + Formatter.latToPrintable(llp.getLongitude()));
+
+		
+	}
+
+	@Override
+	public void addVetoableChangeListener(String arg0, VetoableChangeListener arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public BeanContext getBeanContext() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void removeVetoableChangeListener(String arg0, VetoableChangeListener arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setBeanContext(BeanContext arg0) throws PropertyVetoException {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	// TODO: Add methods for updating the hashmap containing status values
