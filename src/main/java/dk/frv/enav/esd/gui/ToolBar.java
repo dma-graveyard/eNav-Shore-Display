@@ -31,7 +31,7 @@ public class ToolBar extends JInternalFrame {
 	public int width;
 	public int height;
 
-	public ToolBar(MainFrame mainFrame) {
+	public ToolBar(final MainFrame mainFrame) {
 		
 		// Setup location
 		this.setLocation((10+moveHandlerHeight), 10);
@@ -62,13 +62,29 @@ public class ToolBar extends JInternalFrame {
 		// Setup toolitems (add here for more toolitems)
 		// Tool: Zoom
 		JButton zoom = new JButton(new ImageIcon("images/toolbar/zoom.png"));
+		JButton drag = new JButton(new ImageIcon("images/toolbar/drag.png"));
+		
 		zoom.setToolTipText("Zoom in by clicking, hold shift for zoom out");
 		zoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-//				System.out.println("Zoom clicked");
+				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
+					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(0);
+					mainFrame.setMouseMode(0);
+				}
+			}
+        });
+		
+		drag.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
+					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(1);
+					mainFrame.setMouseMode(1);
+				}
 			}
         }); 
 		toolItems.add(zoom);
+		toolItems.add(drag);
+		
 				
 
 	    // Create the masterpanel for aligning

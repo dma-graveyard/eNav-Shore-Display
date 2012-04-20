@@ -98,33 +98,8 @@ public class JMenuWorkspaceBar extends JMenuBar {
 
 		JMenuItem saveWorkspace = new JMenuItem("Save workspace");
 		workspace.add(saveWorkspace);
-		
-		
-		JMenuItem dragMouse = new JMenuItem("Mouse Dragging");
-		maps.add(dragMouse);
-		
-		JMenuItem zoomMouse = new JMenuItem("Mouse Zoom");
-		maps.add(zoomMouse);
-		
-		
+				
 		//Action listeners
-		dragMouse.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
-					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(1);
-					mainFrame.setMouseMode(1);
-				}
-			}
-		});
-		
-		zoomMouse.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
-					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(0);
-					mainFrame.setMouseMode(0);
-				}
-			}
-		});
 		
 		loadWorkspace.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
