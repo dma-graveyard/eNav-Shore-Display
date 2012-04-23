@@ -157,9 +157,6 @@ public class MainFrame extends JFrame implements WindowListener {
 		desktop.add(toolbar, true);
 		desktop.add(notificationArea, true);
 		
-
-
-		
 		
 		// dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
@@ -291,6 +288,12 @@ public class MainFrame extends JFrame implements WindowListener {
 			}
 
 		}
+		
+		
+		//Bring toolbar elements to the front
+		statusArea.toFront();
+		toolbar.toFront();
+		notificationArea.toFront();
 	}
 
 	public void removeMapWindow(JMapFrame window) {
