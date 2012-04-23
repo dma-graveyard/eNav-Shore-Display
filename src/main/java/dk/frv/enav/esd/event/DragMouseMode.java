@@ -3,7 +3,6 @@ package dk.frv.enav.esd.event;
 
 import java.awt.AlphaComposite;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
@@ -14,15 +13,15 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.Properties;
 
-import javax.swing.ImageIcon;
 import javax.swing.border.Border;
 
 import com.bbn.openmap.MapBean;
 import com.bbn.openmap.event.PanMouseMode;
 import com.bbn.openmap.event.ProjectionEvent;
-import com.bbn.openmap.image.ImageScaler;
 import com.bbn.openmap.proj.Projection;
 import com.bbn.openmap.util.PropUtils;
+
+import dk.frv.enav.esd.gui.ChartPanel;
 
 /**
  * Mouse mode for route edit 
@@ -49,6 +48,10 @@ public class DragMouseMode extends AbstractCoordMouseMode {
     private float opaqueness;
     private boolean leaveShadow;
     private boolean useCursor;
+    private ChartPanel chartPanel;
+    
+    Cursor dragCursorMouseClicked; 
+    Cursor dragCursor; 
 
     /**
      * Construct a Drag Mouse Mode. Sets the ID of the mode to the modeID, the
@@ -79,7 +82,10 @@ public class DragMouseMode extends AbstractCoordMouseMode {
           
         //Load an image for the cursor  
         Image image = toolkit.getImage("images/toolbar/drag_mouse.png");
-        Cursor dragCursor = toolkit.createCustomCursor(image, new Point(0,0), "Drag");  
+        dragCursor = toolkit.createCustomCursor(image, new Point(0,0), "Drag");
+        
+        Image image2 = toolkit.getImage("images/toolbar/drag_on_mouse.png");
+        dragCursorMouseClicked = toolkit.createCustomCursor(image2, new Point(0,0), "Drag_on_mouse");  
         
         setModeCursor(dragCursor);
 //        setModeCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
@@ -117,24 +123,23 @@ public class DragMouseMode extends AbstractCoordMouseMode {
              * For who like make his CustomCursor
              */
             try {
-                Toolkit tk = Toolkit.getDefaultToolkit();
-                ImageIcon pointer = new ImageIcon(getClass().getResource("pan.gif"));
-                Dimension bestSize = tk.getBestCursorSize(pointer.getIconWidth(),
-                        pointer.getIconHeight());
-                Image pointerImage = ImageScaler.getOptimalScalingImage(pointer.getImage(),
-                        (int) bestSize.getWidth(),
-                        (int) bestSize.getHeight());
-                Cursor cursor = tk.createCustomCursor(pointerImage,
-                        new Point(0, 0),
-                        "PP");
-                setModeCursor(cursor);
+//                Toolkit tk = Toolkit.getDefaultToolkit();
+//                ImageIcon pointer = new ImageIcon(getClass().getResource("pan.gif"));
+//                Dimension bestSize = tk.getBestCursorSize(pointer.getIconWidth(),
+//                        pointer.getIconHeight());
+//                Image pointerImage = ImageScaler.getOptimalScalingImage(pointer.getImage(),
+//                        (int) bestSize.getWidth(),
+//                        (int) bestSize.getHeight());
+//                Cursor cursor = tk.createCustomCursor(pointerImage,
+//                        new Point(0, 0),
+//                        "PP");
+                setModeCursor(dragCursorMouseClicked);
+                
                 return;
             } catch (Exception e) {
                 // Problem finding image probably, just move on.
             }
         }
-
-        setModeCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
     }
 
     public void setProperties(String prefix, Properties props) {
@@ -190,6 +195,11 @@ public class DragMouseMode extends AbstractCoordMouseMode {
         return props;
     }
 
+    
+    public void mousePressed(MouseEvent arg0){
+    	chartPanel.getMap().setCursor(dragCursorMouseClicked);
+    	}
+    
     /**
      * @see java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.MouseEvent)
      *      The first click for drag, the image is generated. This image is
@@ -197,8 +207,8 @@ public class DragMouseMode extends AbstractCoordMouseMode {
      *      image.
      */
     public void mouseDragged(MouseEvent arg0) {
-
-
+//    	chartPanel.getMap().setCursor(dragCursorMouseClicked);
+    	
         MapBean mb = ((MapBean) arg0.getSource());
         Point2D pnt = mb.getNonRotatedLocation(arg0);
         int x = (int) pnt.getX();
@@ -288,8 +298,9 @@ public class DragMouseMode extends AbstractCoordMouseMode {
             // bufferedMapImage = null; //clean up when not active...
         }
         super.mouseReleased(arg0);
+    	chartPanel.getMap().setCursor(dragCursor);
     }
-
+    
     public boolean isLeaveShadow() {
         return leaveShadow;
     }
@@ -361,5 +372,12 @@ public class DragMouseMode extends AbstractCoordMouseMode {
         // New images...
         bufferedMapImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         bufferedRenderingImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+    }
+    
+    public void findAndInit(Object someObj) {
+    	if (someObj instanceof ChartPanel) {
+           chartPanel = (ChartPanel) someObj;
+        }
+    	super.findAndInit(someObj);
     }
 }

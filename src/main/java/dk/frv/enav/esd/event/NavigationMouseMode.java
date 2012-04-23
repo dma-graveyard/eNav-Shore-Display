@@ -64,8 +64,12 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
 	private boolean mouseDragged = false;
 	boolean layerMouseDrag = false;
 	private int maxScale;
-//	private ChartPanel chartPanel;
-
+    private ChartPanel chartPanel;
+    
+    Cursor navCursorMouseClicked; 
+    Cursor navCursor; 
+	
+	
     /**
      * Construct a NavMouseMode. Sets the ID of the mode to the modeID, the
      * consume mode to true, and the cursor to the crosshair.
@@ -89,13 +93,18 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
         super(modeID, shouldConsumeEvents);
         // override the default cursor
 //        setModeCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        
 //      //Get the default toolkit  
       Toolkit toolkit = Toolkit.getDefaultToolkit();  
         
       //Load an image for the cursor  
       Image image = toolkit.getImage("images/toolbar/zoom_mouse.png");
-      Cursor zoomCursor = toolkit.createCustomCursor(image, new Point(0,0), "Zoom");  
-      setModeCursor(zoomCursor);
+      navCursor = toolkit.createCustomCursor(image, new Point(0,0), "Zoom");
+      
+      Image image2 = toolkit.getImage("images/toolbar/zoom_on_mouse.png");
+      navCursorMouseClicked = toolkit.createCustomCursor(image2, new Point(0,0), "Zoom_on_mouse");  
+      
+      setModeCursor(navCursor);
 
     }
 
@@ -107,6 +116,7 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
      * @param e MouseEvent to be handled
      */
     public void mousePressed(MouseEvent e) {
+    	chartPanel.getMap().setCursor(navCursorMouseClicked);
         e.getComponent().requestFocus();
         clickTimer.setInterval(500);
         clickTimer.startTime();
@@ -185,6 +195,7 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
      * @param e MouseEvent to be handled
      */
     public void mouseReleased(MouseEvent e) {
+    	chartPanel.getMap().setCursor(navCursor);
         Object obj = e.getSource();
 
         if(layerMouseDrag && (obj instanceof MapBean))
@@ -262,6 +273,7 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
             map.setProjection(p);
 //            chartPanel.manualProjChange();
         }
+
     }
 
     /**
@@ -426,5 +438,11 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
         paintRectangle(g, point1, point2);
     }
     
+    public void findAndInit(Object someObj) {
+    	if (someObj instanceof ChartPanel) {
+           chartPanel = (ChartPanel) someObj;
+        }
+    	super.findAndInit(someObj);
+    }
     
 }
