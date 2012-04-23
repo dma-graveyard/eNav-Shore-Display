@@ -128,7 +128,7 @@ public class NmeaTcpSensor extends NmeaSensor {
 
 	public Status getStatus() {
 		synchronized (clientSocket) {
-			if (clientSocket != null && clientSocket.isConnected()) {
+			if (clientSocket.isConnected()) {
 				return Status.CONNECTED;
 			}
 			return Status.DISCONNECTED;

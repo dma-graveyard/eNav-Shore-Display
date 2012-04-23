@@ -11,7 +11,6 @@ import javax.swing.Action;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
@@ -26,7 +25,6 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	MouseMotionListener[] actions;
 	private int id;
 	private final MainFrame mainFrame;
-	JLabel name;
 	private JPanel glassPanel;
 	
 	public JMapFrame(int id, MainFrame mainFrame) {
@@ -72,11 +70,6 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 
 	public int getId(){
 		return id;
-	}
-	
-	
-	public JLabel getNameLabel(){
-		return name;
 	}
 	
 	public void lockUnlockWindow(){

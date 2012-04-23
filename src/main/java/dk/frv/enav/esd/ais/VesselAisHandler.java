@@ -24,6 +24,9 @@ import dk.frv.ais.message.AisMessage6;
 import dk.frv.ais.message.AisPositionMessage;
 import dk.frv.ais.message.binary.AddressedRouteInformation;
 import dk.frv.ais.message.binary.AisApplicationMessage;
+import dk.frv.enav.esd.nmea.IVesselAisListener;
+import dk.frv.enav.esd.nmea.NmeaSensor;
+import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.ins.EeINS;
 import dk.frv.enav.ins.ais.AisAdressedRouteSuggestion;
 import dk.frv.enav.ins.ais.IAisRouteSuggestionListener;
@@ -31,13 +34,9 @@ import dk.frv.enav.ins.ais.VesselPositionData;
 import dk.frv.enav.ins.ais.VesselStaticData;
 import dk.frv.enav.ins.ais.VesselTarget;
 import dk.frv.enav.ins.common.util.Converter;
-import dk.frv.enav.ins.gps.GnssTime;
 import dk.frv.enav.ins.gps.GpsData;
 import dk.frv.enav.ins.gps.GpsHandler;
-import dk.frv.enav.esd.nmea.IVesselAisListener;
-import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.ins.nmea.SensorType;
-import dk.frv.enav.esd.settings.Settings;
 
 public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 	
@@ -133,8 +132,10 @@ public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 			ownShip.setStaticData(new VesselStaticData(msg5));
 		}
 
-		ownShip.setLastReceived(GnssTime.getInstance().getDate());
-		ownShip.setMmsi(aisMessage.getUserId());
+//		if (GnssTime.getInstance() != null){
+//			ownShip.setLastReceived(GnssTime.getInstance().getDate());
+//		}
+//		ownShip.setMmsi(aisMessage.getUserId());
 	}
 
 

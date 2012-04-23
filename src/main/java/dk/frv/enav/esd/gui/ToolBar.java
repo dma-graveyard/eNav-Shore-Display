@@ -65,6 +65,11 @@ public class ToolBar extends JInternalFrame {
 		// Tool: Zoom
 		JButton zoom = new JButton(new ImageIcon("images/toolbar/zoom.png"));
 		JButton drag = new JButton(new ImageIcon("images/toolbar/drag.png"));
+		JButton drag2 = new JButton(new ImageIcon("images/toolbar/drag.png"));
+		JButton drag3 = new JButton(new ImageIcon("images/toolbar/drag.png"));
+		JButton drag4 = new JButton(new ImageIcon("images/toolbar/drag.png"));
+		JButton drag5 = new JButton(new ImageIcon("images/toolbar/drag.png"));
+		JButton drag6 = new JButton(new ImageIcon("images/toolbar/drag.png"));
 		
 		zoom.setToolTipText("Zoom in by clicking, hold shift for zoom out");
 		zoom.addActionListener(new ActionListener() {
@@ -86,7 +91,11 @@ public class ToolBar extends JInternalFrame {
         }); 
 		toolItems.add(zoom);
 		toolItems.add(drag);
-		
+		toolItems.add(drag2);
+		toolItems.add(drag3);
+		toolItems.add(drag4);
+		toolItems.add(drag5);
+		toolItems.add(drag6);
 				
 
 	    // Create the masterpanel for aligning

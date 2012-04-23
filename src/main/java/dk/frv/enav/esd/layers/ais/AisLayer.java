@@ -35,7 +35,7 @@ import dk.frv.enav.ins.layers.ais.AisTargetInfoPanel;
 public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVesselAisListener, MapMouseListener {
 	private static final long serialVersionUID = 1L;
 	private OMGraphicList list = new OMGraphicList();
-	private static VesselAisHandler aisHandler;
+	private VesselAisHandler aisHandler;
 	private List<AisMessageExtended> shipList;
 	private ChartPanel chartPanel;
 	private AisTargetInfoPanel aisTargetInfoPanel = new AisTargetInfoPanel();
