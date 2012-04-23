@@ -167,7 +167,7 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 	@Override
 	public void recieveCoord(LatLonPoint llp) {
 		statusItems.get("LAT").setText(" LAT  " + Formatter.latToPrintable(llp.getLatitude()));
-		statusItems.get("LON").setText(" LON " + Formatter.latToPrintable(llp.getLongitude()));
+		statusItems.get("LON").setText(" LON " + Formatter.lonToPrintable(llp.getLongitude()));
 
 		
 	}
