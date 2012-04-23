@@ -116,7 +116,7 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
      * @param e MouseEvent to be handled
      */
     public void mousePressed(MouseEvent e) {
-    	chartPanel.getMap().setCursor(navCursorMouseClicked);
+//    	chartPanel.getMap().setCursor(navCursorMouseClicked);
         e.getComponent().requestFocus();
         clickTimer.setInterval(500);
         clickTimer.startTime();
