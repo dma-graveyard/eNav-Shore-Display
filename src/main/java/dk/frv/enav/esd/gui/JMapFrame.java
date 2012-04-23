@@ -1,5 +1,7 @@
 package dk.frv.enav.esd.gui;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -14,6 +16,8 @@ import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
+import javax.swing.plaf.ColorUIResource;
 
 public class JMapFrame extends JInternalFrame implements MouseListener  {
 	

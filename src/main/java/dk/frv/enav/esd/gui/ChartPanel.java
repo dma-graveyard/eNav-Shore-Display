@@ -80,6 +80,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	public int maxScale = 5000;
 	private AisLayer aisLayer;
 	private MainFrame mainFrame;
+	private Color background = new Color(2, 101, 134);
 
 	public void setMouseMode(int mode) {
 		// Mode0 is mapNavMouseMode
@@ -139,6 +140,8 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		map = new BufferedLayerMapBean();
 		map.setDoubleBuffered(true);
 		
+		System.out.println(map.getBackground());
+		
 		mouseDelegator = new MouseDelegator();
 		mapHandler.add(mouseDelegator);
 		
@@ -156,6 +159,8 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 		// Get plugin layers
 		createPluginLayers(props);
+
+		map.setBackground(background);
 
 		// Add layer handler to map handler
 		mapHandler.add(layerHandler);

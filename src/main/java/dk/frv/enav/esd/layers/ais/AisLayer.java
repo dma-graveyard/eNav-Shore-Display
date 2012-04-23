@@ -61,6 +61,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private OMText label = null;
 	private int sizeOffset = 5;
 	private MainFrame mainFrame;
+	private Color shipColor = new Color(29, 60, 70);
 	volatile boolean shouldRun = true;
 
 	@Override
@@ -121,12 +122,12 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 						int[] yPos = { sizeOffset, sizeOffset, -2*sizeOffset };
 						vesIcon = new VesselLayer(shipList.get(i).MMSI,xPos, yPos);
 						vesIcon.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, hdgR);
-						vesIcon.setFillPaint(new Color(0, 0, 255));
+						vesIcon.setFillPaint(shipColor);
 						list.add(vesIcon);
 					} else {
 						// Zoom level is too large. Display only dots
 						vesCirc = new OMCircle(lat, lon, 0.01);
-						vesCirc.setFillPaint(new Color(0, 0, 255));
+						vesCirc.setFillPaint(shipColor);
 						list.add(vesCirc);
 					}
 
