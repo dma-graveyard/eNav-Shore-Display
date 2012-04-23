@@ -75,14 +75,14 @@ public class DragMouseMode extends AbstractCoordMouseMode {
         // override the default cursor
 //        
 //        //Get the default toolkit  
-//        Toolkit toolkit = Toolkit.getDefaultToolkit();  
-//          
-//        //Load an image for the cursor  
-//        Image image = toolkit.getImage("images/toolbar/drag.png");  
-//        Cursor dragCursor = toolkit.createCustomCursor(image, new Point(0,0), "Drag");  
-//        
-//        setModeCursor(dragCursor);
-        setModeCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+        Toolkit toolkit = Toolkit.getDefaultToolkit();  
+          
+        //Load an image for the cursor  
+        Image image = toolkit.getImage("images/toolbar/drag_mouse.png");
+        Cursor dragCursor = toolkit.createCustomCursor(image, new Point(0,0), "Drag");  
+        
+        setModeCursor(dragCursor);
+//        setModeCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
     }
 
     public void setActive(boolean val) {

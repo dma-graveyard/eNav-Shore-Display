@@ -31,7 +31,9 @@ package dk.frv.enav.esd.event;
 
 import java.awt.Cursor;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 
 import com.bbn.openmap.MapBean;
@@ -86,7 +88,15 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
     public NavigationMouseMode(boolean shouldConsumeEvents) {
         super(modeID, shouldConsumeEvents);
         // override the default cursor
-        setModeCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+//        setModeCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+//      //Get the default toolkit  
+      Toolkit toolkit = Toolkit.getDefaultToolkit();  
+        
+      //Load an image for the cursor  
+      Image image = toolkit.getImage("images/toolbar/zoom_mouse.png");
+      Cursor zoomCursor = toolkit.createCustomCursor(image, new Point(0,0), "Zoom");  
+      setModeCursor(zoomCursor);
+
     }
 
     /**

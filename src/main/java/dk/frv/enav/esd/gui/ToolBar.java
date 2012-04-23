@@ -3,10 +3,13 @@ package dk.frv.enav.esd.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -16,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 
@@ -32,6 +36,8 @@ public class ToolBar extends JInternalFrame {
 	private ArrayList<JButton> toolItems = new ArrayList<JButton>();
 	public int width;
 	public int height;
+	private static int iconWidth = 16;
+	private static int iconHeight = 16;
 
 	public ToolBar(final MainFrame mainFrame) {
 		
@@ -63,8 +69,14 @@ public class ToolBar extends JInternalFrame {
 		
 		// Setup toolitems (add here for more toolitems)
 		// Tool: Zoom
-		JButton zoom = new JButton(new ImageIcon("images/toolbar/zoom.png"));
-		JButton drag = new JButton(new ImageIcon("images/toolbar/drag.png"));
+		final JButton zoom = new JButton(toolbarIcon("images/toolbar/zoom.png")); //toolbarIcon("images/toolbar/zoom.png")
+		final JButton drag = new JButton(toolbarIcon("images/toolbar/drag.png"));
+		drag.setSelected(true); // Enabled per default
+		
+		//zoom.setHorizontalAlignment(SwingConstants.CENTER);
+		//zoom.setVerticalAlignment(SwingConstants.CENTER);
+		//drag.setHorizontalAlignment(SwingConstants.CENTER);
+		//drag.setAlignmentX(SwingConstants.CENTER);
 		
 		zoom.setToolTipText("Zoom in by clicking, hold shift for zoom out");
 		zoom.addActionListener(new ActionListener() {
@@ -73,8 +85,11 @@ public class ToolBar extends JInternalFrame {
 					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(0);
 					mainFrame.setMouseMode(0);
 				}
+				zoom.setSelected(true);
+				drag.setSelected(false);
 			}
         });
+		toolItems.add(zoom);
 		
 		drag.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -82,9 +97,10 @@ public class ToolBar extends JInternalFrame {
 					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(1);
 					mainFrame.setMouseMode(1);
 				}
+				drag.setSelected(true);
+				zoom.setSelected(false);
 			}
         }); 
-		toolItems.add(zoom);
 		toolItems.add(drag);
 				
 
@@ -96,6 +112,27 @@ public class ToolBar extends JInternalFrame {
 	 
 	    // And finally refresh the toolbar
 	    repaintToolbar();
+	}
+	
+	/*
+	 * Function for resizing the icons for the toolbar
+	 * Author: Steffen D. Sommer
+	 */
+	public ImageIcon toolbarIcon(String imgpath) {
+		/*
+		ImageIcon icon = new ImageIcon(imgpath);
+		Image img = icon.getImage();
+		BufferedImage bi = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+		Graphics g = bi.createGraphics();
+		g.drawImage(img, 0, 0, iconWidth, iconHeight, null);
+		ImageIcon newIcon = new ImageIcon(bi);
+		
+		return newIcon;
+		*/
+		ImageIcon icon = new ImageIcon(imgpath);
+		Image img = icon.getImage();  
+		Image newimg = img.getScaledInstance(iconWidth, iconHeight,  java.awt.Image.SCALE_DEFAULT);  
+		return new ImageIcon(newimg); 
 	}
 	
 	/*
