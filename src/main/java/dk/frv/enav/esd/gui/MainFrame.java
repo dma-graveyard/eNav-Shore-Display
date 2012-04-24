@@ -338,7 +338,7 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		if (!fullscreen) {
 			location = this.getLocation();
-			System.out.println("Size is: " + size);
+//			System.out.println("Size is: " + size);
 			
 			
 			

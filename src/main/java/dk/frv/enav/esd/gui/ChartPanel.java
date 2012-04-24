@@ -140,7 +140,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		map = new BufferedLayerMapBean();
 		map.setDoubleBuffered(true);
 		
-		System.out.println(map.getBackground());
+//		System.out.println(map.getBackground());
 		
 		mouseDelegator = new MouseDelegator();
 		mapHandler.add(mouseDelegator);
