@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Properties;
 
 import com.bbn.openmap.proj.coords.LatLonPoint;
+import com.bbn.openmap.util.PropUtils;
 
 import dk.frv.enav.esd.gui.JMapFrame;
 
@@ -60,6 +61,9 @@ public class Workspace implements Serializable {
 //	private LatLonPoint center = new LatLonPoint.Double(56, 11);
 	private List<Float> scale = new ArrayList<Float>();
 	private List<Boolean> maximized = new ArrayList<Boolean>();
+	private Point toolbarPosition = new Point();
+	private Point notificationAreaPosition = new Point();
+	private Point statusPosition = new Point();
 	
 
 
@@ -112,6 +116,22 @@ public class Workspace implements Serializable {
 			for (int i = 0; i < scaleInput.length; i++) {
 				scale.add(   Float.parseFloat(scaleInput[i]) );
 			}
+			
+			
+			double x_pos = PropUtils.doubleFromProperties(props, PREFIX + "toolbar_pos_x", toolbarPosition.getX());
+			double y_pos = PropUtils.doubleFromProperties(props, PREFIX + "toolbar_pos_y", toolbarPosition.getY());
+			toolbarPosition.setLocation(x_pos, y_pos);
+			
+			x_pos = PropUtils.doubleFromProperties(props, PREFIX + "notification_pos_x", notificationAreaPosition.getX());
+			y_pos = PropUtils.doubleFromProperties(props, PREFIX + "notification_pos_y", notificationAreaPosition.getY());
+			notificationAreaPosition.setLocation(x_pos, y_pos);
+			
+			
+			x_pos = PropUtils.doubleFromProperties(props, PREFIX + "status_pos_x", statusPosition.getX());
+			y_pos = PropUtils.doubleFromProperties(props, PREFIX + "status_pos_y", statusPosition.getY());
+			statusPosition.setLocation(x_pos, y_pos);
+			
+			
 			validWorkspace = true;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -159,6 +179,41 @@ public class Workspace implements Serializable {
 		props.put(PREFIX + "scale", scale);
 		props.put(PREFIX + "alwaysInFront", alwaysInFront);
 
+		props.put(PREFIX + "toolbar_pos_x", Double.toString(toolbarPosition.getX()));
+		props.put(PREFIX + "toolbar_pos_y", Double.toString(toolbarPosition.getY()));
+		
+		props.put(PREFIX + "notification_pos_x", Double.toString(notificationAreaPosition.getX()));
+		props.put(PREFIX + "notification_pos_y", Double.toString(notificationAreaPosition.getY()));
+		
+		props.put(PREFIX + "status_pos_x", Double.toString(statusPosition.getX()));
+		props.put(PREFIX + "status_pos_y", Double.toString(statusPosition.getY()));
+		
+	}
+
+	
+	
+	public Point getToolbarPosition() {
+		return toolbarPosition;
+	}
+
+	public void setToolbarPosition(Point toolbarPosition) {
+		this.toolbarPosition = toolbarPosition;
+	}
+
+	public Point getNotificationAreaPosition() {
+		return notificationAreaPosition;
+	}
+
+	public void setNotificationAreaPosition(Point notificationAreaPosition) {
+		this.notificationAreaPosition = notificationAreaPosition;
+	}
+
+	public Point getStatusPosition() {
+		return statusPosition;
+	}
+
+	public void setStatusPosition(Point statusPosition) {
+		this.statusPosition = statusPosition;
 	}
 
 	public boolean isValidWorkspace() {

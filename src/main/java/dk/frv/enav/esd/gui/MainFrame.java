@@ -266,7 +266,9 @@ public class MainFrame extends JFrame implements WindowListener {
 				topMenu.renameMapMenu(window);
 				window.setSize(workspace.getSize().get(i));
 				window.setLocation(workspace.getPosition().get(i));
-
+				toolbar.setLocation(workspace.getToolbarPosition());
+				notificationArea.setLocation(workspace.getNotificationAreaPosition());
+				statusArea.setLocation(workspace.getStatusPosition());
 				try {
 					window.setMaximum(workspace.isMaximized().get(i));
 				} catch (PropertyVetoException e) {
@@ -379,6 +381,9 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	public void saveWorkSpace(String filename) {
+		ESD.getSettings().getWorkspace().setToolbarPosition(toolbar.getLocation());
+		ESD.getSettings().getWorkspace().setNotificationAreaPosition(notificationArea.getLocation());
+		ESD.getSettings().getWorkspace().setStatusPosition(statusArea.getLocation());
 		ESD.getSettings().saveCurrentWorkspace(mapWindows, filename);
 	}
 
