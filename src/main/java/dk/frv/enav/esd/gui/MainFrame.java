@@ -136,7 +136,8 @@ public class MainFrame extends JFrame implements WindowListener {
 		// getContentPane().add(scrollPane);
 		this.setContentPane(scrollPane);
 
-		desktop.setBackground(Color.LIGHT_GRAY);
+		//desktop.setBackground(Color.LIGHT_GRAY);
+		desktop.setBackground(new Color(39, 39, 39));
 
 		mapWindows = new ArrayList<JMapFrame>();
 

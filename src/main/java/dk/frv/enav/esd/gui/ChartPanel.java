@@ -80,7 +80,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	public int maxScale = 5000;
 	private AisLayer aisLayer;
 	private MainFrame mainFrame;
-	private Color background = new Color(2, 101, 134);
+	private Color background = new Color(168, 228, 255);
 
 	public void setMouseMode(int mode) {
 		// Mode0 is mapNavMouseMode
