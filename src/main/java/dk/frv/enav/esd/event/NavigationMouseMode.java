@@ -344,7 +344,12 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
 	            // paint new rectangle
 	            // point2 = e.getPoint();
 
+	            if (!e.isControlDown()){
 	            point2 = getRatioPoint((MapBean) e.getSource(), point1, e.getPoint());
+	            }
+	            else{
+	            	point2 = e.getPoint();
+	            }
 
 	            paintRectangle((MapBean) e.getSource(), point1, point2);
 			}

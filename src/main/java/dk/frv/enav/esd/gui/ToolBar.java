@@ -76,6 +76,16 @@ public class ToolBar extends JInternalFrame {
 		// Setup toolitems (add here for more toolitems)
 		// Tool: Select TODO
 		final JLabel select = new JLabel(toolbarIcon("images/toolbar/select.png"));
+		select.addMouseListener(new MouseAdapter() {  
+		    public void mouseReleased(MouseEvent e) {  
+		    	setActiveToolItem(select);
+		    	
+				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
+					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(2);
+				}
+				mainFrame.setMouseMode(2);
+		    }  
+		});
 		select.setBorder(toolPaddingBorder);
 		toolItems.add(select);
 		
@@ -87,8 +97,8 @@ public class ToolBar extends JInternalFrame {
 		    	
 				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
 					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(1);
-					mainFrame.setMouseMode(1);
 				}
+				mainFrame.setMouseMode(1);
 		    }  
 		});
 		drag.setBorder(toolPaddingBorder);
@@ -102,8 +112,8 @@ public class ToolBar extends JInternalFrame {
 		    	
 				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
 					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(0);
-					mainFrame.setMouseMode(0);
 				}
+				mainFrame.setMouseMode(0);
 		    }  
 		});  
 		zoom.setBorder(toolPaddingBorder);
@@ -122,7 +132,17 @@ public class ToolBar extends JInternalFrame {
 	    repaintToolbar();
 	    
 		// Set default active tool item
-		setActiveToolItem(drag);
+	    int mouseMode = mainFrame.getMouseMode();
+	    if (mouseMode == 0){
+	    	setActiveToolItem(zoom);
+	    }
+	    if (mouseMode == 1){
+	    	setActiveToolItem(drag);
+	    }
+	    if (mouseMode == 2){
+	    	setActiveToolItem(select);	
+	    }
+		
 	}
 	
 	/*

@@ -35,7 +35,7 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 	private JPanel statusPanel;
 	private static int moveHandlerHeight = 18;
 	private static int statusItemHeight = 20;
-	private static int statusItemWidth = 110;
+	private static int statusItemWidth = 125;
 	private static int statusPanelOffset = 4;
 	private HashMap<String, JLabel> statusItems = new HashMap<String, JLabel>();
 	public int width;
@@ -52,6 +52,7 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 		setRootPaneCheckingEnabled(false);
 		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).setNorthPane(null);
 		this.setBorder(null);
+		
 		
         // Create the top movehandler (for dragging)
         moveHandler = new JLabel("Status", JLabel.CENTER);

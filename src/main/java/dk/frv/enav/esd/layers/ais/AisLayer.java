@@ -24,6 +24,7 @@ import dk.frv.enav.esd.ais.AisHandler.AisMessageExtended;
 import dk.frv.enav.esd.ais.VesselAisHandler;
 import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
+import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.gui.ChartPanel;
 import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.ins.ais.VesselPositionData;
@@ -245,9 +246,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 
 	@Override
 	public String[] getMouseModeServiceList() {
-		String[] ret = new String[2];
-		ret[0] = DragMouseMode.modeID; // "Gestures"
-		ret[1] = NavigationMouseMode.modeID; // "Gestures"
+		String[] ret = new String[3];
+		ret[0] = DragMouseMode.modeID; // "DragMouseMode"
+		ret[1] = NavigationMouseMode.modeID; // "ZoomMouseMoude"
+		ret[1] = SelectMouseMode.modeID; // "SelectMouseMode"
 		return ret;
 	}
 

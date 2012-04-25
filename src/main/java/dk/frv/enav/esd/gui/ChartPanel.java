@@ -58,6 +58,7 @@ import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
+import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.layers.ais.AisLayer;
 import dk.frv.enav.esd.settings.MapSettings;
 
@@ -74,8 +75,12 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	private BufferedLayerMapBean map;
 	private Layer encLayer;
 	private Layer bgLayer;
+	
 	private NavigationMouseMode mapNavMouseMode;
 	private DragMouseMode dragMouseMode;
+	private SelectMouseMode selectMouseMode;
+	
+	
 	private MouseDelegator mouseDelegator;
 	public int maxScale = 5000;
 	private AisLayer aisLayer;
@@ -92,6 +97,11 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		if (mode == 1) {
 			mouseDelegator.setActive(dragMouseMode);
 		}
+		// Mode1 is Select
+		if (mode == 2) {
+			mouseDelegator.setActive(selectMouseMode);
+		}
+		
 	}
 
 	public ChartPanel(MainFrame mainFrame) {
@@ -147,13 +157,17 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		
 		mapNavMouseMode = new NavigationMouseMode(this);
 		dragMouseMode = new DragMouseMode();
+		selectMouseMode = new SelectMouseMode(this);
 		
 		mouseDelegator.addMouseMode(mapNavMouseMode);
 		mouseDelegator.addMouseMode(dragMouseMode);
+		mouseDelegator.addMouseMode(selectMouseMode);
+		
 		setMouseMode(mainFrame.getMouseMode());
 		
 		mapHandler.add(dragMouseMode);
 		mapHandler.add(mapNavMouseMode);
+		mapHandler.add(selectMouseMode);
 		
 		layerHandler = new LayerHandler();
 

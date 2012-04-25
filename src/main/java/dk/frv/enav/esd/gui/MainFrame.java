@@ -69,7 +69,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private Point location;
 	private JMenuWorkspaceBar topMenu;
 	private boolean fullscreen = false;
-	private int mouseMode = 1;
+	private int mouseMode = 2;
 	private BeanContextServicesSupport beanHandler;
 	
 	
