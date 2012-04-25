@@ -4,11 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -18,6 +21,8 @@ import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
 
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 
@@ -28,10 +33,12 @@ public class NotificationArea extends JInternalFrame {
 	private JLabel moveHandler;
 	private JPanel masterPanel;
 	private JPanel notificationPanel;
-	private static int moveHandlerHeight = 12;
+	private static int moveHandlerHeight = 18;
 	private static int notificationHeight = 35;
-	private static int notificationWidth = 70;
-	private ArrayList<JButton> notifications = new ArrayList<JButton>();
+	private static int notificationWidth = 125;
+	private static int notificationPanelOffset = 4;
+	//private ArrayList<JButton> notifications = new ArrayList<JButton>();
+	private ArrayList<JLabel> notifications = new ArrayList<JLabel>();
 	public int width;
 	public int height;
 
@@ -50,9 +57,11 @@ public class NotificationArea extends JInternalFrame {
 		
         // Create the top movehandler (for dragging)
         moveHandler = new JLabel("Notifications", JLabel.CENTER);
-        moveHandler.setForeground(Color.WHITE);
+        moveHandler.setForeground(new Color(200, 200, 200));
         moveHandler.setOpaque(true);
         moveHandler.setBackground(Color.DARK_GRAY);
+        moveHandler.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(30, 30, 30)));
+        moveHandler.setFont(new Font("Arial", Font.BOLD, 9));
         moveHandler.setPreferredSize(new Dimension(notificationWidth, moveHandlerHeight));
         ToolbarMoveMouseListener mml = new ToolbarMoveMouseListener(this, mainFrame);
         moveHandler.addMouseListener(mml);
@@ -61,9 +70,64 @@ public class NotificationArea extends JInternalFrame {
 		// Create the grid for the notifications
         notificationPanel = new JPanel();
 		notificationPanel.setLayout(new GridLayout(0,1));
-		notificationPanel.setBorder(BorderFactory.createLineBorder (Color.DARK_GRAY, 2));
+		notificationPanel.setBorder(BorderFactory.createEmptyBorder(5,5,0,5));
+		notificationPanel.setBackground(new Color(83, 83, 83));
+		
+		Border paddingLeft = BorderFactory.createMatteBorder(0, 8, 0, 0, new Color(65, 65, 65));
+		Border paddingBottom = BorderFactory.createMatteBorder(0, 0, 5, 0, new Color(83, 83, 83));
+		final Border notificationPadding = BorderFactory.createCompoundBorder(paddingBottom, paddingLeft);
+		final Border notificationsIndicatorImportant = BorderFactory.createMatteBorder(0, 0, 0, 10, new Color(206, 120, 120));
+		
+		Border paddingLeftPressed = BorderFactory.createMatteBorder(0, 8, 0, 0, new Color(45, 45, 45));
+		final Border notificationPaddingPressed = BorderFactory.createCompoundBorder(paddingBottom, paddingLeftPressed);
+		
+		final JLabel msi = new JLabel("MSI (1)");
+		msi.setBackground(new Color(65, 65, 65));
+		msi.setBorder(BorderFactory.createCompoundBorder(notificationPadding, notificationsIndicatorImportant));
+		msi.setOpaque(true);
+		notifications.add(msi);
+		msi.setFont(new Font("Arial", Font.PLAIN, 11));
+		msi.setForeground(new Color(237, 237, 237));
+		
+		msi.addMouseListener(new MouseAdapter() {  
+			public void mousePressed(MouseEvent e) {
+				msi.setBorder(BorderFactory.createCompoundBorder(notificationPaddingPressed, notificationsIndicatorImportant));
+				msi.setBackground(new Color(45, 45, 45));
+			}
+			
+		    public void mouseReleased(MouseEvent e) {  
+		    	msi.setBorder(BorderFactory.createCompoundBorder(notificationPadding, notificationsIndicatorImportant));
+		    	msi.setBackground(new Color(65, 65, 65));
+		    	mainFrame.toggleNotificationCenter();
+		    }  
+		});
 		
 		
+		
+		
+		final JLabel ais = new JLabel("AIS");
+		ais.setBackground(new Color(65, 65, 65));
+		ais.setBorder(notificationPadding);
+		ais.setOpaque(true);
+		notifications.add(ais);
+		ais.setFont(new Font("Arial", Font.PLAIN, 11));
+		ais.setForeground(new Color(237, 237, 237));
+		
+		ais.addMouseListener(new MouseAdapter() {  
+			public void mousePressed(MouseEvent e) {
+				ais.setBorder(notificationPaddingPressed);
+				ais.setBackground(new Color(45, 45, 45));
+			}
+			
+		    public void mouseReleased(MouseEvent e) {  
+		    	ais.setBorder(notificationPadding);
+		    	ais.setBackground(new Color(65, 65, 65));
+		    	mainFrame.toggleNotificationCenter();
+		    }  
+		});
+		
+		
+		/*
 		// Setup notifications (add here for more notifications)
 		// Notification: MSI
 		JButton msi = new JButton("MSI");
@@ -84,12 +148,13 @@ public class NotificationArea extends JInternalFrame {
 			}
         }); 
 		notifications.add(ais);
-				
+		*/
 
 	    // Create the masterpanel for aligning
 	    masterPanel = new JPanel(new BorderLayout());
 	    masterPanel.add(moveHandler, BorderLayout.NORTH);
 	    masterPanel.add(notificationPanel, BorderLayout.SOUTH);
+	    masterPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
 	    this.getContentPane().add(masterPanel);
 	 
 	    // And finally refresh the notification area
@@ -133,7 +198,7 @@ public class NotificationArea extends JInternalFrame {
 	public void repaintNotificationArea() {
 		
 		// Lets start by adding all the notifications
-		for(Iterator<JButton> i = notifications.iterator();i.hasNext();) {
+		for(Iterator<JLabel> i = notifications.iterator();i.hasNext();) {
 			//JLayeredPane lpane = new JLayeredPane();
 			//lpane.setBackground(Color.BLACK);
 			//notificationPanel.add(lpane);
@@ -165,8 +230,8 @@ public class NotificationArea extends JInternalFrame {
 			height = innerHeight + moveHandlerHeight;
 		
 		// And finally set the size and repaint it
-		notificationPanel.setSize(width, innerHeight);
-		notificationPanel.setPreferredSize(new Dimension(width, innerHeight));
+		notificationPanel.setSize(width, innerHeight - notificationPanelOffset);
+		notificationPanel.setPreferredSize(new Dimension(width, innerHeight - notificationPanelOffset));
 		this.setSize(width, height);
 		this.revalidate();
 		this.repaint();

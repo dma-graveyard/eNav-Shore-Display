@@ -3,20 +3,21 @@ package dk.frv.enav.esd.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
 
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 
@@ -27,14 +28,18 @@ public class ToolBar extends JInternalFrame {
 	private JLabel moveHandler;
 	private JPanel masterPanel;
 	private JPanel buttonPanel;
-	private static int moveHandlerHeight = 12;
+	private static int moveHandlerHeight = 18;
 	private static int toolItemSize = 35;
 	private static int toolItemColumns = 2;
-	private ArrayList<JButton> toolItems = new ArrayList<JButton>();
+	private static int buttonPanelOffset = 4;
+	private ArrayList<JLabel> toolItems = new ArrayList<JLabel>();
 	public int width;
 	public int height;
 	private static int iconWidth = 16;
 	private static int iconHeight = 16;
+	private Border toolPaddingBorder = BorderFactory.createMatteBorder(0, 0, 3, 3, new Color(83, 83, 83));
+	private Border toolInnerEtchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(37, 37, 37), new Color(52, 52, 52));
+	
 
 	public ToolBar(final MainFrame mainFrame) {
 		
@@ -50,9 +55,11 @@ public class ToolBar extends JInternalFrame {
 		
         // Create the top movehandler (for dragging)
         moveHandler = new JLabel("Toolbar", JLabel.CENTER);
-        moveHandler.setForeground(Color.WHITE);
+        moveHandler.setForeground(new Color(200, 200, 200));
         moveHandler.setOpaque(true);
         moveHandler.setBackground(Color.DARK_GRAY);
+        moveHandler.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(30, 30, 30)));
+        moveHandler.setFont(new Font("Arial", Font.BOLD, 9));
         moveHandler.setPreferredSize(new Dimension((toolItemSize * toolItemColumns), moveHandlerHeight));
         ToolbarMoveMouseListener mml = new ToolbarMoveMouseListener(this, mainFrame);
         moveHandler.addMouseListener(mml);
@@ -61,54 +68,78 @@ public class ToolBar extends JInternalFrame {
 		// Create the grid for the toolitems
         buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridLayout(0,2));
-		buttonPanel.setBorder(BorderFactory.createLineBorder (Color.DARK_GRAY, 2));
+		buttonPanel.setBorder(BorderFactory.createEmptyBorder(3,3,0,0));
+		buttonPanel.setBackground(new Color(83, 83, 83));
+		
 		
 		
 		// Setup toolitems (add here for more toolitems)
-		// Tool: Zoom
-		final JButton zoom = new JButton(toolbarIcon("images/toolbar/zoom.png")); //toolbarIcon("images/toolbar/zoom.png")
-		final JButton drag = new JButton(toolbarIcon("images/toolbar/drag.png"));
-		drag.setSelected(true); // Enabled per default
+		// Tool: Select TODO
+		final JLabel select = new JLabel(toolbarIcon("images/toolbar/select.png"));
+		select.setBorder(toolPaddingBorder);
+		toolItems.add(select);
 		
-		//zoom.setHorizontalAlignment(SwingConstants.CENTER);
-		//zoom.setVerticalAlignment(SwingConstants.CENTER);
-		//drag.setHorizontalAlignment(SwingConstants.CENTER);
-		//drag.setAlignmentX(SwingConstants.CENTER);
-		
-		zoom.setToolTipText("Zoom in by clicking, hold shift for zoom out");
-		zoom.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
-					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(0);
-					mainFrame.setMouseMode(0);
-				}
-				zoom.setSelected(true);
-				drag.setSelected(false);
-			}
-        });
-		toolItems.add(zoom);
-		
-		drag.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		// Tool: Drag
+		final JLabel drag = new JLabel(toolbarIcon("images/toolbar/drag.png"));
+		drag.addMouseListener(new MouseAdapter() {  
+		    public void mouseReleased(MouseEvent e) {  
+		    	setActiveToolItem(drag);
+		    	
 				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
 					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(1);
 					mainFrame.setMouseMode(1);
 				}
-				drag.setSelected(true);
-				zoom.setSelected(false);
-			}
-        }); 
+		    }  
+		});
+		drag.setBorder(toolPaddingBorder);
 		toolItems.add(drag);
-				
+		
+		// Tool: Zoom
+		final JLabel zoom = new JLabel(toolbarIcon("images/toolbar/zoom.png"));
+		zoom.addMouseListener(new MouseAdapter() {  
+		    public void mouseReleased(MouseEvent e) {  
+		    	setActiveToolItem(zoom);
+		    	
+				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
+					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(0);
+					mainFrame.setMouseMode(0);
+				}
+		    }  
+		});  
+		zoom.setBorder(toolPaddingBorder);
+		toolItems.add(zoom);
+		
+		
 
 	    // Create the masterpanel for aligning
 	    masterPanel = new JPanel(new BorderLayout());
 	    masterPanel.add(moveHandler, BorderLayout.NORTH);
 	    masterPanel.add(buttonPanel, BorderLayout.SOUTH);
+	    masterPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
 	    this.getContentPane().add(masterPanel);
-	 
+	    
 	    // And finally refresh the toolbar
 	    repaintToolbar();
+	    
+		// Set default active tool item
+		setActiveToolItem(drag);
+	}
+	
+	/*
+	 * Function for setting the active tool item in the toolbar
+	 * Author: Steffen D. Sommer
+	 */
+	public void setActiveToolItem(JLabel tool) {
+		// Inactive all tools
+		for(int i=0;i<toolItems.size();i++) {
+			toolItems.get(i).setBorder(toolPaddingBorder);
+			toolItems.get(i).setOpaque(false);
+		}
+		
+		// Set active tool
+        tool.setBackground(new Color(55, 55, 55));
+        tool.setBorder(BorderFactory.createCompoundBorder(toolPaddingBorder, toolInnerEtchedBorder));
+        tool.setOpaque(true);
 	}
 	
 	/*
@@ -116,16 +147,6 @@ public class ToolBar extends JInternalFrame {
 	 * Author: Steffen D. Sommer
 	 */
 	public ImageIcon toolbarIcon(String imgpath) {
-		/*
-		ImageIcon icon = new ImageIcon(imgpath);
-		Image img = icon.getImage();
-		BufferedImage bi = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-		Graphics g = bi.createGraphics();
-		g.drawImage(img, 0, 0, iconWidth, iconHeight, null);
-		ImageIcon newIcon = new ImageIcon(bi);
-		
-		return newIcon;
-		*/
 		ImageIcon icon = new ImageIcon(imgpath);
 		Image img = icon.getImage();  
 		Image newimg = img.getScaledInstance(iconWidth, iconHeight,  java.awt.Image.SCALE_DEFAULT);  
@@ -168,8 +189,8 @@ public class ToolBar extends JInternalFrame {
 	public void repaintToolbar() {
 		
 		// Lets start by adding all the toolitems
-		for(Iterator<JButton> i = toolItems.iterator();i.hasNext();) {
-			buttonPanel.add(i.next());
+		for(int i=0;i<toolItems.size();i++) {
+			buttonPanel.add(toolItems.get(i));
 		}
 		
 		// Then calculate the size of the toolbar according to the number of toolitems
@@ -180,14 +201,13 @@ public class ToolBar extends JInternalFrame {
 		
 		if(!locked)
 			height = innerHeight + moveHandlerHeight;
-		
+				
 		// And finally set the size and repaint it
-		buttonPanel.setSize(width, innerHeight);
-		buttonPanel.setPreferredSize(new Dimension(width, innerHeight));
+		buttonPanel.setSize(width, innerHeight - buttonPanelOffset);
+		buttonPanel.setPreferredSize(new Dimension(width, innerHeight - buttonPanelOffset));
 		this.setSize(width, height);
 		this.revalidate();
 		this.repaint();
-		
 	}
 	
 	/*

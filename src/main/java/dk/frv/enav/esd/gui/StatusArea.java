@@ -3,6 +3,7 @@ package dk.frv.enav.esd.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.beans.PropertyVetoException;
@@ -17,6 +18,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.EtchedBorder;
 
 import com.bbn.openmap.proj.coords.LatLonPoint;
 
@@ -31,9 +33,10 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 	private JLabel moveHandler;
 	private JPanel masterPanel;
 	private JPanel statusPanel;
-	private static int moveHandlerHeight = 12;
-	private static int statusItemHeight = 15;
-	private static int statusItemWidth = 90;
+	private static int moveHandlerHeight = 18;
+	private static int statusItemHeight = 20;
+	private static int statusItemWidth = 110;
+	private static int statusPanelOffset = 4;
 	private HashMap<String, JLabel> statusItems = new HashMap<String, JLabel>();
 	public int width;
 	public int height;
@@ -52,9 +55,11 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 		
         // Create the top movehandler (for dragging)
         moveHandler = new JLabel("Status", JLabel.CENTER);
-        moveHandler.setForeground(Color.WHITE);
+        moveHandler.setForeground(new Color(200, 200, 200));
         moveHandler.setOpaque(true);
         moveHandler.setBackground(Color.DARK_GRAY);
+        moveHandler.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(30, 30, 30)));
+        moveHandler.setFont(new Font("Arial", Font.BOLD, 9));
         moveHandler.setPreferredSize(new Dimension(statusItemWidth, moveHandlerHeight));
         ToolbarMoveMouseListener mml = new ToolbarMoveMouseListener(this, mainFrame);
         moveHandler.addMouseListener(mml);
@@ -63,7 +68,8 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 		// Create the grid for the status items
         statusPanel = new JPanel();
         statusPanel.setLayout(new GridLayout(0,1));
-        statusPanel.setBorder(BorderFactory.createLineBorder (Color.DARK_GRAY, 2));
+        statusPanel.setBorder(BorderFactory.createEmptyBorder(3,3,0,0));
+        statusPanel.setBackground(new Color(83, 83, 83));
 		
 		
 		// Add status items here
@@ -85,6 +91,7 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 	    masterPanel = new JPanel(new BorderLayout());
 	    masterPanel.add(moveHandler, BorderLayout.NORTH);
 	    masterPanel.add(statusPanel, BorderLayout.SOUTH);
+	    masterPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
 	    this.getContentPane().add(masterPanel);
 	 
 	    // And finally refresh the status bar
@@ -128,7 +135,10 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 		
 		// Lets start by adding all the notifications
 		for(Iterator<Entry<String, JLabel>> i = statusItems.entrySet().iterator();i.hasNext();) {
-			statusPanel.add(i.next().getValue());
+			JLabel statusItem = i.next().getValue();
+			statusItem.setFont(new Font("Arial", Font.PLAIN, 11));
+			statusItem.setForeground(new Color(237, 237, 237));
+			statusPanel.add(statusItem);
 		}
 		
 		// Then calculate the size of the status bar according to the number of status items
@@ -140,8 +150,8 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 			height = innerHeight + moveHandlerHeight;
 		
 		// And finally set the size and repaint it
-		statusPanel.setSize(width, innerHeight);
-		statusPanel.setPreferredSize(new Dimension(width, innerHeight));
+		statusPanel.setSize(width, innerHeight - statusPanelOffset);
+		statusPanel.setPreferredSize(new Dimension(width, innerHeight - statusPanelOffset));
 		this.setSize(width, height);
 		this.revalidate();
 		this.repaint();
