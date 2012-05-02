@@ -42,27 +42,8 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 	private ChartPanel chartPanel;
 	private AisTargetInfoPanel aisTargetInfoPanel = new AisTargetInfoPanel();
 
-	private OMGraphic closest = null;
-
-	private OMCircle vesCirc;
-
-	private OMPoly infoBox;
-	private OMText boxMMSI;
-	private OMText boxSog;
-	private OMText boxCog;
-
-	private OMLine speedVector;
-	private LatLonPoint startPos = null;
-	private LatLonPoint endPos = null;
-	public static final float STROKE_WIDTH = 1.5f;
-
-	private VesselPositionData location;
-	private Font font = null;
-	private OMText label = null;
-	private int sizeOffset = 5;
 	private MainFrame mainFrame;
 	volatile boolean shouldRun = true;
-	private Color shipColor = new Color(78, 78, 78);
 	private WMSService wmsService;
 
 	@Override
@@ -74,10 +55,16 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 			Double upperLeftLat = chartPanel.getMap().getProjection().getUpperLeft().getY();
 			Double lowerRightLon = chartPanel.getMap().getProjection().getLowerRight().getX();
 			Double lowerRightLat = chartPanel.getMap().getProjection().getLowerRight().getY();
+			
+			// Overwrite coordinates to get it working:
+			upperLeftLat = 612615.5069764;
+			upperLeftLon = 6871781.27364377;
+			lowerRightLat = 622761.062857702;
+			lowerRightLon = 6882542.40257854;
+			
 			int w = chartPanel.getMap().getWidth();
 			int h = chartPanel.getMap().getHeight();
-			// 612615.5069764,6882542.40257854,622761.062857702,6871781.27364377
-			wmsService.setWMSPosition(upperLeftLon,upperLeftLat,lowerRightLon,lowerRightLat,w,h);
+			wmsService.setWMSPosition(chartPanel.getMap().getProjection().getCenter().getX(),chartPanel.getMap().getProjection().getCenter().getY(),upperLeftLon,upperLeftLat,lowerRightLon,lowerRightLat,w,h);
 			drawWMS(wmsService.getWmsList());
 		}
 	}
