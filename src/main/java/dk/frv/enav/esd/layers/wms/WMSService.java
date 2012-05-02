@@ -72,6 +72,8 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 				+ "&HEIGHT=" + height
 				+ "&ticket=5e1212b2670a2b1905d01affb02ffaa5";
 		System.out.println(queryString);
+		queryString = "http://kortforsyningen.kms.dk/soe_enc_primar?ignoreillegallayers=TRUE&transparent=TRUE&login=StatSofart&password=114karls&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326&BBOX=12,55,10,60&WIDTH=512&HEIGHT=512&LAYERS=cells&STYLES=style-id-245&TRANSPARENT=TRUE&FORMAT=image/gif";
+//		System.out.println(queryString);
 		return queryString;
 
 				//+ "&login=StatSofart" 
