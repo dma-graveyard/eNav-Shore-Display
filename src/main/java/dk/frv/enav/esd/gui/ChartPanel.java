@@ -60,6 +60,8 @@ import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.layers.ais.AisLayer;
+import dk.frv.enav.esd.layers.wms.WMSLayer;
+import dk.frv.enav.esd.layers.wms.WMSService;
 import dk.frv.enav.esd.settings.MapSettings;
 
 /**
@@ -84,6 +86,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	private MouseDelegator mouseDelegator;
 	public int maxScale = 5000;
 	private AisLayer aisLayer;
+	private WMSLayer wmsLayer;
 	private MainFrame mainFrame;
 	private Color background = new Color(168, 228, 255);
 
@@ -182,6 +185,10 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		aisLayer = new AisLayer();
 		aisLayer.setVisible(true);
 		mapHandler.add(aisLayer);
+		
+		wmsLayer = new WMSLayer();
+		wmsLayer.setVisible(true);
+		mapHandler.add(wmsLayer);
 
 
 		// Create background layer
