@@ -108,7 +108,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		
 	}
 
-	public ChartPanel(MainFrame mainFrame) {
+	public ChartPanel(MainFrame mainFrame, JMapFrame jmapFrame) {
 		super();
 
 		this.mainFrame = mainFrame;
@@ -121,6 +121,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		mapHandler.add(this);
 		mapHandler.add(mainFrame);
 		mapHandler.add(mainFrame.getStatusArea());
+		mapHandler.add(jmapFrame);
 
 		// Set layout
 		// setLayout(new BorderLayout());

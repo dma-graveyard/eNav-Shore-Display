@@ -34,7 +34,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener {
 
 		this.mainFrame = mainFrame;
 		this.id = id;
-		chartPanel = new ChartPanel(mainFrame);
+		chartPanel = new ChartPanel(mainFrame, this);
 		this.setContentPane(chartPanel);
 		this.setVisible(true);
 
@@ -54,10 +54,12 @@ public class JMapFrame extends JInternalFrame implements MouseListener {
 
 		this.mainFrame = mainFrame;
 		this.id = id;
-		chartPanel = new ChartPanel(mainFrame);
+		chartPanel = new ChartPanel(mainFrame, this);
 		this.setContentPane(chartPanel);
 		this.setVisible(true);
 
+		initGlassPane();
+		
 		chartPanel.initChart(center, scale);
 		makeKeyBindings();
 
@@ -196,6 +198,12 @@ public class JMapFrame extends JInternalFrame implements MouseListener {
 			this.setTitle(title);
 			mainFrame.renameMapWindow(this);
 		}
+	}
+
+	
+	
+	public JPanel getGlassPanel() {
+		return glassPanel;
 	}
 
 	@Override
