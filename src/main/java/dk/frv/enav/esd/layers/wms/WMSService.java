@@ -27,94 +27,76 @@ import dk.frv.enav.ins.gui.MainFrame;
 
 public class WMSService extends WMSPlugIn implements ImageServerConstants {
 
-	private ChartPanel chartPanel;
 	private OMGraphicList wmsList = new OMGraphicList();
-
+	private String queryString = "";
+	String bbox;
+	String width;
+	String height;
+	
 	public WMSService() {
-
-		// chartPanel.getMap()
 		super();
-		// WMSPlugIn wms = new WMSPlugIn();
 		setImageFormat("image/png");
-		setLayers("cells");
+		setLayers("ftk_f100");
 		setWmsVersion("1.1.1");
-		setStyles("style-id-245");
+		setStyles("");
 		setVendorSpecificNames("EPSG");
-		setVendorSpecificValues("4326");
-		setQueryHeader("http://kortforsyningen.kms.dk/soe_enc_primar");
+		setVendorSpecificValues("32629");
+		//setQueryHeader("http://kortforsyningen.kms.dk/soe_enc_primar");
+		setQueryHeader("http://kortforsyningen.kms.dk/ftopo");
 		setTransparent("TRUE");
-
-		// Projection p = bean.getProjection();
-
-		String height = "undefined";
-		String width = "undefined";
-
-		/*
-		 * if (p != null) { bbox =
-		 * Double.toString(p.getUpperLeft().getLongitude()) + "," +
-		 * Double.toString(p.getLowerRight().getLatitude()) + "," +
-		 * Double.toString(p.getLowerRight().getLongitude()) + "," +
-		 * Double.toString(p.getUpperLeft().getLatitude()); height =
-		 * Integer.toString(p.getHeight()); width =
-		 * Integer.toString(p.getWidth()); }
-		 */
-		width = "1680";
-		height = "1050";
-
-		/*
-		 * http://kortforsyningen.kms.dk/soe_enc_primar?ignoreillegallayers=TRUE
-		 * &transparent=TRUE &login=StatSofart &password=114karls &VERSION=1.1.1
-		 * &REQUEST=GetMap &SRS=EPSG:4326 &WIDTH=1680 &HEIGHT=1050 &LAYERS=cells
-		 * &STYLES=style-id-245 &TRANSPARENT=TRUE &FORMAT=image/png
-		 */
-
-		String queryString = getQueryHeader() + "?ignoreillegallayers=TRUE" + "&transparent=" + getTransparent()
-				+ "&login=StatSofart" + "&password=114karls" + "&VERSION=" + getWmsVersion() + "&REQUEST=GetMap"
-				+ "&SRS=" + getVendorSpecificNames() + ":" + getVendorSpecificValues() + "&WIDTH=" + width + "&HEIGHT="
-				+ height + "&LAYERS=" + getLayers() + "&STYLES=" + getStyles() + "&FORMAT=" + getImageFormat();
-
-		// System.out.println(wms.createQueryString(bean.getProjection()));
-
-		queryString = "http://kortforsyningen.kms.dk/ftopo?ignoreillegallayers=TRUE&transparent=TRUE&service=WMS&REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&LAYERS=ftk_f100&STYLES=&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=TRUE&SRS=EPSG:32629&BBOX=612615.5069764,6871781.27364377,622761.062857702,6882542.40257854&WIDTH=445&HEIGHT=472&ticket=5e1212b2670a2b1905d01affb02ffaa5";
+	}
+	
+	public void setWMSPosition(Double upperLeftLon, Double upperLeftLat, Double lowerRightLon, Double lowerRightLat, int w, int h){
+		// xmin, ymin, xmax, ymax
+		this.bbox = Double.toString(upperLeftLat) + "," +
+				  Double.toString(upperLeftLon) + "," +
+				  Double.toString(lowerRightLat) + "," +
+				  Double.toString(lowerRightLon);
+		this.width = Integer.toString(w);
+		this.height = Integer.toString(h);
+	}
+	
+	public String getQueryString(){	
+		queryString = getQueryHeader() 
+				+ "?ignoreillegallayers=TRUE" 
+				+ "&transparent=" + getTransparent()
+				+ "&service=WMS"
+				+ "&REQUEST=GetMap"
+				+ "&VERSION=" + getWmsVersion() 
+				+ "&LAYERS=" + getLayers()
+				+ "&STYLES=" + getStyles() 
+				+ "&FORMAT=" + getImageFormat()
+				+ "&SRS=" + getVendorSpecificNames() + ":" + getVendorSpecificValues()
+				+ "&BBOX="+bbox
+				+ "&WIDTH=" + width 
+				+ "&HEIGHT=" + height
+				+ "&ticket=5e1212b2670a2b1905d01affb02ffaa5";
 		System.out.println(queryString);
+		return queryString;
+
+				//+ "&login=StatSofart" 
+				//+ "&password=114karls"
+	}
+	
+
+	public OMGraphicList getWmsList() {
+		
 		java.net.URL url = null;
-
 		try {
-			System.out.println("Inside URL code");
-			url = new java.net.URL(queryString);
-
+			url = new java.net.URL(getQueryString());
 			java.net.HttpURLConnection urlc = (java.net.HttpURLConnection) url.openConnection();
-
-			urlc.setRequestProperty("User-Agent",
-					"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14");
-
-			System.out.println("Using Proxy: " + urlc.usingProxy());
-
+			urlc.setRequestProperty("User-Agent","Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14");
 			urlc.setDoInput(true);
 			urlc.setDoOutput(true);
 			urlc.setRequestMethod("GET");
-
-			// Check if correct image found with urlc.getContentType()
 			urlc.disconnect();
-			ImageIcon ii = new ImageIcon(url);
-			CenterRaster wmsImage = new CenterRaster(55.6760968, 12.568337, 445, 472, ii);
-			wmsList.add(wmsImage);
-
+			wmsList.clear();
+			wmsList.add(new CenterRaster(55.6760968, 12.568337, 445, 472, new ImageIcon(url)));
 		} catch (java.net.MalformedURLException murle) {
 			System.out.println("Bad URL!");
 		} catch (java.io.IOException ioe) {
 			System.out.println("IO Exception");
 		}
-
-
-	}
-
-	/*
-	 * @Override public void findAndInit(Object obj) { if (obj instanceof
-	 * ChartPanel) { chartPanel = (ChartPanel) obj; } }
-	 */
-
-	public OMGraphicList getWmsList() {
 		return wmsList;
 	}
 

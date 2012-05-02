@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 import java.util.List;
 
 import com.bbn.openmap.event.MapMouseListener;
@@ -68,8 +69,15 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 	public void run() {
 		while (shouldRun) {
 			ESD.sleep(1000);
+			Double upperLeftLon = chartPanel.getMap().getProjection().getUpperLeft().getX();
+			Double upperLeftLat = chartPanel.getMap().getProjection().getUpperLeft().getY();
+			Double lowerRightLon = chartPanel.getMap().getProjection().getLowerRight().getX();
+			Double lowerRightLat = chartPanel.getMap().getProjection().getLowerRight().getY();
+			int w = chartPanel.getMap().getWidth();
+			int h = chartPanel.getMap().getHeight();
+			// 612615.5069764,6882542.40257854,622761.062857702,6871781.27364377
+			wmsService.setWMSPosition(upperLeftLon,upperLeftLat,lowerRightLon,lowerRightLat,w,h);
 			drawWMS(wmsService.getWmsList());
-//			drawVessels();
 		}
 	}
 
@@ -84,15 +92,9 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 	}
 
 	public void drawWMS(OMGraphicList list){
-		OMGraphic object = list.get(0);
-		object.setVisible(true);
+		this.list.clear();
 		this.list.add(list);
-//		this.list.clear();
-//		this.setList(list);
-//		System.out.println(this.getList().size());
-		
 		doPrepare();
-//		System.out.println(this.list.get(0).isVisible());
 	}
 	
 	@Override

@@ -182,14 +182,13 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		// Add layer handler to map handler
 		mapHandler.add(layerHandler);
 		
-		aisLayer = new AisLayer();
-		aisLayer.setVisible(true);
-		mapHandler.add(aisLayer);
-		
 		wmsLayer = new WMSLayer();
 		wmsLayer.setVisible(true);
 		mapHandler.add(wmsLayer);
-
+		
+		aisLayer = new AisLayer();
+		aisLayer.setVisible(true);
+		mapHandler.add(aisLayer);
 
 		// Create background layer
 		String layerName = "background";
