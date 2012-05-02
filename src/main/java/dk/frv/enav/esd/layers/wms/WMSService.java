@@ -29,9 +29,13 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 
 	private OMGraphicList wmsList = new OMGraphicList();
 	private String queryString = "";
-	String bbox;
-	String width;
-	String height;
+	private String bbox;
+	private String width;
+	private String height;
+	private int wmsWidth;
+	private int wmsHeight;
+	private Double wmsullon;
+	private Double wmsullat;
 	
 	public WMSService() {
 		super();
@@ -46,8 +50,11 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 		setTransparent("TRUE");
 	}
 	
-	public void setWMSPosition(Double upperLeftLon, Double upperLeftLat, Double lowerRightLon, Double lowerRightLat, int w, int h){
-		// xmin, ymin, xmax, ymax
+	public void setWMSPosition(Double ullon, Double ullat, Double upperLeftLon, Double upperLeftLat, Double lowerRightLon, Double lowerRightLat, int w, int h){
+		this.wmsWidth = w;
+		this.wmsHeight = h;
+		this.wmsullon = ullon;
+		this.wmsullat = ullat;
 		this.bbox = Double.toString(upperLeftLat) + "," +
 				  Double.toString(upperLeftLon) + "," +
 				  Double.toString(lowerRightLat) + "," +
@@ -62,7 +69,7 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 				+ "&transparent=" + getTransparent()
 				+ "&service=WMS"
 				+ "&REQUEST=GetMap"
-				+ "&VERSION=" + getWmsVersion() 
+				+ "&VERSION=" + getWmsVersion()
 				+ "&LAYERS=" + getLayers()
 				+ "&STYLES=" + getStyles() 
 				+ "&FORMAT=" + getImageFormat()
@@ -71,7 +78,6 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 				+ "&WIDTH=" + width 
 				+ "&HEIGHT=" + height
 				+ "&ticket=5e1212b2670a2b1905d01affb02ffaa5";
-		System.out.println(queryString);
 		return queryString;
 
 				//+ "&login=StatSofart" 
@@ -91,7 +97,8 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 			urlc.setRequestMethod("GET");
 			urlc.disconnect();
 			wmsList.clear();
-			wmsList.add(new CenterRaster(55.6760968, 12.568337, 445, 472, new ImageIcon(url)));
+			//wmsList.add(new CenterRaster(55.6760968, 12.568337, 445, 472, new ImageIcon(url)));
+			wmsList.add(new CenterRaster(this.wmsullat, this.wmsullon, this.wmsWidth, this.wmsHeight, new ImageIcon(url)));
 		} catch (java.net.MalformedURLException murle) {
 			System.out.println("Bad URL!");
 		} catch (java.io.IOException ioe) {
