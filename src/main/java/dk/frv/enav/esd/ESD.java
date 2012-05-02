@@ -38,7 +38,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -50,6 +49,7 @@ import dk.frv.enav.esd.ais.VesselAisHandler;
 import dk.frv.enav.esd.gui.MainFrame;
 import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.nmea.NmeaTcpSensor;
+import dk.frv.enav.esd.services.shore.ShoreServices;
 import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.esd.test.TestHandler;
 import dk.frv.enav.esd.util.OneInstanceGuard;
@@ -81,6 +81,7 @@ public class ESD {
 	private static NmeaSensor gpsSensor;
 	private static GpsHandler gpsHandler;
 	private static TestHandler testHandler;
+	private static ShoreServices shoreServices;
 	
 	private static ExceptionHandler exceptionHandler = new ExceptionHandler();
 	
@@ -120,6 +121,10 @@ public class ESD {
         // Create a test handler for use in testing ais handler data
         testHandler = new TestHandler();
         beanHandler.add(testHandler);
+        
+        // Create shore services
+        shoreServices = new ShoreServices();
+        beanHandler.add(shoreServices);
         
         // Load settings or get defaults and add to bean context       
         if (args.length > 0) {        	
@@ -352,6 +357,10 @@ public class ESD {
 	
 	public static AisHandler getAisHandler() {
 		return aisHandler;
+	}
+	
+	public static ShoreServices getShoreServices() {
+		return shoreServices;
 	}
 	
 	public static BeanContextServicesSupport getBeanHandler(){

@@ -60,7 +60,9 @@ import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.layers.ais.AisLayer;
+import dk.frv.enav.esd.layers.msi.MsiLayer;
 import dk.frv.enav.esd.settings.MapSettings;
+import dk.frv.enav.esd.msi.MsiHandler;
 
 /**
  * The panel with chart. Initializes all layers to be shown on the map.
@@ -72,6 +74,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 	private MapHandler mapHandler;
 	private LayerHandler layerHandler;
+	private MsiHandler msiHandler;
 	private BufferedLayerMapBean map;
 	private Layer encLayer;
 	private Layer bgLayer;
@@ -84,6 +87,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	private MouseDelegator mouseDelegator;
 	public int maxScale = 5000;
 	private AisLayer aisLayer;
+	private MsiLayer msiLayer;
 	private MainFrame mainFrame;
 	private Color background = new Color(168, 228, 255);
 
@@ -113,6 +117,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 		// Add the aishandler to this bean
 		mapHandler.add(ESD.getAisHandler());
+		mapHandler.add(ESD.getShoreServices());
 		mapHandler.add(this);
 		mapHandler.add(mainFrame);
 		mapHandler.add(mainFrame.getStatusArea());
@@ -142,6 +147,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		add(map);
 
 		getMap().addMouseWheelListener(this);
+		
 	}
 
 	public void initChartDefault() {
@@ -179,10 +185,20 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		// Add layer handler to map handler
 		mapHandler.add(layerHandler);
 		
+		//Add AIS Layer
 		aisLayer = new AisLayer();
 		aisLayer.setVisible(true);
 		mapHandler.add(aisLayer);
 
+		//Add MSI Layer
+		msiLayer = new MsiLayer();
+		msiLayer.setVisible(true);
+		mapHandler.add(msiLayer);
+
+		
+        // Create MSI handler
+        msiHandler = new MsiHandler();
+        mapHandler.add(msiHandler);
 
 		// Create background layer
 		String layerName = "background";
@@ -198,10 +214,17 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 		// Add map to map handler
 		mapHandler.add(map);
+		
+		// Force a MSI layer update
+		msiLayer.doUpdate();
 	}
 	
 	public AisLayer getAisLayer() {
 		return aisLayer;
+	}
+
+	public MsiHandler getMsiHandler() {
+		return msiHandler;
 	}
 
 	public void initChart(Point2D center, float scale) {
@@ -337,6 +360,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 	@Override
 	public void findAndInit(Object obj) {
+
 	}
 
 	/**
