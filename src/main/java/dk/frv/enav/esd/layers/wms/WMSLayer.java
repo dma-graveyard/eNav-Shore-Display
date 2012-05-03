@@ -50,17 +50,15 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 	public void run() {
 		while (shouldRun) {
 			ESD.sleep(1000);
-//			System.out.println(chartPanel.getMap().getProjection().getProjectionID());
 			Double upperLeftLon = chartPanel.getMap().getProjection().getUpperLeft().getX();
 			Double upperLeftLat = chartPanel.getMap().getProjection().getUpperLeft().getY();
 			Double lowerRightLon = chartPanel.getMap().getProjection().getLowerRight().getX();
 			Double lowerRightLat = chartPanel.getMap().getProjection().getLowerRight().getY();
 			
-			// Overwrite coordinates to get it working:
-			upperLeftLat = 612615.5069764;
-			upperLeftLon = 6871781.27364377;
-			lowerRightLat = 622761.062857702;
-			lowerRightLon = 6882542.40257854;
+//			System.out.println(upperLeftLon);
+//			System.out.println(upperLeftLat);
+//			System.out.println(lowerRightLon);
+//			System.out.println(lowerRightLat);
 			
 			int w = chartPanel.getMap().getWidth();
 			int h = chartPanel.getMap().getHeight();

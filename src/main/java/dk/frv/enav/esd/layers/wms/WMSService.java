@@ -39,14 +39,13 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 	
 	public WMSService() {
 		super();
-		setImageFormat("image/png");
-		setLayers("ftk_f100");
+		setImageFormat("image/gif");
+		setLayers("cells");
 		setWmsVersion("1.1.1");
-		setStyles("");
+		setStyles("style-id-245");
 		setVendorSpecificNames("EPSG");
-		setVendorSpecificValues("32629");
-		//setQueryHeader("http://kortforsyningen.kms.dk/soe_enc_primar");
-		setQueryHeader("http://kortforsyningen.kms.dk/ftopo");
+		setVendorSpecificValues("4326");
+		setQueryHeader("http://kortforsyningen.kms.dk/soe_enc");
 		setTransparent("TRUE");
 	}
 	
@@ -55,38 +54,38 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 		this.wmsHeight = h;
 		this.wmsullon = ullon;
 		this.wmsullat = ullat;
-		this.bbox = Double.toString(upperLeftLat) + "," +
-				  Double.toString(upperLeftLon) + "," +
+		this.bbox = Double.toString(lowerRightLon) + "," +
 				  Double.toString(lowerRightLat) + "," +
-				  Double.toString(lowerRightLon);
+				  Double.toString(upperLeftLon) + "," +
+				  Double.toString(upperLeftLat);
 		this.width = Integer.toString(w);
 		this.height = Integer.toString(h);
 	}
+	
+
 	
 	public String getQueryString(){	
 		queryString = getQueryHeader() 
 				+ "?ignoreillegallayers=TRUE" 
 				+ "&transparent=" + getTransparent()
-				+ "&service=WMS"
-				+ "&REQUEST=GetMap"
+				+ "&login=StatSofart"
+				+ "&password=114karls"
 				+ "&VERSION=" + getWmsVersion()
+				+ "&REQUEST=GetMap"
+				+ "&SRS=" + getVendorSpecificNames() + ":" + getVendorSpecificValues()
+				+ "&BBOX="+bbox				
+				+ "&WIDTH=" + width 
+				+ "&HEIGHT=" + height
 				+ "&LAYERS=" + getLayers()
 				+ "&STYLES=" + getStyles() 
 				+ "&FORMAT=" + getImageFormat()
-				+ "&SRS=" + getVendorSpecificNames() + ":" + getVendorSpecificValues()
-				+ "&BBOX="+bbox
-				+ "&WIDTH=" + width 
-				+ "&HEIGHT=" + height
-				+ "&ticket=5e1212b2670a2b1905d01affb02ffaa5";
+				+ "&service=WMS"				
+				;
 
-//		System.out.println(queryString);
-//		queryString = "http://kortforsyningen.kms.dk/soe_enc_primar?ignoreillegallayers=TRUE&transparent=TRUE&login=StatSofart&password=114karls&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326&BBOX=12,55,10,60&WIDTH=512&HEIGHT=512&LAYERS=cells&STYLES=style-id-245&TRANSPARENT=TRUE&FORMAT=image/gif";
+
 //		System.out.println(queryString);
 
 		return queryString;
-
-				//+ "&login=StatSofart" 
-				//+ "&password=114karls"
 	}
 	
 
