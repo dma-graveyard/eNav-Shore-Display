@@ -45,7 +45,7 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 		setStyles("style-id-245");
 		setVendorSpecificNames("EPSG");
 		setVendorSpecificValues("4326");
-		setQueryHeader("http://kortforsyningen.kms.dk/soe_enc");
+		setQueryHeader("http://kortforsyningen.kms.dk/soe_enc_primar");
 		setTransparent("TRUE");
 	}
 	
