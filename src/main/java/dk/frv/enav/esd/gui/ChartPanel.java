@@ -198,7 +198,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 		
         // Create MSI handler
-        msiHandler = new MsiHandler();
+        msiHandler = ESD.getMsiHandler();
         mapHandler.add(msiHandler);
 
 		// Create background layer

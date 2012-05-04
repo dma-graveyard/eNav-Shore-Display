@@ -5,17 +5,27 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import dk.frv.enav.esd.gui.msi.MsiTableModel;
+import dk.frv.enav.esd.layers.msi.MsiLayer;
+import dk.frv.enav.esd.msi.IMsiUpdateListener;
+import dk.frv.enav.esd.msi.MsiHandler;
+
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class NotificationCenter extends JInternalFrame{
+
+public class NotificationCenter extends ComponentFrame implements ListSelectionListener, ActionListener, IMsiUpdateListener {
 	private static final long serialVersionUID = 1L;
 	private JTextPane area = new JTextPane();
 	private StringBuilder doc = new StringBuilder();
 	private MenuTable menu; 
-	private MSITableDummy rt;
+//	private MSITableDummy rt;
+	private MsiHandler msiHandler;
+	private MsiTableModel msiTableModel;
 	
 	public NotificationCenter(){
 		super("Notification Center", true, true, true, true);
@@ -23,6 +33,9 @@ public class NotificationCenter extends JInternalFrame{
 		setLocation(10, 10);
 		setVisible(false);
 		
+	}
+	
+	public void initGui(){
 		// Add main container
 		JPanel mainContainer = new JPanel();
 		mainContainer.setLayout(new GridBagLayout());
@@ -51,8 +64,9 @@ public class NotificationCenter extends JInternalFrame{
 
 		// Test
 		GridBagConstraints c2 = new GridBagConstraints();
-		rt = new MSITableDummy();
-		JTable rightTable = new JTable(rt);
+//		rt = new MSITableDummy();
+		msiTableModel = new MsiTableModel(msiHandler);
+		JTable rightTable = new JTable(msiTableModel);
 		rightTable.getSelectionModel().addListSelectionListener(new RowListener2());
 		rightTable.setShowVerticalLines(false);
 		rightTable.setGridColor(new Color(224,224,224));
@@ -72,7 +86,6 @@ public class NotificationCenter extends JInternalFrame{
 		rightContainer.add(new JScrollPane(area,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),c2);		
 		doc.append("<table><tr><td><b>Notification</b></td><td style=\"color:red;\">Center</td></tr></table>");
 		area.setText(doc.toString());
-		
 	}
 	
 	public void toggleVisibility(){
@@ -101,8 +114,8 @@ public class NotificationCenter extends JInternalFrame{
             }
             DefaultListSelectionModel values = (DefaultListSelectionModel) event.getSource();
             doc.delete(0,doc.length());
-            for (int i = 0; i <  rt.getColumnCount(); i++) {
-            	doc.append("<b>"+rt.getColumnName(i)+":</b> "+rt.getValueAt(values.getAnchorSelectionIndex(),i)+"<br /><br />");
+            for (int i = 0; i <  msiTableModel.getColumnCount(); i++) {
+            	doc.append("<b>"+msiTableModel.getColumnName(i)+":</b> "+msiTableModel.getValueAt(values.getAnchorSelectionIndex(),i)+"<br /><br />");
 			}
             area.setText(doc.toString());
         }
@@ -138,5 +151,33 @@ public class NotificationCenter extends JInternalFrame{
             data[row][col] = value;
             fireTableCellUpdated(row, col);
         }
-    }	
+    }
+
+	@Override
+	public void msiUpdate() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}	
+	
+	@Override
+	public void findAndInit(Object obj) {
+		System.out.println(obj);
+		if (obj instanceof MsiHandler) {
+			msiHandler = (MsiHandler)obj;
+			msiHandler.addListener(this);
+			initGui();
+		}
+	}
 }

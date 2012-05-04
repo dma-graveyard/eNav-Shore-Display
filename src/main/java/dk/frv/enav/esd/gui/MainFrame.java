@@ -163,6 +163,7 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		// Add self to bean handler
 		beanHandler.add(this);
+		beanHandler.add(notificationCenter);
 
 		setWorkSpace(workspace);
 
