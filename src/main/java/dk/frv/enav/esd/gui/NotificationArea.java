@@ -3,6 +3,7 @@ package dk.frv.enav.esd.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -17,6 +18,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
@@ -34,8 +36,10 @@ public class NotificationArea extends JInternalFrame {
 	private static int notificationWidth = 125;
 	private static int notificationPanelOffset = 4;
 	//private ArrayList<JLabel> notifications = new ArrayList<JLabel>();
-	private HashMap<String, JLabel> notifications = new HashMap<String, JLabel>();
+	private HashMap<String, JPanel> notifications = new HashMap<String, JPanel>();
+	private HashMap<String, String> services = new HashMap<String, String>();
 	private HashMap<String, Integer> unreadMessages = new HashMap<String, Integer>();
+	private HashMap<String, JLabel> indicatorLabels = new HashMap<String, JLabel>();
 	public int width;
 	public int height;
 	
@@ -82,36 +86,40 @@ public class NotificationArea extends JInternalFrame {
 		
 		// Setup notifications (add here for more notifications)
 		// Notification: MSI
-		final JLabel msi = new JLabel("MSI");
+		//final JLabel msi = new JLabel("MSI");
+		final JPanel msi = new JPanel();
 		notifications.put("msi", msi);
+		services.put("msi", "MSI");
 		
 		msi.addMouseListener(new MouseAdapter() {  
 			public void mousePressed(MouseEvent e) {
-				//msi.setBorder(BorderFactory.createCompoundBorder(notificationPaddingPressed, notificationsIndicatorImportant));
-				//msi.setBackground(new Color(45, 45, 45));
+				msi.setBorder(notificationPaddingPressed);
+				msi.setBackground(new Color(45, 45, 45));
 			}
 			
 		    public void mouseReleased(MouseEvent e) {  
-		    	//msi.setBorder(BorderFactory.createCompoundBorder(notificationPadding, notificationsIndicatorImportant));
-		    	//msi.setBackground(new Color(65, 65, 65));
+		    	msi.setBorder(notificationPadding);
+		    	msi.setBackground(new Color(65, 65, 65));
 		    	mainFrame.toggleNotificationCenter();
 		    }  
 		});
 		
 		// Notification: AIS
-		final JLabel ais = new JLabel("AIS");
+		//final JLabel ais = new JLabel("AIS");
+		final JPanel ais = new JPanel();
 		notifications.put("ais", ais);
 		unreadMessages.put("ais", 23);
+		services.put("ais", "AIS");
 		
 		ais.addMouseListener(new MouseAdapter() {  
 			public void mousePressed(MouseEvent e) {
-				//ais.setBorder(notificationPaddingPressed);
-				//ais.setBackground(new Color(45, 45, 45));
+				ais.setBorder(notificationPaddingPressed);
+				ais.setBackground(new Color(45, 45, 45));
 			}
 			
 		    public void mouseReleased(MouseEvent e) {  
-		    	//ais.setBorder(notificationPadding);
-		    	//ais.setBackground(new Color(65, 65, 65));
+		    	ais.setBorder(notificationPadding);
+		    	ais.setBackground(new Color(65, 65, 65));
 		    	mainFrame.toggleNotificationCenter();
 		    }  
 		});
@@ -128,6 +136,44 @@ public class NotificationArea extends JInternalFrame {
 	    // And finally refresh the notification area
 	    repaintNotificationArea();
 	    
+	    // Test incoming messages
+	    try {
+			newMessage("ais");
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	public void newMessage(final String key) throws InterruptedException {
+		final int blinks = 20;
+		
+		final Runnable doChangeIndicator = new Runnable() {
+			JLabel unreadIndicator = indicatorLabels.get(key);
+		    boolean changeColor = false;
+		    public void run() {
+			if (changeColor = !changeColor) {
+				unreadIndicator.setBackground(new Color(165, 80, 80));
+			} else {
+				unreadIndicator.setBackground(new Color(206, 120, 120));
+			}
+		    }
+		};
+
+		Runnable doBlinkIndicator = new Runnable() {
+		    public void run() {
+		    	for (int i = 0; i < blinks; i++) {
+				    try {
+				    	EventQueue.invokeLater(doChangeIndicator);
+				    	Thread.sleep(500);
+				    } catch (InterruptedException e) {
+				    	return;
+				    }
+				}
+		    }
+		};
+		
+		new Thread(doBlinkIndicator).start();
 	}
 	
 	/*
@@ -170,45 +216,60 @@ public class NotificationArea extends JInternalFrame {
 		notificationPanel.updateUI();
 		
 		// Lets start by adding all the notifications
-		for(Iterator<Entry<String, JLabel>> i = notifications.entrySet().iterator();i.hasNext();) {
+		for(Iterator<Entry<String, JPanel>> i = notifications.entrySet().iterator();i.hasNext();) {
 			
-			Entry<String, JLabel> entry = i.next();
+			Entry<String, JPanel> entry = i.next();
 			
 			// Get values for service
-			JLabel notification = entry.getValue();
+			String service = services.get(entry.getKey());
 			Integer messageCount = unreadMessages.get(entry.getKey());
 			
 			if(messageCount == null)
 					messageCount = 0;
 			
+			if(service == null)
+				service = "";
+			
 			// Style the notification panel
-			JPanel servicePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+			//JPanel servicePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+			JPanel servicePanel = entry.getValue();
+			servicePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+			//servicePanel.setLayout(FlowLayout.LEFT, 0, 0);
 			servicePanel.setBackground(new Color(65, 65, 65));
 			servicePanel.setBorder(notificationPadding);
 			servicePanel.setPreferredSize(new Dimension(notificationWidth, notificationHeight));
 			
 			// Create labels for each value
 			// The label
+			JLabel notification = new JLabel(service);
 			notification.setPreferredSize(new Dimension(76, notificationHeight));
 			notification.setFont(new Font("Arial", Font.PLAIN, 11));
 			notification.setForeground(new Color(237, 237, 237));
 			servicePanel.add(notification);
 			
 			// Unread messages
-			JLabel messages = new JLabel(messageCount.toString());
+			JLabel messages = new JLabel(messageCount.toString(), SwingConstants.RIGHT);
 			messages.setPreferredSize(new Dimension(20, notificationHeight));
 			messages.setFont(new Font("Arial", Font.PLAIN, 9));
 			messages.setForeground(new Color(100, 100, 100));
+			messages.setBorder(BorderFactory.createEmptyBorder(0,0,0,5));
 			servicePanel.add(messages);
 			
 			// The unread indicator
 			JLabel unreadIndicator = new JLabel();
 			unreadIndicator.setPreferredSize(new Dimension(7, notificationHeight));
-			unreadIndicator.setBackground(new Color(206, 120, 120));
-			unreadIndicator.setOpaque(true);
+			
+			if(messageCount > 0) {
+				unreadIndicator.setBackground(new Color(206, 120, 120));
+				unreadIndicator.setOpaque(true);
+			}
+			
 			servicePanel.add(unreadIndicator);
 			
 			notificationPanel.add(servicePanel);
+		
+			// Make list of indicator labels to use when blinking
+			indicatorLabels.put(entry.getKey(), unreadIndicator);
 			
 		}
 		/*
