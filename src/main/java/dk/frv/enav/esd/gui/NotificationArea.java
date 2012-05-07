@@ -108,7 +108,7 @@ public class NotificationArea extends JInternalFrame {
 		//final JLabel ais = new JLabel("AIS");
 		final JPanel ais = new JPanel();
 		notifications.put("ais", ais);
-		unreadMessages.put("ais", 23);
+		//unreadMessages.put("ais", 23);
 		services.put("ais", "AIS");
 		
 		ais.addMouseListener(new MouseAdapter() {  
@@ -135,14 +135,11 @@ public class NotificationArea extends JInternalFrame {
 	 
 	    // And finally refresh the notification area
 	    repaintNotificationArea();
-	    
-	    // Test incoming messages
-	    try {
-			newMessage("ais");
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	}
+	
+	public void addMessage(String service) throws InterruptedException {
+		unreadMessages.put(service, unreadMessages.get(service)+1);
+		newMessage(service);
 	}
 	
 	public void newMessage(final String key) throws InterruptedException {
