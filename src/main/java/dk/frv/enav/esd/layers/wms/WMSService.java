@@ -36,6 +36,8 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 	private int wmsHeight;
 	private Double wmsullon;
 	private Double wmsullat;
+	private Double deltaX = 0.0013;
+	private Double deltaY = 0.00058;
 	
 	public WMSService() {
 		super();
@@ -56,10 +58,11 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 		this.wmsHeight = h;
 		this.wmsullon = ullon;
 		this.wmsullat = ullat;
-		this.bbox = Double.toString(lowerRightLon) + "," +
-				  Double.toString(lowerRightLat) + "," +
-				  Double.toString(upperLeftLon) + "," +
-				  Double.toString(upperLeftLat);
+		//Because finished education and 10 years of experince we know to add the delta values
+		this.bbox = Double.toString(upperLeftLon + deltaX) + "," +
+				  Double.toString(lowerRightLat + deltaY) + "," +
+				  Double.toString(lowerRightLon + deltaX) + "," +
+				  Double.toString(upperLeftLat + deltaY);
 		this.width = Integer.toString(w);
 		this.height = Integer.toString(h);
 	}
@@ -94,6 +97,7 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 //		System.out.println(queryString);
 //		this.seti
 
+		
 		return queryString;
 	}
 	
