@@ -27,58 +27,65 @@
  * either expressed or implied, of Danish Maritime Authority.
  * 
  */
-package dk.frv.enav.esd.gui;
+package dk.frv.enav.esd.status;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Rectangle;
+import java.util.Date;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
+import dk.frv.enav.esd.services.shore.ShoreServiceException;
+import dk.frv.enav.ins.common.text.Formatter;
+
 
 /**
- * Abstract base class for panels to be shown on the map in the glass pane
+ * Status for shore services
  */
-public abstract class InfoPanel extends JPanel {
-	private static final long serialVersionUID = 1L;
+public class ShoreServiceStatus extends ComponentStatus {
 
-	private JLabel textLabel = new JLabel();
+	private Date lastContact = null;
+	private Date lastFailed = null;
+	private ShoreServiceException lastException = null;
 
-	public InfoPanel() {
-		super();
-		FlowLayout flowLayout = new FlowLayout();
-		setLayout(flowLayout);
-		flowLayout.setVgap(0);
-		flowLayout.setHgap(0);
-//		setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
-		add(textLabel);
-		setVisible(false);
-		textLabel.setFont(new Font("Arial", Font.PLAIN, 11));
-		textLabel.setBackground(new Color(83, 83, 83));
-		textLabel.setForeground(new Color(237, 237, 237));
-		setBackground(new Color(83, 83, 83));
+	public ShoreServiceStatus() {
+		super("Shore services");
+		shortStatusText = "No services performed yet";
 	}
 
-	public void showText(String text) {
-		textLabel.setText(text);
-		resizeAndShow();
+	public synchronized void markContactSuccess() {
+		lastContact = new Date();
+		status = Status.OK;
+		shortStatusText = "Last shore contact: " + lastContact;
 	}
 
-	public void resizeAndShow() {
-		validate();
-		Dimension d = textLabel.getSize();
-		this.setSize(d.width + 6, d.height + 4);
-		setVisible(true);
+	public synchronized void markContactError(ShoreServiceException e) {		
+		lastFailed = new Date();
+		status = Status.ERROR;
+		this.lastException = e;
+		shortStatusText = "Last failed shore contact: " + Formatter.formatLongDateTime(lastFailed);
 	}
 
-	public void setPos(int x, int y) {
-		Rectangle rect = getBounds();
-		setBounds(x, y, (int) rect.getWidth(), (int) rect.getHeight());
+	public Date getLastContact() {
+		return lastContact;
+	}
+
+	public Date getLastFailed() {
+		return lastFailed;
+	}
+	
+	@Override
+	public String getStatusHtml() {
+		StringBuilder buf = new StringBuilder();
+		buf.append("Contact: " + status.name() + "<br/>");
+		if (status == Status.ERROR) {
+			buf.append("Last error: " + Formatter.formatLongDateTime(lastFailed) + "<br/>");
+			buf.append("Error message: " + lastException.getMessage());
+			if (lastException.getExtraMessage() != null) {
+				 buf.append(": " + lastException.getExtraMessage());
+			}
+		} else {
+			buf.append("Last contact: " + Formatter.formatLongDateTime(lastContact));
+		}
+		
+		
+		return buf.toString();
 	}
 
 }

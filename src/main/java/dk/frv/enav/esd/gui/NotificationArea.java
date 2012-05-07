@@ -23,8 +23,10 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
+import dk.frv.enav.esd.msi.IMsiUpdateListener;
+import dk.frv.enav.esd.msi.MsiHandler;
 
-public class NotificationArea extends JInternalFrame {
+public class NotificationArea extends ComponentFrame implements IMsiUpdateListener {
 	
 	private static final long serialVersionUID = 1L;	
 	private Boolean locked = false;
@@ -42,6 +44,7 @@ public class NotificationArea extends JInternalFrame {
 	private HashMap<String, JLabel> indicatorLabels = new HashMap<String, JLabel>();
 	public int width;
 	public int height;
+	private MsiHandler msiHandler;
 	
 	Border paddingLeft = BorderFactory.createMatteBorder(0, 8, 0, 0, new Color(65, 65, 65));
 	Border paddingBottom = BorderFactory.createMatteBorder(0, 0, 5, 0, new Color(83, 83, 83));
@@ -307,5 +310,27 @@ public class NotificationArea extends JInternalFrame {
 	 */
 	public int getHeight() {
 		return height;
+	}
+	
+	@Override
+	public void findAndInit(Object obj) {
+		if (obj instanceof MsiHandler) {
+			msiHandler = (MsiHandler)obj;
+			msiHandler.addListener(this);
+			
+			unreadMessages.put("msi", msiHandler.getUnAcknowledgedMSI());
+			repaintNotificationArea();
+		}
+	}
+
+	@Override
+	public void msiUpdate() {
+		//msiHandler.getUnAcknowledgedMSI();
+		try {
+			newMessage("msi");
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

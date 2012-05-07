@@ -27,58 +27,64 @@
  * either expressed or implied, of Danish Maritime Authority.
  * 
  */
-package dk.frv.enav.esd.gui;
+package dk.frv.enav.esd.layers.msi;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Rectangle;
+import com.bbn.openmap.omGraphics.OMGraphicList;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
+import dk.frv.ais.geo.GeoLocation;
+import dk.frv.enav.common.xml.msi.MsiLocation;
+import dk.frv.enav.common.xml.msi.MsiMessage;
+import dk.frv.enav.common.xml.msi.MsiPoint;
+import dk.frv.enav.esd.msi.MsiHandler.MsiMessageExtended;
 
 /**
- * Abstract base class for panels to be shown on the map in the glass pane
+ * Graphic for MSI
  */
-public abstract class InfoPanel extends JPanel {
+public abstract class MsiSymbolPosition extends OMGraphicList {
+
 	private static final long serialVersionUID = 1L;
+	
+	protected MsiMessage msiMessage;
+	protected boolean acknowledged;
 
-	private JLabel textLabel = new JLabel();
-
-	public InfoPanel() {
+	public MsiSymbolPosition(MsiMessageExtended message) {
 		super();
-		FlowLayout flowLayout = new FlowLayout();
-		setLayout(flowLayout);
-		flowLayout.setVgap(0);
-		flowLayout.setHgap(0);
-//		setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
-		add(textLabel);
-		setVisible(false);
-		textLabel.setFont(new Font("Arial", Font.PLAIN, 11));
-		textLabel.setBackground(new Color(83, 83, 83));
-		textLabel.setForeground(new Color(237, 237, 237));
-		setBackground(new Color(83, 83, 83));
+		this.msiMessage = message.msiMessage;
+		MsiLocation msiLocation = msiMessage.getLocation();
+		acknowledged = message.acknowledged;		
+		
+		// Determine where to place MSI symbols
+		switch (msiLocation.getLocationType()) {
+		case POINT:
+		case POINTS:
+			/*
+			 * Place symbol in each point 
+			 */
+			for (MsiPoint point : msiLocation.getPoints()) {
+				createSymbol(new GeoLocation(point.getLatitude(), point.getLongitude()));
+			}			
+			break;
+		case POLYGON:
+			/*
+			 * Place symbol in center of polygon
+			 */
+			createSymbol(msiLocation.getCenter());
+			break;
+		case POLYLINE:
+			/*
+			 * Place a symbol in middle point 
+			 */
+			MsiPoint middle =  msiLocation.getPoints().get(msiLocation.getPoints().size() / 2);
+			createSymbol(new GeoLocation(middle.getLatitude(), middle.getLongitude()));
+			break;
+		default:
+			break;
+		}
 	}
 
-	public void showText(String text) {
-		textLabel.setText(text);
-		resizeAndShow();
+	public abstract void createSymbol(GeoLocation geoLocation);
+	
+	public MsiMessage getMsiMessage() {
+		return msiMessage;
 	}
-
-	public void resizeAndShow() {
-		validate();
-		Dimension d = textLabel.getSize();
-		this.setSize(d.width + 6, d.height + 4);
-		setVisible(true);
-	}
-
-	public void setPos(int x, int y) {
-		Rectangle rect = getBounds();
-		setBounds(x, y, (int) rect.getWidth(), (int) rect.getHeight());
-	}
-
 }

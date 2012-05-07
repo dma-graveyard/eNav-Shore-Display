@@ -27,58 +27,43 @@
  * either expressed or implied, of Danish Maritime Authority.
  * 
  */
-package dk.frv.enav.esd.gui;
+package dk.frv.enav.esd.layers.msi;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Rectangle;
+import javax.swing.ImageIcon;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
+import dk.frv.ais.geo.GeoLocation;
+import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.msi.MsiHandler.MsiMessageExtended;
+import dk.frv.enav.ins.common.graphics.CenterRaster;
+
 
 /**
- * Abstract base class for panels to be shown on the map in the glass pane
+ * Graphic for MSI symbol 
  */
-public abstract class InfoPanel extends JPanel {
+public class MsiSymbolGraphic extends MsiSymbolPosition {
 	private static final long serialVersionUID = 1L;
-
-	private JLabel textLabel = new JLabel();
-
-	public InfoPanel() {
-		super();
-		FlowLayout flowLayout = new FlowLayout();
-		setLayout(flowLayout);
-		flowLayout.setVgap(0);
-		flowLayout.setHgap(0);
-//		setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
-		add(textLabel);
-		setVisible(false);
-		textLabel.setFont(new Font("Arial", Font.PLAIN, 11));
-		textLabel.setBackground(new Color(83, 83, 83));
-		textLabel.setForeground(new Color(237, 237, 237));
-		setBackground(new Color(83, 83, 83));
+	
+	public MsiSymbolGraphic(MsiMessageExtended message) {
+		super(message);
+		setVague(true);
 	}
-
-	public void showText(String text) {
-		textLabel.setText(text);
-		resizeAndShow();
+	
+	public void createSymbol(GeoLocation pos) {
+		CenterRaster msiSymbol;
+		ImageIcon msiSymbolImage;
+		int imageWidth;
+		int imageHeight;
+		if(acknowledged) {
+			msiSymbolImage = new ImageIcon(ESD.class.getResource("/images/msi/msi_symbol_32.png"));
+			imageWidth = msiSymbolImage.getIconWidth();
+			imageHeight = msiSymbolImage.getIconHeight();
+		} else {
+			msiSymbolImage = new ImageIcon(ESD.class.getResource("/images/msi/msi_unack_symbol_32.png"));
+			imageWidth = msiSymbolImage.getIconWidth();
+			imageHeight = msiSymbolImage.getIconHeight();
+		}
+		msiSymbol = new CenterRaster(pos.getLatitude(), pos.getLongitude(), imageWidth, imageHeight, msiSymbolImage);
+		add(msiSymbol);
 	}
-
-	public void resizeAndShow() {
-		validate();
-		Dimension d = textLabel.getSize();
-		this.setSize(d.width + 6, d.height + 4);
-		setVisible(true);
-	}
-
-	public void setPos(int x, int y) {
-		Rectangle rect = getBounds();
-		setBounds(x, y, (int) rect.getWidth(), (int) rect.getHeight());
-	}
-
+	
 }

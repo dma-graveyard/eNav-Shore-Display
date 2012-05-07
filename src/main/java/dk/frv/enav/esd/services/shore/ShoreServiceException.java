@@ -27,58 +27,42 @@
  * either expressed or implied, of Danish Maritime Authority.
  * 
  */
-package dk.frv.enav.esd.gui;
-
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Rectangle;
-
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
+package dk.frv.enav.esd.services.shore;
 
 /**
- * Abstract base class for panels to be shown on the map in the glass pane
+ * Shore service exception 
  */
-public abstract class InfoPanel extends JPanel {
+public class ShoreServiceException extends Exception {
+	
 	private static final long serialVersionUID = 1L;
-
-	private JLabel textLabel = new JLabel();
-
-	public InfoPanel() {
-		super();
-		FlowLayout flowLayout = new FlowLayout();
-		setLayout(flowLayout);
-		flowLayout.setVgap(0);
-		flowLayout.setHgap(0);
-//		setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
-		add(textLabel);
-		setVisible(false);
-		textLabel.setFont(new Font("Arial", Font.PLAIN, 11));
-		textLabel.setBackground(new Color(83, 83, 83));
-		textLabel.setForeground(new Color(237, 237, 237));
-		setBackground(new Color(83, 83, 83));
+	
+	private int errroCode;
+	private String extraMessage;
+	
+	public ShoreServiceException(int errorCode, String extraMessage) {
+		this(errorCode);
+		this.extraMessage = extraMessage;
 	}
-
-	public void showText(String text) {
-		textLabel.setText(text);
-		resizeAndShow();
+	
+	public ShoreServiceException(int errorCode) {
+		super(ShoreServiceErrorCode.getErrorMessage(errorCode));
+		this.errroCode = errorCode;
 	}
-
-	public void resizeAndShow() {
-		validate();
-		Dimension d = textLabel.getSize();
-		this.setSize(d.width + 6, d.height + 4);
-		setVisible(true);
+	
+	public int getErrroCode() {
+		return errroCode;
 	}
-
-	public void setPos(int x, int y) {
-		Rectangle rect = getBounds();
-		setBounds(x, y, (int) rect.getWidth(), (int) rect.getHeight());
+	
+	public void setErrroCode(int errroCode) {
+		this.errroCode = errroCode;
+	}
+	
+	public void setExtraMessage(String extraMessage) {
+		this.extraMessage = extraMessage;
+	}
+	
+	public String getExtraMessage() {
+		return extraMessage;
 	}
 
 }
