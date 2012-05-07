@@ -42,9 +42,10 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 		setImageFormat("image/gif");
 		setLayers("cells");
 		setWmsVersion("1.1.1");
-		setStyles("style-id-245");
+		setStyles("style-id-246");
 		setVendorSpecificNames("EPSG");
 		setVendorSpecificValues("4326");
+//		setVendorSpecificValues("3857");
 		setQueryHeader("http://kortforsyningen.kms.dk/soe_enc_primar");
 		setTransparent("TRUE");
 	}
@@ -65,6 +66,12 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 
 	
 	public String getQueryString(){	
+//		queryString = "http://kartta.liikennevirasto.fi/meriliikenne/dgds/wms_ip/merikartta?&REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&LAYERS=cells&FORMAT=image/gif&TRANSPARENT=true&SRS=EPSG:4326";
+//		queryString = queryString + "&BBOX="+bbox		
+//				+ "&WIDTH=" + width 
+//				+ "&HEIGHT=" + height;
+		
+		
 		queryString = getQueryHeader() 
 				+ "?ignoreillegallayers=TRUE" 
 				+ "&transparent=" + getTransparent()
@@ -82,8 +89,9 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 				+ "&service=WMS"				
 				;
 
-
+//queryString = "http://kartta.liikennevirasto.fi/meriliikenne/dgds/wms_ip/merikartta?&REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&LAYERS=cells&FORMAT=image/gif&TRANSPARENT=true&SRS=EPSG:4326&BBOX=16.8763,58.81432171570781,22.5013,61.60697637138628&WIDTH=256&HEIGHT=260";
 //		System.out.println(queryString);
+//		this.seti
 
 		return queryString;
 	}
