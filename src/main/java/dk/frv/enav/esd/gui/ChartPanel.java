@@ -48,10 +48,16 @@ import com.bbn.openmap.LayerHandler;
 import com.bbn.openmap.MapBean;
 import com.bbn.openmap.MapHandler;
 import com.bbn.openmap.MouseDelegator;
+import com.bbn.openmap.event.ProjectionSupport;
 import com.bbn.openmap.gui.OMComponentPanel;
 import com.bbn.openmap.layer.shape.ShapeLayer;
+import com.bbn.openmap.proj.LLXY;
+import com.bbn.openmap.proj.LLXYLoader;
+import com.bbn.openmap.proj.MercatorLoader;
 import com.bbn.openmap.proj.Proj;
 import com.bbn.openmap.proj.Projection;
+import com.bbn.openmap.proj.ProjectionFactory;
+import com.bbn.openmap.proj.ProjectionLoader;
 import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.ais.geo.GeoLocation;
@@ -61,6 +67,8 @@ import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.layers.ais.AisLayer;
 import dk.frv.enav.esd.layers.msi.MsiLayer;
+import dk.frv.enav.esd.layers.wms.WMSLayer;
+import dk.frv.enav.esd.layers.wms.WMSService;
 import dk.frv.enav.esd.settings.MapSettings;
 import dk.frv.enav.esd.msi.MsiHandler;
 
@@ -78,35 +86,22 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	private BufferedLayerMapBean map;
 	private Layer encLayer;
 	private Layer bgLayer;
-	
+
 	private NavigationMouseMode mapNavMouseMode;
 	private DragMouseMode dragMouseMode;
 	private SelectMouseMode selectMouseMode;
-	
-	
+
 	private MouseDelegator mouseDelegator;
 	public int maxScale = 5000;
 	private AisLayer aisLayer;
 	private MsiLayer msiLayer;
+	private WMSLayer wmsLayer;
 	private MainFrame mainFrame;
 	private Color background = new Color(168, 228, 255);
+	private Point2D center;
+	private float scale;
 
-	public void setMouseMode(int mode) {
-		// Mode0 is mapNavMouseMode
-		if (mode == 0) {
-			mouseDelegator.setActive(mapNavMouseMode);
-		}
-
-		// Mode1 is DragNavMouseMode
-		if (mode == 1) {
-			mouseDelegator.setActive(dragMouseMode);
-		}
-		// Mode1 is Select
-		if (mode == 2) {
-			mouseDelegator.setActive(selectMouseMode);
-		}
-		
-	}
+	protected transient ProjectionSupport projectionSupport = new ProjectionSupport(this, false);
 
 	public ChartPanel(MainFrame mainFrame, JMapFrame jmapFrame) {
 		super();
@@ -133,17 +128,71 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 	}
 
+	public void initChart(Point2D center, float scale) {
+
+		this.center = center;
+		this.scale = scale;
+		
+		initChartDefault();
+
+		// Set last postion
+//		System.out.println(map.getCenter());
+
+//		map.setCenter(center);
+//		System.out.println(map.getCenter());
+
+		// ProjectionFactory factory =
+		// ProjectionFactory.loadDefaultProjections();
+
+		// ProjectionLoader loader = LLXYLoader.class;
+
+		// Projection projx = factory.makeProjection(loader, center, scale, 100,
+		// 100, null);
+		// map.setProjection(projx);
+
+		// Projection mapProj = null;
+		// Projection projx =
+		// ProjectionFactory.loadDefaultProjections().makeProjection("com.bbn.openmap.proj.LLXY",
+		// mapProj);
+		// Projection projx =
+		// ProjectionFactory.loadDefaultProjections().makeProjection(null,
+		// center, scale, 100, 100, null);
+		// System.out.println("map projection set");
+
+		// map.setProjection(projx);
+
+		// map.setCenter(55.557615156744006,11.262839127526894);
+		// map.setCenter(100f, 100f);
+
+//		System.out.println("Map center set from workspace");
+//		System.out.println(map.getCenter());
+
+		// Get from settings
+//		map.setScale(scale);
+
+//		LatLonPoint latlonCenter = new LatLonPoint(center);
+		
+		add(map);
+
+		
+		getMap().addMouseWheelListener(this);
+	}
+
 	public void initChart() {
 
 		MapSettings mapSettings = ESD.getSettings().getMapSettings();
+		
+		this.center = mapSettings.getCenter();
+		this.scale = mapSettings.getScale();
 
 		initChartDefault();
 
 		// Set last postion
-		map.setCenter(mapSettings.getCenter());
+//		map.setCenter(mapSettings.getCenter());
+//		System.out.println("Map center set");
 
 		// Get from settings
-		map.setScale(mapSettings.getScale());
+//		map.setScale(mapSettings.getScale());
 
 		add(map);
 
@@ -153,29 +202,51 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 	public void initChartDefault() {
 		Properties props = ESD.getProperties();
-		
+
 		map = new BufferedLayerMapBean();
-		map.setDoubleBuffered(true);
+
+		LLXY llxyProjection = new LLXY((LatLonPoint) center, scale, 100, 100);
 		
-//		System.out.println(map.getBackground());
+		map.setProjection(llxyProjection);
 		
+//		Projection projx = ProjectionFactory.loadDefaultProjections().makeProjection("com.bbn.openmap.proj.LLXY",
+//				map.getProjection());
+		// Projection projx =
+		// ProjectionFactory.loadDefaultProjections().makeProjection(null,
+		// center, scale, 100, 100, null);
+		// System.out.println("map projection set");
+//		LLXY test = new LLXY(null, alignmentX, maxScale, maxScale);
+		
+		
+//		map.setProjection(test);
+
+		// Projection newProx = map.getProjection().makeClone();
+		//
+		// Projection newProj =
+		// ProjectionFactory.loadDefaultProjections().makeProjection("com.bbn.openmap.proj.LLXY",
+		// newProx);
+
+		// map.setDoubleBuffered(true);
+
+		// System.out.println(map.getBackground());
+
 		mouseDelegator = new MouseDelegator();
 		mapHandler.add(mouseDelegator);
-		
+
 		mapNavMouseMode = new NavigationMouseMode(this);
 		dragMouseMode = new DragMouseMode();
 		selectMouseMode = new SelectMouseMode(this);
-		
+
 		mouseDelegator.addMouseMode(mapNavMouseMode);
 		mouseDelegator.addMouseMode(dragMouseMode);
 		mouseDelegator.addMouseMode(selectMouseMode);
-		
+
 		setMouseMode(mainFrame.getMouseMode());
-		
+
 		mapHandler.add(dragMouseMode);
 		mapHandler.add(mapNavMouseMode);
 		mapHandler.add(selectMouseMode);
-		
+
 		layerHandler = new LayerHandler();
 
 		// Get plugin layers
@@ -185,11 +256,18 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 		// Add layer handler to map handler
 		mapHandler.add(layerHandler);
+
 		
 		//Add AIS Layer
+		wmsLayer = new WMSLayer();
+		wmsLayer.setVisible(true);
+		mapHandler.add(wmsLayer);
+
+
 		aisLayer = new AisLayer();
 		aisLayer.setVisible(true);
 		mapHandler.add(aisLayer);
+
 
 		//Add MSI Layer
 		msiLayer = new MsiLayer();
@@ -219,28 +297,35 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		// Force a MSI layer update
 		msiLayer.doUpdate();
 	}
-	
-	public AisLayer getAisLayer() {
-		return aisLayer;
-	}
+
+
 
 	public MsiHandler getMsiHandler() {
 		return msiHandler;
 	}
 
-	public void initChart(Point2D center, float scale) {
+	
 
-		initChartDefault();
 
-		// Set last postion
-		map.setCenter(center);
+	public void setMouseMode(int mode) {
+		// Mode0 is mapNavMouseMode
+		if (mode == 0) {
+			mouseDelegator.setActive(mapNavMouseMode);
+		}
 
-		// Get from settings
-		map.setScale(scale);
+		// Mode1 is DragNavMouseMode
+		if (mode == 1) {
+			mouseDelegator.setActive(dragMouseMode);
+		}
+		// Mode1 is Select
+		if (mode == 2) {
+			mouseDelegator.setActive(selectMouseMode);
+		}
 
-		add(map);
+	}
 
-		getMap().addMouseWheelListener(this);
+	public AisLayer getAisLayer() {
+		return aisLayer;
 	}
 
 	public void saveSettings() {
