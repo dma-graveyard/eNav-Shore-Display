@@ -1,40 +1,79 @@
 package dk.frv.enav.esd.layers.ais;
 
-import com.bbn.openmap.omGraphics.OMPoly;
+import javax.swing.ImageIcon;
 
-public class VesselLayer extends OMPoly {
+import dk.frv.enav.esd.ESD;
+import dk.frv.enav.ins.common.graphics.CenterRaster;
 
+public class VesselLayer extends CenterRaster {
 	private static final long serialVersionUID = 1L;
-	private double heading;
-	private int[] origXPoints;
-	private int[] origYPoints;
-	private int[] xPoints;
-	private int[] yPoints;
 	private long MMSI;
+	private ImageIcon vesselIcon;
+	private double lat;
+	private double lon;
+	private double trueHeading;
+	private String shipType;
 
-	public VesselLayer(long MMSI, int[] origXPoints, int[] origYPoints) {
-		super();
+	public VesselLayer(long MMSI) {
+		super(0, 0, 24, 24, new ImageIcon(ESD.class.getResource("/images/vesselIcons/white1_90.png")));
 		this.MMSI = MMSI;
-		this.origXPoints = origXPoints;
-		this.origYPoints = origYPoints;
-		this.xPoints = new int[origXPoints.length];
-		this.yPoints = new int[origYPoints.length];
-		this.heading = 0;
 	}
 
-	public void setLocation(double latPoint, double lonPoint, int units, double heading) {
-		if (this.heading != heading) {
-			for (int i = 0; i < origXPoints.length; i++) {
-				xPoints[i] = (int) (origXPoints[i] * Math.cos(heading) - origYPoints[i] * Math.sin(heading));
-				yPoints[i] = (int) (origXPoints[i] * Math.sin(heading) + origYPoints[i] * Math.cos(heading));
-			}
-			this.heading = heading;
+	public void setHeading(double trueHeading) {
+		if (this.trueHeading != trueHeading) {
+			this.trueHeading = trueHeading;
+			this.setRotationAngle(Math.toRadians(trueHeading - 90));
 		}
-		super.setLocation(latPoint, lonPoint, units, xPoints, yPoints);
+	}
+
+	public void setLocation(double lat, double lon) {
+		if (this.lat != lat || this.lon != lon) {
+			this.lat = lat;
+			this.lon = lon;
+			this.setLat(lat);
+			this.setLon(lon);
+		}
+	}
+
+	public void setImageIcon(String shipType) {
+		if(this.shipType != shipType) {	
+			this.shipType = shipType;
+			if (shipType.startsWith("Passenger"))
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/blue1_90.png"));
+			else if (shipType.startsWith("Cargo"))
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/lightgreen1_90.png"));
+			else if (shipType.startsWith("Tug"))
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/cyan1_90.png"));
+			else if (shipType.startsWith("Tanker"))
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/red1_90.png"));
+			else if (shipType.startsWith("Port"))
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/cyan1_90.png"));
+			else if (shipType.startsWith("Dredging"))
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/white0.png"));
+			else if (shipType.startsWith("Sailing"))
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/brown1_90.png"));
+			else if (shipType.startsWith("Pleasure"))
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/magenta1_90.png"));
+			else if (shipType.startsWith("Sar"))
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/cyan1_90.png"));
+			else if (shipType.startsWith("Fishing"))
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/brown1_90.png"));
+			else if (shipType.startsWith("Diving"))
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/cyan1_90.png"));
+			else if (shipType.startsWith("Pilot"))
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/cyan1_90.png"));
+			else if (shipType.startsWith("Undefined"))
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/lightgray1_90.png"));
+			else if (shipType.startsWith("Unknown"))
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/lightgray1_90.png"));
+			else {
+				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/lightgray1_90.png"));
+			}
+			this.setImageIcon(vesselIcon);
+		}
 	}
 
 	public long getMMSI() {
-		return MMSI;
+		return this.MMSI;
 	}
-	
 }
