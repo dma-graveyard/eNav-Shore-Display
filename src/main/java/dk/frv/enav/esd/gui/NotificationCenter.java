@@ -173,7 +173,6 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	
 	@Override
 	public void findAndInit(Object obj) {
-		System.out.println(obj);
 		if (obj instanceof MsiHandler) {
 			msiHandler = (MsiHandler)obj;
 			msiHandler.addListener(this);
