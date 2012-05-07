@@ -3,8 +3,11 @@ package dk.frv.enav.esd.layers.ais;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.util.List;
+
+import javax.swing.ImageIcon;
 
 import com.bbn.openmap.event.MapMouseListener;
 import com.bbn.openmap.layer.OMGraphicHandlerLayer;
@@ -19,6 +22,7 @@ import com.bbn.openmap.proj.Length;
 import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.ais.message.AisMessage;
+import dk.frv.ais.message.ShipTypeCargo;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.ais.AisHandler.AisMessageExtended;
 import dk.frv.enav.esd.ais.VesselAisHandler;
@@ -30,6 +34,7 @@ import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.ins.ais.VesselPositionData;
 import dk.frv.enav.ins.ais.VesselStaticData;
 import dk.frv.enav.ins.ais.VesselTarget;
+import dk.frv.enav.ins.common.graphics.CenterRaster;
 import dk.frv.enav.ins.gui.MainFrame;
 import dk.frv.enav.ins.layers.ais.AisTargetInfoPanel;
 
@@ -45,6 +50,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 
 	private VesselLayer heading;
 	private VesselLayer vesIcon;
+	private ImageIcon vesselIcon;
 	private OMCircle vesCirc;
 	
 	private OMPoly infoBox;
@@ -118,6 +124,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					double sog = location.getSog();
 
 					// Draw Vessel
+					/*
 					if (mapScale < 1500000.0 && shouldDisplayVessel) {
 						// Zoom level is good. Display vessel icon
 						int[] xPos = { sizeOffset, -sizeOffset, 0 };
@@ -126,6 +133,71 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 						vesIcon.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, hdgR);
 						vesIcon.setFillPaint(shipColor);
 						list.add(vesIcon);
+					} else {
+						// Zoom level is too large. Display only dots
+						vesCirc = new OMCircle(lat, lon, 0.01);
+						vesCirc.setFillPaint(shipColor);
+						list.add(vesCirc);
+					}
+					*/
+					
+					if (false && staticData != null && staticData.getDimPort()+staticData.getDimStarboard()>0 && staticData.getDimBow()+staticData.getDimStern()>0 && mapScale < 200000.0 && shouldDisplayVessel) {
+						// Zoom level is good. Display vessel icon relative to size
+						ImageIcon vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/magenta1_90.png"));
+						
+						//System.out.println("Width: "+(staticData.getDimPort()+staticData.getDimStarboard())+" Height: "+(staticData.getDimBow()+staticData.getDimStern()));
+						Image img = vesselIcon.getImage();
+						float scalar = (float) (staticData.getDimBow()+staticData.getDimStern()) / (staticData.getDimPort()+staticData.getDimStarboard());
+						int newWidth = (staticData.getDimPort()+staticData.getDimStarboard())*2;
+						int newHeight = (int) Math.floor(newWidth*scalar);
+						Image newimg = img.getScaledInstance(newHeight,newWidth, java.awt.Image.SCALE_SMOOTH ) ;  
+						vesselIcon = new ImageIcon( newimg );
+						//System.out.println("New Width: "+newWidth+" New Height: "+newHeight);
+						CenterRaster vesselRaster = new CenterRaster(lat,lon,vesselIcon.getIconHeight(),vesselIcon.getIconWidth(),vesselIcon);
+						vesselRaster.setRotationAngle(Math.toRadians(trueHeading-90));
+						list.add(vesselRaster);
+					} else if (mapScale < 1500000.0 && shouldDisplayVessel) {
+						// Zoom level is good. Display vessel icon
+						if(staticData != null){
+							String stype = staticData.getShipType().toString();
+							if(stype.startsWith("Passenger"))
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/blue1_90.png"));
+							else if(stype.startsWith("Cargo"))
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/lightgreen1_90.png"));
+							else if(stype.startsWith("Tug"))
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/cyan1_90.png"));
+							else if(stype.startsWith("Tanker"))
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/red1_90.png"));
+							else if(stype.startsWith("Port"))
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/cyan1_90.png"));
+							else if(stype.startsWith("Dredging"))
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/white0.png"));
+							else if(stype.startsWith("Sailing"))
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/brown1_90.png"));
+							else if(stype.startsWith("Pleasure"))
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/magenta1_90.png"));
+							else if(stype.startsWith("Sar"))
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/cyan1_90.png"));
+							else if(stype.startsWith("Fishing"))
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/brown1_90.png"));
+							else if(stype.startsWith("Diving"))
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/cyan1_90.png"));
+							else if(stype.startsWith("Pilot"))
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/cyan1_90.png"));
+							else if(stype.startsWith("Undefined"))
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/lightgray1_90.png"));
+							else if(stype.startsWith("Unknown"))
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/lightgray1_90.png"));
+							else {
+								vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/lightgray1_90.png"));
+								System.out.println(stype);
+							}
+						} else {
+							vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/white1_90.png"));
+						}						
+						CenterRaster vesselRaster = new CenterRaster(lat,lon,vesselIcon.getIconHeight(),vesselIcon.getIconWidth(),vesselIcon);
+						vesselRaster.setRotationAngle(Math.toRadians(trueHeading-90));
+						list.add(vesselRaster);
 					} else {
 						// Zoom level is too large. Display only dots
 						vesCirc = new OMCircle(lat, lon, 0.01);
