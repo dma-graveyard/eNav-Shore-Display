@@ -158,7 +158,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		desktop.add(toolbar, true);
 		desktop.add(notificationArea, true);
 		
-		
+		beanHandler.add(notificationArea);
 		// dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
 		// Add self to bean handler

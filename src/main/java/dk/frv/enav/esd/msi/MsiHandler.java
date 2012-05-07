@@ -45,6 +45,7 @@ import dk.frv.enav.common.xml.msi.MsiMessage;
 import dk.frv.enav.common.xml.msi.response.MsiResponse;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.layers.msi.MsiLayer;
+import dk.frv.enav.esd.msi.MsiHandler.MsiMessageExtended;
 import dk.frv.enav.esd.services.shore.ShoreServiceException;
 import dk.frv.enav.esd.services.shore.ShoreServices;
 import dk.frv.enav.ins.gps.GpsData;
@@ -135,6 +136,19 @@ public class MsiHandler extends MapHandlerChild implements Runnable, IRoutesUpda
 			list.add(msiMessageExtended);
 		}
 		return list;
+	}
+	
+	public int getUnAcknowledgedMSI(){
+		List<MsiMessageExtended> messageList = getMessageList();
+		int counter = 0;
+		
+		for (int i = 0; i < messageList.size(); i++) {
+			if (messageList.get(i).acknowledged == false){
+				counter++;
+			}
+		}
+		
+		return counter;
 	}
 	
 	public synchronized int getFirstNonAcknowledged() {
