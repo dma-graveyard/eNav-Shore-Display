@@ -1,26 +1,34 @@
 package dk.frv.enav.esd.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
+import java.beans.PropertyVetoException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.border.EtchedBorder;
 import javax.swing.plaf.ColorUIResource;
 
+import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
+
 public class JMapFrame extends JInternalFrame implements MouseListener  {
-	
 	
 	private static final long serialVersionUID = 1L;
 	private ChartPanel chartPanel;
@@ -30,6 +38,9 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	private int id;
 	private final MainFrame mainFrame;
 	private JPanel glassPanel;
+	private JLabel moveHandler;
+	private JPanel masterPanel;
+	private static int moveHandlerHeight = 18;
 	
 	public JMapFrame(int id, MainFrame mainFrame) {
 		super("New Window "+id, true, true, true, true);
@@ -37,7 +48,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		this.mainFrame = mainFrame;
 		this.id = id;
 		chartPanel = new ChartPanel(mainFrame);
-		this.setContentPane(chartPanel);
+		//this.setContentPane(chartPanel);
 		this.setVisible(true);
 	
 		initGlassPane();
@@ -48,6 +59,68 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().addMouseListener(this);
 		actions = (MouseMotionListener[])((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().getListeners(MouseMotionListener.class);
 		
+		// Strip off
+		setRootPaneCheckingEnabled(false);
+		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).setNorthPane(null);
+		this.setBorder(null);
+		
+        // Create the top movehandler (for dragging)
+        moveHandler = new JLabel("Map Window", JLabel.CENTER);
+        moveHandler.setForeground(new Color(200, 200, 200));
+        moveHandler.setOpaque(true);
+        moveHandler.setBackground(Color.DARK_GRAY);
+        moveHandler.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(30, 30, 30)));
+        moveHandler.setFont(new Font("Arial", Font.BOLD, 9));
+        moveHandler.setPreferredSize(new Dimension(500, moveHandlerHeight));
+        ToolbarMoveMouseListener mml = new ToolbarMoveMouseListener(this, mainFrame);
+        moveHandler.addMouseListener(mml);
+        moveHandler.addMouseMotionListener(mml);
+        
+        final JInternalFrame test = this;
+        JLabel minimize = new JLabel("Minimize");
+        minimize.addMouseListener(new MouseAdapter() {  
+		    public void mouseReleased(MouseEvent e) { 
+		    	try {
+					test.setIcon(true);
+				} catch (PropertyVetoException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+		    	System.out.println("minimizing");
+		    }
+        });
+        
+        JLabel maximize = new JLabel("Maximize");
+        maximize.addMouseListener(new MouseAdapter() {  
+		    public void mouseReleased(MouseEvent e) { 
+		    	test.setMaximizable(true);
+		    	System.out.println("Maximizing");
+		    }
+        });
+        
+        JLabel close = new JLabel("Close");
+        close.addMouseListener(new MouseAdapter() {  
+		    public void mouseReleased(MouseEvent e) { 
+		    	try {
+					test.setClosed(true);
+				} catch (PropertyVetoException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+		    	System.out.println("Closing");
+		    }
+        });
+        
+        
+        
+     // Create the masterpanel for aligning
+	    masterPanel = new JPanel(new BorderLayout());
+	    masterPanel.add(moveHandler, BorderLayout.NORTH);
+	    masterPanel.add(chartPanel, BorderLayout.SOUTH);
+	    //masterPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
+	    //this.getContentPane().add(masterPanel);
+        
+	    this.setContentPane(masterPanel);
 	}
 	
 	public JMapFrame(int id, MainFrame mainFrame, Point2D center, float scale) {
@@ -64,6 +137,11 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		
 		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().addMouseListener(this);
 		actions = (MouseMotionListener[])((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().getListeners(MouseMotionListener.class);
+	
+		// Strip off
+		setRootPaneCheckingEnabled(false);
+		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).setNorthPane(null);
+		this.setBorder(null);
 	}
 	
 	private void initGlassPane() {
