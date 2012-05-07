@@ -48,6 +48,7 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 //		setVendorSpecificValues("3857");
 		setQueryHeader("http://kortforsyningen.kms.dk/soe_enc_primar");
 		setTransparent("TRUE");
+		
 	}
 	
 	public void setWMSPosition(Double ullon, Double ullat, Double upperLeftLon, Double upperLeftLat, Double lowerRightLon, Double lowerRightLat, int w, int h){

@@ -94,6 +94,8 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	private WMSLayer wmsLayer;
 	private MainFrame mainFrame;
 	private Color background = new Color(168, 228, 255);
+	private Point2D center;
+	private float scale;
 
 	protected transient ProjectionSupport projectionSupport = new ProjectionSupport(this, false);
 
@@ -122,13 +124,16 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 	public void initChart(Point2D center, float scale) {
 
+		this.center = center;
+		this.scale = scale;
+		
 		initChartDefault();
 
 		// Set last postion
-		System.out.println(map.getCenter());
+//		System.out.println(map.getCenter());
 
-		map.setCenter(center);
-		System.out.println(map.getCenter());
+//		map.setCenter(center);
+//		System.out.println(map.getCenter());
 
 		// ProjectionFactory factory =
 		// ProjectionFactory.loadDefaultProjections();
@@ -153,29 +158,35 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		// map.setCenter(55.557615156744006,11.262839127526894);
 		// map.setCenter(100f, 100f);
 
-		System.out.println("Map center set from workspace");
-		System.out.println(map.getCenter());
+//		System.out.println("Map center set from workspace");
+//		System.out.println(map.getCenter());
 
 		// Get from settings
-		map.setScale(scale);
+//		map.setScale(scale);
 
+//		LatLonPoint latlonCenter = new LatLonPoint(center);
+		
 		add(map);
 
+		
 		getMap().addMouseWheelListener(this);
 	}
 
 	public void initChart() {
 
 		MapSettings mapSettings = ESD.getSettings().getMapSettings();
+		
+		this.center = mapSettings.getCenter();
+		this.scale = mapSettings.getScale();
 
 		initChartDefault();
 
 		// Set last postion
-		map.setCenter(mapSettings.getCenter());
-		System.out.println("Map center set");
+//		map.setCenter(mapSettings.getCenter());
+//		System.out.println("Map center set");
 
 		// Get from settings
-		map.setScale(mapSettings.getScale());
+//		map.setScale(mapSettings.getScale());
 
 		add(map);
 
@@ -187,14 +198,20 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 		map = new BufferedLayerMapBean();
 
-		Projection projx = ProjectionFactory.loadDefaultProjections().makeProjection("com.bbn.openmap.proj.LLXY",
-				map.getProjection());
+		LLXY llxyProjection = new LLXY((LatLonPoint) center, scale, 100, 100);
+		
+		map.setProjection(llxyProjection);
+		
+//		Projection projx = ProjectionFactory.loadDefaultProjections().makeProjection("com.bbn.openmap.proj.LLXY",
+//				map.getProjection());
 		// Projection projx =
 		// ProjectionFactory.loadDefaultProjections().makeProjection(null,
 		// center, scale, 100, 100, null);
 		// System.out.println("map projection set");
-
-		map.setProjection(projx);
+//		LLXY test = new LLXY(null, alignmentX, maxScale, maxScale);
+		
+		
+//		map.setProjection(test);
 
 		// Projection newProx = map.getProjection().makeClone();
 		//
