@@ -125,7 +125,8 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		private static final long serialVersionUID = 1L;
 		private String[] columnNames = {"Service name","Unread"};
         private Object[][] data = {
-		    {"MSI", new Integer(10)},
+//		    {"MSI", new Integer(10)},
+		    {"MSI", msiHandler.getUnAcknowledgedMSI()},
 		    {"Guard Zones", new Integer(2)},
 		    {"AIS", new Integer(2)},
 		    {"Risk Index", new Integer(0)}

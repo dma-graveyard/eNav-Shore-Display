@@ -66,6 +66,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 
 		this.mainFrame = mainFrame;
 		this.id = id;
+		
 		chartPanel = new ChartPanel(mainFrame, this);
 		this.setContentPane(chartPanel);
 		this.setVisible(true);
@@ -73,6 +74,26 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		initGlassPane();
 
 		chartPanel.initChart();
+		
+		initGUI();
+	}
+	
+	public JMapFrame(int id, MainFrame mainFrame, Point2D center, float scale) {
+		super("New Window " + id, true, true, true, true);
+
+		this.mainFrame = mainFrame;
+		this.id = id;
+		chartPanel = new ChartPanel(mainFrame, this);
+		this.setContentPane(chartPanel);
+		this.setVisible(true);
+
+		initGlassPane();
+		
+		chartPanel.initChart(center, scale);
+		initGUI();
+	}
+	
+	public void initGUI(){
 		makeKeyBindings();
 		
 		mapFrame = this;
@@ -205,7 +226,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 
 	    repaintMapWindow();
 	}
-	
+
 	public void repaintMapWindow() {
 		
 		System.out.println("Repainting: " + mapFrame.getSize().width + " og " + mapFrame.getSize().height);
@@ -231,31 +252,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		//		.getListeners(MouseMotionListener.class);
 
 	}
-
-	public JMapFrame(int id, MainFrame mainFrame, Point2D center, float scale) {
-		super("New Window " + id, true, true, true, true);
-
-		this.mainFrame = mainFrame;
-		this.id = id;
-		chartPanel = new ChartPanel(mainFrame, this);
-		this.setContentPane(chartPanel);
-		this.setVisible(true);
-
-		initGlassPane();
-		
-		chartPanel.initChart(center, scale);
-		makeKeyBindings();
-		
-		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().addMouseListener(this);
-		actions = (MouseMotionListener[])((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().getListeners(MouseMotionListener.class);
 	
-		// Strip off
-		setRootPaneCheckingEnabled(false);
-		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).setNorthPane(null);
-		this.setBorder(null);
-
-	}
-
 	private void initGlassPane() {
 		glassPanel = (JPanel) getGlassPane();
 		glassPanel.setLayout(null);

@@ -200,6 +200,10 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		
 	}
 
+	public WMSLayer getWmsLayer() {
+		return wmsLayer;
+	}
+
 	public void initChartDefault() {
 		Properties props = ESD.getProperties();
 
@@ -296,6 +300,12 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		
 		// Force a MSI layer update
 		msiLayer.doUpdate();
+		
+		
+		if(wmsLayer.isVisible()){
+			bgLayer.setVisible(false);
+		}
+		
 	}
 
 
@@ -306,6 +316,10 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 	
 
+
+	public Layer getBgLayer() {
+		return bgLayer;
+	}
 
 	public void setMouseMode(int mode) {
 		// Mode0 is mapNavMouseMode

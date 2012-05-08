@@ -120,6 +120,39 @@ public class ToolBar extends JInternalFrame {
 		toolItems.add(zoom);
 		
 		
+		
+		final JLabel wms = new JLabel(toolbarIcon("images/toolbar/wms_small.png"));
+		wms.setName("wms");
+		wms.addMouseListener(new MouseAdapter() {  
+		    public void mouseReleased(MouseEvent e) {
+				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
+			    	if(mainFrame.getMapWindows().get(i).getChartPanel().getWmsLayer().isVisible()){
+			    		mainFrame.getMapWindows().get(i).getChartPanel().getWmsLayer().setVisible(false);
+			    		mainFrame.getMapWindows().get(i).getChartPanel().getBgLayer().setVisible(true);
+			    		
+			    		wms.setBorder(toolPaddingBorder);
+			    		wms.setOpaque(false);
+			    		
+			    	}else{
+			    		mainFrame.getMapWindows().get(i).getChartPanel().getWmsLayer().setVisible(true);
+			    		mainFrame.getMapWindows().get(i).getChartPanel().getBgLayer().setVisible(false);
+			    		
+
+
+			    		
+			            wms.setBackground(new Color(55, 55, 55));
+			            wms.setBorder(BorderFactory.createCompoundBorder(toolPaddingBorder, toolInnerEtchedBorder));
+			            wms.setOpaque(true);
+			    	}
+				}
+		    }  
+		});
+		wms.setBorder(toolPaddingBorder);
+		toolItems.add(wms);
+        wms.setBackground(new Color(55, 55, 55));
+        wms.setBorder(BorderFactory.createCompoundBorder(toolPaddingBorder, toolInnerEtchedBorder));
+        wms.setOpaque(true);
+		
 
 	    // Create the masterpanel for aligning
 	    masterPanel = new JPanel(new BorderLayout());
@@ -143,6 +176,8 @@ public class ToolBar extends JInternalFrame {
 	    	setActiveToolItem(select);	
 	    }
 		
+	    
+	    
 	}
 	
 	/*
@@ -152,8 +187,12 @@ public class ToolBar extends JInternalFrame {
 	public void setActiveToolItem(JLabel tool) {
 		// Inactive all tools
 		for(int i=0;i<toolItems.size();i++) {
+			
+			if (toolItems.get(i).getName() != "wms"){
+			
 			toolItems.get(i).setBorder(toolPaddingBorder);
 			toolItems.get(i).setOpaque(false);
+			}
 		}
 		
 		// Set active tool
