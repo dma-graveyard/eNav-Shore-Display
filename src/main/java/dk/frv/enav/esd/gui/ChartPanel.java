@@ -210,9 +210,9 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 		map = new BufferedLayerMapBean();
 
-		LLXY llxyProjection = new LLXY((LatLonPoint) center, scale, 100, 100);
-		
-		map.setProjection(llxyProjection);
+//		LLXY llxyProjection = new LLXY((LatLonPoint) center, scale, 100, 100);
+//		
+//		map.setProjection(llxyProjection);
 		
 //		Projection projx = ProjectionFactory.loadDefaultProjections().makeProjection("com.bbn.openmap.proj.LLXY",
 //				map.getProjection());
