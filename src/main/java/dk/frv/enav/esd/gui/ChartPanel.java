@@ -51,13 +51,8 @@ import com.bbn.openmap.MouseDelegator;
 import com.bbn.openmap.event.ProjectionSupport;
 import com.bbn.openmap.gui.OMComponentPanel;
 import com.bbn.openmap.layer.shape.ShapeLayer;
-import com.bbn.openmap.proj.LLXY;
-import com.bbn.openmap.proj.LLXYLoader;
-import com.bbn.openmap.proj.MercatorLoader;
 import com.bbn.openmap.proj.Proj;
 import com.bbn.openmap.proj.Projection;
-import com.bbn.openmap.proj.ProjectionFactory;
-import com.bbn.openmap.proj.ProjectionLoader;
 import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.ais.geo.GeoLocation;
@@ -68,9 +63,8 @@ import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.layers.ais.AisLayer;
 import dk.frv.enav.esd.layers.msi.MsiLayer;
 import dk.frv.enav.esd.layers.wms.WMSLayer;
-import dk.frv.enav.esd.layers.wms.WMSService;
-import dk.frv.enav.esd.settings.MapSettings;
 import dk.frv.enav.esd.msi.MsiHandler;
+import dk.frv.enav.esd.settings.MapSettings;
 
 /**
  * The panel with chart. Initializes all layers to be shown on the map.
@@ -98,8 +92,8 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	private WMSLayer wmsLayer;
 	private MainFrame mainFrame;
 	private Color background = new Color(168, 228, 255);
-	private Point2D center;
-	private float scale;
+//	private Point2D center;
+//	private float scale;
 
 	protected transient ProjectionSupport projectionSupport = new ProjectionSupport(this, false);
 
@@ -131,47 +125,15 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 	public void initChart(Point2D center, float scale) {
 
-		this.center = center;
-		this.scale = scale;
-		
+//		this.center = center;
+//		this.scale = scale;
+//		
 		initChartDefault();
 
-		// Set last postion
-//		System.out.println(map.getCenter());
-
-//		map.setCenter(center);
-//		System.out.println(map.getCenter());
-
-		// ProjectionFactory factory =
-		// ProjectionFactory.loadDefaultProjections();
-
-		// ProjectionLoader loader = LLXYLoader.class;
-
-		// Projection projx = factory.makeProjection(loader, center, scale, 100,
-		// 100, null);
-		// map.setProjection(projx);
-
-		// Projection mapProj = null;
-		// Projection projx =
-		// ProjectionFactory.loadDefaultProjections().makeProjection("com.bbn.openmap.proj.LLXY",
-		// mapProj);
-		// Projection projx =
-		// ProjectionFactory.loadDefaultProjections().makeProjection(null,
-		// center, scale, 100, 100, null);
-		// System.out.println("map projection set");
-
-		// map.setProjection(projx);
-
-		// map.setCenter(55.557615156744006,11.262839127526894);
-		// map.setCenter(100f, 100f);
-
-//		System.out.println("Map center set from workspace");
-//		System.out.println(map.getCenter());
-
 		// Get from settings
-//		map.setScale(scale);
+		map.setCenter(center);
+		map.setScale(scale);
 
-//		LatLonPoint latlonCenter = new LatLonPoint(center);
 		
 		add(map);
 
@@ -183,8 +145,8 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 		MapSettings mapSettings = ESD.getSettings().getMapSettings();
 		
-		this.center = mapSettings.getCenter();
-		this.scale = mapSettings.getScale();
+//		this.center = mapSettings.getCenter();
+//		this.scale = mapSettings.getScale();
 
 		initChartDefault();
 

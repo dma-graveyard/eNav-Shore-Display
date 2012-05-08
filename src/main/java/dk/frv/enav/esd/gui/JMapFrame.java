@@ -32,6 +32,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
@@ -113,7 +114,12 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		// Strip off
 		setRootPaneCheckingEnabled(false);
 		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).setNorthPane(null);
-		this.setBorder(null);
+		
+		//Steffen look here!
+		this.setBorder(BorderFactory.createLineBorder(Color.black, 1));
+		
+		
+//		this.setBorder(null);
 		
 		// Map tools
 		mapPanel = new JPanel(new GridLayout(1,3));
