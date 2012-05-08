@@ -2,12 +2,10 @@ package dk.frv.enav.esd.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -17,12 +15,10 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.beans.PropertyVetoException;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
@@ -31,14 +27,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
+
 import javax.swing.border.EtchedBorder;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
-import javax.swing.plaf.ColorUIResource;
-import dk.frv.enav.esd.event.MapResizeMouseListener;
+
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 
 public class JMapFrame extends JInternalFrame implements MouseListener  {
@@ -58,9 +49,8 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	private boolean maximized = false;
 	public int width;
 	public int height;
-	private static int chartPanelOffset = 4;
+	private static int chartPanelOffset = 6;
 	JInternalFrame mapFrame = null;
-	private JPanel resizePanel;
 
 	public JMapFrame(int id, MainFrame mainFrame) {
 		super("New Window " + id, true, true, true, true);
@@ -73,9 +63,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		this.setVisible(true);
 
 		initGlassPane();
-
 		chartPanel.initChart();
-		
 		initGUI();
 	}
 	
@@ -89,7 +77,6 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		this.setVisible(true);
 
 		initGlassPane();
-		
 		chartPanel.initChart(center, scale);
 		initGUI();
 	}
@@ -114,12 +101,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		// Strip off
 		setRootPaneCheckingEnabled(false);
 		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).setNorthPane(null);
-		
-		//Steffen look here!
-		this.setBorder(BorderFactory.createLineBorder(Color.black, 1));
-		
-		
-//		this.setBorder(null);
+		this.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 		
 		// Map tools
 		mapPanel = new JPanel(new GridLayout(1,3));
@@ -141,9 +123,6 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
         moveHandler.setForeground(new Color(200, 200, 200));
         moveHandler.addMouseListener(this);
 		actions = moveHandler.getListeners(MouseMotionListener.class);
-        //ToolbarMoveMouseListener mml = new ToolbarMoveMouseListener(this, mainFrame);
-        //moveHandler.addMouseListener(mml);
-        //moveHandler.addMouseMotionListener(mml);
         mapPanel.add(moveHandler);
         
         // The tools (minimize, maximize and close)
@@ -203,25 +182,8 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
         
         mapPanel.add(mapToolsPanel);
         
-        // Resizer
-        //chartPanel.setLayout(null);
-        resizePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        resizePanel.setSize(mapFrame.getSize().width, 15);
-        resizePanel.setPreferredSize(new Dimension(mapFrame.getSize().width, 15));
-        resizePanel.setBackground(Color.DARK_GRAY);
-        
-        JLabel resize = new JLabel(new ImageIcon("images/window/resize.png"));
-		MapResizeMouseListener mrl = new MapResizeMouseListener(this, mainFrame);
-		resize.addMouseListener(mrl);
-		resize.addMouseMotionListener(mrl);
-        resizePanel.add(resize);
-        
-        chartPanel.add(resizePanel);
-        
-        //chartPanel.setSize(500, 450);
-        //chartPanel.setPreferredSize(new Dimension(500, 450));
-        
-     // Create the masterpanel for aligning
+
+        // Create the masterpanel for aligning
 	    masterPanel = new JPanel(new BorderLayout());
 	    masterPanel.add(mapPanel, BorderLayout.NORTH);
 	    masterPanel.add(chartPanel, BorderLayout.SOUTH);
@@ -305,32 +267,17 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		*/
 		
 		if(locked) {
+			
 			masterPanel.add(mapPanel, BorderLayout.NORTH);
-			chartPanel.add(resizePanel);
 			locked = false;
 			mapFrame.setResizable(true);
 			
-			/*
-			// Align the notification area according to the height of the movehandler
-			int newX = (int) (this.getLocation().getX());
-			int newY = (int) (this.getLocation().getY());
-			Point new_location = new Point(newX, (newY - moveHandlerHeight));
-			this.setLocation(new_location);
-			*/
-
 		} else {
+			
 			masterPanel.remove(mapPanel);
-			chartPanel.remove(resizePanel);
 			locked = true;
 			mapFrame.setResizable(false);
 			
-			/*
-			// Align the notification area according to the height of the movehandler
-			int newX = (int) (this.getLocation().getX());
-			int newY = (int) (this.getLocation().getY());
-			Point new_location = new Point(newX, (newY + moveHandlerHeight));
-			this.setLocation(new_location);
-			*/
 		}
 		
 		

@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import javax.swing.BorderFactory;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -41,6 +40,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 	private HashMap<String, JPanel> notifications = new HashMap<String, JPanel>();
 	private HashMap<String, String> services = new HashMap<String, String>();
 	private HashMap<String, Integer> unreadMessages = new HashMap<String, Integer>();
+	private HashMap<String, JLabel> unreadMessagesLabels = new HashMap<String, JLabel>();
 	private HashMap<String, JLabel> indicatorLabels = new HashMap<String, JLabel>();
 	public int width;
 	public int height;
@@ -89,7 +89,6 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 		
 		// Setup notifications (add here for more notifications)
 		// Notification: MSI
-		//final JLabel msi = new JLabel("MSI");
 		final JPanel msi = new JPanel();
 		notifications.put("msi", msi);
 		services.put("msi", "MSI");
@@ -140,12 +139,31 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 	    repaintNotificationArea();
 	}
 	
-	public void addMessage(String service) throws InterruptedException {
-		unreadMessages.put(service, unreadMessages.get(service)+1);
-		newMessage(service);
+	public void addMessage(String service, int messageCount) throws InterruptedException {
+				
+		JLabel unread = unreadMessagesLabels.get(service);
+		JLabel unreadIndicator = indicatorLabels.get(service);
+		Integer currentCount = unreadMessages.get(service);
+		
+		if(currentCount == null)
+			currentCount = 0;
+		
+		if(messageCount == 0)
+			unreadIndicator.setOpaque(false);
+		
+		if(messageCount != currentCount)
+			unread.setText(Integer.toString(messageCount));
+				
+		if(messageCount > currentCount) {
+			unreadIndicator.setOpaque(true);
+			newMessage(service);
+		}
+		
+		unreadMessages.put(service, messageCount);
 	}
 	
 	public void newMessage(final String key) throws InterruptedException {
+				
 		final int blinks = 20;
 		
 		final Runnable doChangeIndicator = new Runnable() {
@@ -231,10 +249,8 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 				service = "";
 			
 			// Style the notification panel
-			//JPanel servicePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 			JPanel servicePanel = entry.getValue();
 			servicePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-			//servicePanel.setLayout(FlowLayout.LEFT, 0, 0);
 			servicePanel.setBackground(new Color(65, 65, 65));
 			servicePanel.setBorder(notificationPadding);
 			servicePanel.setPreferredSize(new Dimension(notificationWidth, notificationHeight));
@@ -259,25 +275,15 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 			JLabel unreadIndicator = new JLabel();
 			unreadIndicator.setPreferredSize(new Dimension(7, notificationHeight));
 			
-			if(messageCount > 0) {
-				unreadIndicator.setBackground(new Color(206, 120, 120));
-				unreadIndicator.setOpaque(true);
-			}
-			
 			servicePanel.add(unreadIndicator);
 			
 			notificationPanel.add(servicePanel);
 		
 			// Make list of indicator labels to use when blinking
 			indicatorLabels.put(entry.getKey(), unreadIndicator);
+			unreadMessagesLabels.put(entry.getKey(), messages);
 			
 		}
-		/*
-		OLD
-		for(Iterator<JLabel> i = notifications.iterator();i.hasNext();) {
-			//notificationPanel.add(i.next());
-		}
-		*/
 		
 		// Then calculate the size of the notification area according to the number of notifications
 		width = notificationWidth;
@@ -317,9 +323,6 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 		if (obj instanceof MsiHandler) {
 			msiHandler = (MsiHandler)obj;
 			msiHandler.addListener(this);
-			
-			unreadMessages.put("msi", msiHandler.getUnAcknowledgedMSI());
-			repaintNotificationArea();
 		}
 	}
 
@@ -327,7 +330,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 	public void msiUpdate() {
 		//msiHandler.getUnAcknowledgedMSI();
 		try {
-			newMessage("msi");
+			addMessage("msi", msiHandler.getUnAcknowledgedMSI());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
