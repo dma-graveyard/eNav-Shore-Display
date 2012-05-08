@@ -3,11 +3,15 @@ package dk.frv.enav.esd.layers.wms;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.List;
 
 import com.bbn.openmap.event.MapMouseListener;
+import com.bbn.openmap.event.PanEvent;
+import com.bbn.openmap.event.PanListener;
 import com.bbn.openmap.layer.OMGraphicHandlerLayer;
 import com.bbn.openmap.omGraphics.OMCircle;
 import com.bbn.openmap.omGraphics.OMGraphic;
@@ -50,6 +54,9 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 	public void run() {
 		while (shouldRun) {
 			ESD.sleep(1500);
+			
+			//Check is changed
+			
 			Double upperLeftLon = chartPanel.getMap().getProjection().getUpperLeft().getX();
 			Double upperLeftLat = chartPanel.getMap().getProjection().getUpperLeft().getY();
 			Double lowerRightLon = chartPanel.getMap().getProjection().getLowerRight().getX();
@@ -95,11 +102,13 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 
 	@Override
 	public void findAndInit(Object obj) {
+//		System.out.println(obj.getClass());
 		if (obj instanceof VesselAisHandler) {
 			aisHandler = (VesselAisHandler) obj;
 		}
 		if (obj instanceof ChartPanel) {
 			chartPanel = (ChartPanel) obj;
+//			chartPanel.getMapHandler().addPropertyChangeListener("WMS", pcl)
 		}
 		if (obj instanceof MainFrame) {
 			mainFrame = (MainFrame) obj;

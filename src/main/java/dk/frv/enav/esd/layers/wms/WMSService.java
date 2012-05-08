@@ -115,7 +115,21 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 			urlc.disconnect();
 			wmsList.clear();
 			//wmsList.add(new CenterRaster(55.6760968, 12.568337, 445, 472, new ImageIcon(url)));
-			wmsList.add(new CenterRaster(this.wmsullat, this.wmsullon, this.wmsWidth, this.wmsHeight, new ImageIcon(url)));
+			ImageIcon wmsImg = new ImageIcon(url);
+			
+			if (wmsImg.getIconHeight() == -1 || wmsImg.getIconWidth() ==-1){
+				System.out.println("no WMS");
+				wmsList.add(new CenterRaster(this.wmsullat, this.wmsullon, this.wmsWidth, this.wmsHeight, new ImageIcon("images/noWMSAvailable.jpg")));
+			}else{
+				wmsList.add(new CenterRaster(this.wmsullat, this.wmsullon, this.wmsWidth, this.wmsHeight, wmsImg));	
+			}
+			
+			
+			
+//			System.out.println(wmsImg.getIconHeight());
+//			System.out.println(wmsImg.getIconWidth());
+			//If iconHeight or width == -1 no WMS available
+			
 		} catch (java.net.MalformedURLException murle) {
 			System.out.println("Bad URL!");
 		} catch (java.io.IOException ioe) {
