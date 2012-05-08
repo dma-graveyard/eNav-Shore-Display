@@ -33,9 +33,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
@@ -47,6 +51,7 @@ public abstract class InfoPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private JLabel textLabel = new JLabel();
+	private JLabel imageLabel = new JLabel(new ImageIcon("images/loading.gif"));
 
 	public InfoPanel() {
 		super();
@@ -57,14 +62,18 @@ public abstract class InfoPanel extends JPanel {
 //		setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
 		add(textLabel);
+		add(imageLabel);
 		setVisible(false);
 		textLabel.setFont(new Font("Arial", Font.PLAIN, 11));
 		textLabel.setBackground(new Color(83, 83, 83));
 		textLabel.setForeground(new Color(237, 237, 237));
 		setBackground(new Color(83, 83, 83));
+		imageLabel.setVisible(false);
+		
 	}
 
 	public void showText(String text) {
+		imageLabel.setVisible(false);
 		textLabel.setText(text);
 		resizeAndShow();
 	}
@@ -79,6 +88,16 @@ public abstract class InfoPanel extends JPanel {
 	public void setPos(int x, int y) {
 		Rectangle rect = getBounds();
 		setBounds(x, y, (int) rect.getWidth(), (int) rect.getHeight());
+	}
+	
+	public void showImage(ImageIcon image){
+		imageLabel.setVisible(true);
+//		imageLabel.setIcon(image);
+		setOpaque(false);
+		validate();
+		Dimension d = imageLabel.getSize();
+		this.setSize(d.width, d.height);
+		setVisible(true);
 	}
 
 }
