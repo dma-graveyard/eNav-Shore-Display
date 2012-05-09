@@ -87,6 +87,227 @@ public class ESD {
 
 	private static ExceptionHandler exceptionHandler = new ExceptionHandler();
 
+	/**
+	 * Function called on shutdown
+	 */
+	public static void closeApp() {
+		closeApp(false);
+	}
+
+	/**
+	 * Close app routine with possibility for restart - not implemented
+	 * @param restart - boolean value for program restart
+	 */
+	public static void closeApp(boolean restart) {
+		// Shutdown routine
+
+		// Chart panels
+
+		// Window state
+
+		// Window state has a
+		// Name, Size, Location, Locked status, on top status
+		// Chart panel has a zoom level, position
+
+		// Main application
+
+		mainFrame.saveSettings();
+		settings.saveToFile();
+
+		// GuiSettings
+		// Handler settings
+		// routeManager.saveToFile();
+		// msiHandler.saveToFile();
+		// aisHandler.saveView();
+
+		LOG.info("Closing ESD");
+		System.exit(restart ? 2 : 0);
+	}
+
+	/**
+	 * Creates and shows the GUI
+	 */
+	private static void createAndShowGUI() {
+		// Set the look and feel.
+		initLookAndFeel();
+
+		// Make sure we have nice window decorations.
+		JFrame.setDefaultLookAndFeelDecorated(true);
+
+		// Create and set up the main window
+		mainFrame = new MainFrame();
+		mainFrame.setVisible(true);
+
+	}
+
+	/**
+	 * Create the plugin components and initialize the beanhandler
+	 */
+	private static void createPluginComponents() {
+		Properties props = getProperties();
+		String componentsValue = props.getProperty("esd.plugin_components");
+		if (componentsValue == null) {
+			return;
+		}
+		String[] componentNames = componentsValue.split(" ");
+		for (String compName : componentNames) {
+			String classProperty = compName + ".class";
+			String className = props.getProperty(classProperty);
+			if (className == null) {
+				LOG.error("Failed to locate property " + classProperty);
+				continue;
+			}
+			// Create it if you do...
+			try {
+				Object obj = java.beans.Beans.instantiate(null, className);
+				if (obj instanceof PropertyConsumer) {
+					PropertyConsumer propCons = (PropertyConsumer) obj;
+					propCons.setProperties(compName, props);
+				}
+				beanHandler.add(obj);
+			} catch (IOException e) {
+				LOG.error("IO Exception instantiating class \"" + className + "\"");
+			} catch (ClassNotFoundException e) {
+				LOG.error("Component class not found: \"" + className + "\"");
+			}
+		}
+	}
+
+	/**
+	 * Function used to measure time
+	 * @param start - Startime
+	 * @return - Elapsed time
+	 */
+	public static double elapsed(long start) {
+		double elapsed = System.nanoTime() - start;
+		return elapsed / 1000000.0;
+	}
+
+	/**
+	 * Return the AisHandler
+	 * @return - aisHandler
+	 */
+	public static AisHandler getAisHandler() {
+		return aisHandler;
+	}
+
+	
+	/**
+	 * BeanHandler for program structure
+	 * @return - beanHandler
+	 */
+	public static BeanContextServicesSupport getBeanHandler() {
+		return beanHandler;
+	}
+
+	
+	/**
+	 * Return the GpsHandler
+	 * @return - GpsHandler
+	 */
+	public static GpsHandler getGpsHandler() {
+		return gpsHandler;
+	}
+
+	
+	/**
+	 * Return the mainFrame gui element
+	 * @return - mainframe gui
+	 */
+	public static MainFrame getMainFrame() {
+		return mainFrame;
+	}
+
+	/**
+	 * Return minor version
+	 * @return - minor version
+	 */
+	public static String getMinorVersion() {
+		return MINORVERSION;
+	}
+
+	/**
+	 * Return the msiHandker
+	 * @return - MsiHandler
+	 */
+	public static MsiHandler getMsiHandler() {
+		return msiHandler;
+	}
+
+	/**
+	 * Returns the properties
+	 * @return - properties
+	 */
+	public static Properties getProperties() {
+		return properties;
+	}
+
+	/**
+	 * Return the settings
+	 * @return - settings
+	 */
+	public static Settings getSettings() {
+		return settings;
+	}
+
+	/**
+	 * Return the shoreService used in shore connections like MSI 
+	 * @return - shoreServices
+	 */
+	public static ShoreServices getShoreServices() {
+		return shoreServices;
+	}
+
+	/**
+	 *  Returns the version
+	 * @return - version
+	 */
+	public static String getVersion() {
+		return VERSION;
+	}
+
+	/**
+	 * Set the used theme using lookAndFeel
+	 */
+	private static void initLookAndFeel() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			LOG.error("Failed to set look and feed: " + e.getMessage());
+		}
+
+		// Uncomment for fancy look and feel
+		/**
+		 * try { for (LookAndFeelInfo info :
+		 * UIManager.getInstalledLookAndFeels()) { if
+		 * ("Nimbus".equals(info.getName())) {
+		 * UIManager.setLookAndFeel(info.getClassName()); break; } } } catch
+		 * (Exception e) { // If Nimbus is not available, you can set the GUI to
+		 * another look and feel. }
+		 **/
+
+	}
+
+	/**
+	 * Load the properties file
+	 */
+	private static void loadProperties() {
+		InputStream in = ESD.class.getResourceAsStream("/esd.properties");
+		try {
+			if (in == null) {
+				throw new IOException("Properties file not found");
+			}
+			properties.load(in);
+			in.close();
+		} catch (IOException e) {
+			LOG.error("Failed to load resources: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Starts the program by initializing the various threads and spawning the main GUI
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		// Set up log4j logging
 		DOMConfigurator.configure("log4j.xml");
@@ -175,6 +396,7 @@ public class ESD {
 
 		// Create and show GUI
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				createAndShowGUI();
 			}
@@ -182,6 +404,21 @@ public class ESD {
 
 	}
 
+	/**
+	 * Function used to call sleep on a thread
+	 * @param ms - time in ms of how long to sleep
+	 */
+	public static void sleep(long ms) {
+		try {
+			Thread.sleep(ms);
+		} catch (InterruptedException e) {
+			LOG.error(e.getMessage());
+		}
+	}
+
+	/**
+	 * Starts the needed sensors such as the AIS TCP connection
+	 */
 	private static void startSensors() {
 		SensorSettings sensorSettings = settings.getSensorSettings();
 		switch (sensorSettings.getAisConnectionType()) {
@@ -225,168 +462,15 @@ public class ESD {
 
 	}
 
-	private static void loadProperties() {
-		InputStream in = ESD.class.getResourceAsStream("/esd.properties");
-		try {
-			if (in == null) {
-				throw new IOException("Properties file not found");
-			}
-			properties.load(in);
-			in.close();
-		} catch (IOException e) {
-			LOG.error("Failed to load resources: " + e.getMessage());
-		}
-	}
-
-	private static void createAndShowGUI() {
-		// Set the look and feel.
-		initLookAndFeel();
-
-		// Make sure we have nice window decorations.
-		JFrame.setDefaultLookAndFeelDecorated(true);
-
-		// Create and set up the main window
-		mainFrame = new MainFrame();
-		mainFrame.setVisible(true);
-
-	}
-
-	private static void initLookAndFeel() {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			LOG.error("Failed to set look and feed: " + e.getMessage());
-		}
-
-		// Uncomment for fancy look and feel
-		/**
-		 * try { for (LookAndFeelInfo info :
-		 * UIManager.getInstalledLookAndFeels()) { if
-		 * ("Nimbus".equals(info.getName())) {
-		 * UIManager.setLookAndFeel(info.getClassName()); break; } } } catch
-		 * (Exception e) { // If Nimbus is not available, you can set the GUI to
-		 * another look and feel. }
-		 **/
-
-	}
-
-	public static void closeApp() {
-		closeApp(false);
-	}
-
-	public static void closeApp(boolean restart) {
-		// Shutdown routine
-
-		// Chart panels
-
-		// Window state
-
-		// Window state has a
-		// Name, Size, Location, Locked status, on top status
-		// Chart panel has a zoom level, position
-
-		// Main application
-
-		mainFrame.saveSettings();
-		settings.saveToFile();
-
-		// GuiSettings
-		// Handler settings
-		// routeManager.saveToFile();
-		// msiHandler.saveToFile();
-		// aisHandler.saveView();
-
-		LOG.info("Closing ESD");
-		System.exit(restart ? 2 : 0);
-	}
-
-	private static void createPluginComponents() {
-		Properties props = getProperties();
-		String componentsValue = props.getProperty("esd.plugin_components");
-		if (componentsValue == null) {
-			return;
-		}
-		String[] componentNames = componentsValue.split(" ");
-		for (String compName : componentNames) {
-			String classProperty = compName + ".class";
-			String className = props.getProperty(classProperty);
-			if (className == null) {
-				LOG.error("Failed to locate property " + classProperty);
-				continue;
-			}
-			// Create it if you do...
-			try {
-				Object obj = java.beans.Beans.instantiate(null, className);
-				if (obj instanceof PropertyConsumer) {
-					PropertyConsumer propCons = (PropertyConsumer) obj;
-					propCons.setProperties(compName, props);
-				}
-				beanHandler.add(obj);
-			} catch (IOException e) {
-				LOG.error("IO Exception instantiating class \"" + className + "\"");
-			} catch (ClassNotFoundException e) {
-				LOG.error("Component class not found: \"" + className + "\"");
-			}
-		}
-	}
-
-	public static Properties getProperties() {
-		return properties;
-	}
-
-	public static String getVersion() {
-		return VERSION;
-	}
-
-	public static String getMinorVersion() {
-		return MINORVERSION;
-	}
-
-	public static Settings getSettings() {
-		return settings;
-	}
-
-	public static MainFrame getMainFrame() {
-		return mainFrame;
-	}
-
-	public static AisHandler getAisHandler() {
-		return aisHandler;
-	}
-
-	public static ShoreServices getShoreServices() {
-		return shoreServices;
-	}
-
-	public static BeanContextServicesSupport getBeanHandler() {
-		return beanHandler;
-	}
-
-	public static void sleep(long ms) {
-		try {
-			Thread.sleep(ms);
-		} catch (InterruptedException e) {
-			LOG.error(e.getMessage());
-		}
-	}
-
+	/**
+	 * Function used to create a thread
+	 * @param t - class to create thread on
+	 * @param name - Thread name
+	 */
 	public static void startThread(Runnable t, String name) {
 		Thread thread = new Thread(t);
 		thread.setName(name);
 		thread.start();
-	}
-
-	public static double elapsed(long start) {
-		double elapsed = System.nanoTime() - start;
-		return elapsed / 1000000.0;
-	}
-
-	public static GpsHandler getGpsHandler() {
-		return gpsHandler;
-	}
-
-	public static MsiHandler getMsiHandler() {
-		return msiHandler;
 	}
 
 }

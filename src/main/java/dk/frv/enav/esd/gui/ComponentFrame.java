@@ -65,57 +65,62 @@ public abstract class ComponentFrame extends JInternalFrame implements PropertyC
 
 	protected BeanContextChildSupport beanContextChildSupport = new BeanContextChildSupport(this);
 	
+	protected WindowSupport windowSupport;
+	
+	protected String propertyPrefix = null;
+
+	/**
+	 * Constructor
+	 */
 	protected ComponentFrame() {
 		super();
 	}
-	
+
+	/**
+	 * Constructor used in creating gui elements with arguments
+	 * @param string Title
+	 * @param b Resizable
+	 * @param c Closeable
+	 * @param d Maximizable
+	 * @param e Iconifiable
+	 */
 	protected ComponentFrame(String string, boolean b, boolean c, boolean d, boolean e) {
 		super( string,  b,  c,  d,  e);
 	}
 
-	protected WindowSupport windowSupport;
-
-	public void setWindowSupport(WindowSupport ws) {
-		windowSupport = ws;
+	/**
+	 * Add listener
+	 */
+	public void addVetoableChangeListener(String propertyName, VetoableChangeListener in_vcl) {
+		beanContextChildSupport.addVetoableChangeListener(propertyName, in_vcl);
 	}
 
-	public WindowSupport getWindowSupport() {
-		return windowSupport;
-	}
-
-	protected String propertyPrefix = null;
-
-	public void setProperties(java.util.Properties props) {
-		setProperties(getPropertyPrefix(), props);
-	}
-
-	public void setProperties(String prefix, java.util.Properties props) {
-		setPropertyPrefix(prefix);
-
-		// String realPrefix =
-		// PropUtils.getScopedPropertyPrefix(prefix);
-	}
-
-	public Properties getProperties(Properties props) {
-		if (props == null) {
-			props = new Properties();
+	/**
+	 * Event on children added
+	 */
+	public void childrenAdded(BeanContextMembershipEvent bcme) {
+		if (!isolated || bcme.getBeanContext().equals(getBeanContext())) {
+			findAndInit(bcme.iterator());
 		}
-		return props;
 	}
 
-	public Properties getPropertyInfo(Properties list) {
-		if (list == null) {
-			list = new Properties();
+	/**
+	 * Child element removed event
+	 */
+	public void childrenRemoved(BeanContextMembershipEvent bcme) {
+		Iterator<?> it = bcme.iterator();
+		while (it.hasNext()) {
+			findAndUndo(it.next());
 		}
-		return list;
 	}
-
-	public void setPropertyPrefix(String prefix) {
-		propertyPrefix = prefix;
-	}
-
-	public String getPropertyPrefix() {
-		return propertyPrefix;
+	
+	/**
+	 * Find and init bean function used in initializing other classes
+	 */
+	public void findAndInit(Iterator<?> it) {
+		while (it.hasNext()) {
+			findAndInit(it.next());
+		}
 	}
 
 	public void findAndInit(Object obj) {
@@ -124,29 +129,81 @@ public abstract class ComponentFrame extends JInternalFrame implements PropertyC
 	public void findAndUndo(Object obj) {
 	}
 
-	public void findAndInit(Iterator<?> it) {
-		while (it.hasNext()) {
-			findAndInit(it.next());
-		}
+	/**
+	 * Fire vetoable change
+	 */
+	public void fireVetoableChange(String name, Object oldValue, Object newValue) throws PropertyVetoException {
+		beanContextChildSupport.fireVetoableChange(name, oldValue, newValue);
 	}
 
-	public void childrenAdded(BeanContextMembershipEvent bcme) {
-		if (!isolated || bcme.getBeanContext().equals(getBeanContext())) {
-			findAndInit(bcme.iterator());
-		}
-	}
-
-	public void childrenRemoved(BeanContextMembershipEvent bcme) {
-		Iterator<?> it = bcme.iterator();
-		while (it.hasNext()) {
-			findAndUndo(it.next());
-		}
-	}
-
+	/** 
+	 * Return bean context
+	 */
 	public BeanContext getBeanContext() {
 		return beanContextChildSupport.getBeanContext();
 	}
 
+	/**
+	 * Return orientation
+	 * @return
+	 */
+	public int getOrientation() {
+		return orientation;
+	}
+
+	/**
+	 * Return properties
+	 */
+	public Properties getProperties(Properties props) {
+		if (props == null) {
+			props = new Properties();
+		}
+		return props;
+	}
+
+	/**
+	 * Get property info
+	 */
+	public Properties getPropertyInfo(Properties list) {
+		if (list == null) {
+			list = new Properties();
+		}
+		return list;
+	}
+
+	/**
+	 * Get property prefix
+	 */
+	public String getPropertyPrefix() {
+		return propertyPrefix;
+	}
+
+	/**
+	 * Get windowSupport
+	 * @return
+	 */
+	public WindowSupport getWindowSupport() {
+		return windowSupport;
+	}
+
+	/**
+	 * Get isIsolated
+	 * @return
+	 */
+	public boolean isIsolated() {
+		return isolated;
+	}
+
+	/**
+	 * Remove toable Change listeners
+	 */
+	public void removeVetoableChangeListener(String propertyName, VetoableChangeListener in_vcl) {
+		beanContextChildSupport.removeVetoableChangeListener(propertyName, in_vcl);
+	}
+
+	/**
+	 * Set the bean context
+	 */
 	public void setBeanContext(BeanContext in_bc) throws PropertyVetoException {
 
 		if (in_bc != null) {
@@ -158,31 +215,51 @@ public abstract class ComponentFrame extends JInternalFrame implements PropertyC
 		}
 	}
 
-	public void addVetoableChangeListener(String propertyName, VetoableChangeListener in_vcl) {
-		beanContextChildSupport.addVetoableChangeListener(propertyName, in_vcl);
+	/**
+	 * Set isolated
+	 * @param isolated
+	 */
+	public void setIsolated(boolean isolated) {
+		this.isolated = isolated;
 	}
 
-	public void removeVetoableChangeListener(String propertyName, VetoableChangeListener in_vcl) {
-		beanContextChildSupport.removeVetoableChangeListener(propertyName, in_vcl);
-	}
-
-	public void fireVetoableChange(String name, Object oldValue, Object newValue) throws PropertyVetoException {
-		beanContextChildSupport.fireVetoableChange(name, oldValue, newValue);
-	}
-
-	public int getOrientation() {
-		return orientation;
-	}
-
+	/**
+	 * Set orientation
+	 * @param orientation
+	 */
 	public void setOrientation(int orientation) {
 		this.orientation = orientation;
 	}
 
-	public boolean isIsolated() {
-		return isolated;
+	/**
+	 * Set properties
+	 */
+	public void setProperties(java.util.Properties props) {
+		setProperties(getPropertyPrefix(), props);
 	}
 
-	public void setIsolated(boolean isolated) {
-		this.isolated = isolated;
+	/**
+	 * Set properties
+	 */
+	public void setProperties(String prefix, java.util.Properties props) {
+		setPropertyPrefix(prefix);
+
+		// String realPrefix =
+		// PropUtils.getScopedPropertyPrefix(prefix);
+	}
+
+	/**
+	 * Set propertyrefix
+	 */
+	public void setPropertyPrefix(String prefix) {
+		propertyPrefix = prefix;
+	}
+
+	/**
+	 * Set window support
+	 * @param ws
+	 */
+	public void setWindowSupport(WindowSupport ws) {
+		windowSupport = ws;
 	}
 }

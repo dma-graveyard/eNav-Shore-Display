@@ -84,8 +84,8 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	 * Overloaded constructor for setting up the map frame
 	 * @param id		id number for this map frame
 	 * @param mainFrame	reference to the map frame
-	 * @param center	where to center map - david help
-	 * @param scale		how to scale the map - david help
+	 * @param center	where to center map
+	 * @param scale		map zoom level
 	 */
 	public JMapFrame(int id, MainFrame mainFrame, Point2D center, float scale) {
 		
@@ -104,6 +104,62 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		
 	}
 	
+	/**
+	 * Function for setting the map frame always on top
+	 */
+	public void alwaysFront() {
+		
+		if (alwaysInFront) {
+			alwaysInFront = false;
+		} else {
+			alwaysInFront = true;
+		}
+		
+		mainFrame.getDesktop().getManager().addToFront(id, this);
+		
+	}
+
+	/**
+	 * Function for getting the chartpanel(map) of the map frame
+	 * @return
+	 */
+	public ChartPanel getChartPanel() {
+		return chartPanel;
+	}
+	
+	/**
+	 * Function for getting the glassPanel of the map frame
+	 * @return glassPanel the glassPanel of the map frame
+	 */
+	public JPanel getGlassPanel() {
+		return glassPanel;
+	}
+
+	/**
+	 * Function for getting the id of the map frame
+	 * @return id id of the map frame
+	 */
+	public int getId() {
+		return id;
+	}
+	
+	/**
+	 * Function for getting the loadingPanel of the map frame
+	 * @return loadingPanel the loadingPanel of the map frame
+	 */
+	public JPanel getLoadingPanel() {
+		return loadingPanel;
+	}
+	
+	/**
+	 * Function for initializing the glasspane - david help
+	 */
+	private void initGlassPane() {
+		glassPanel = (JPanel) getGlassPane();
+		glassPanel.setLayout(null);
+		glassPanel.setVisible(false);
+	}
+
 	/**
 	 * Function for setting up custom GUI for the map frame
 	 */
@@ -216,36 +272,6 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	}
 
 	/**
-	 * Function for repainting the mapframe after e.g. resize
-	 */
-	public void repaintMapWindow() {
-				
-		width = mapFrame.getSize().width;
-		int innerHeight = mapFrame.getSize().height - moveHandlerHeight - chartPanelOffset;
-		height = mapFrame.getSize().height;
-				
-		if(locked)
-			innerHeight = mapFrame.getSize().height - 4; // 4 for border
-		
-		// And finally set the size and repaint it
-		chartPanel.setSize(width, innerHeight);
-		chartPanel.setPreferredSize(new Dimension(width, innerHeight));
-		this.setSize(width, height);
-		this.revalidate();
-		this.repaint();
-
-	}
-	
-	/**
-	 * Function for initializing the glasspane - david help
-	 */
-	private void initGlassPane() {
-		glassPanel = (JPanel) getGlassPane();
-		glassPanel.setLayout(null);
-		glassPanel.setVisible(false);
-	}
-
-	/**
 	 * Function for initializing the loading animation
 	 */
 	private void initLoadingPane() {
@@ -253,15 +279,23 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		loadingPanel.setLayout(null);
 		loadingPanel.setVisible(false);
 	}
-	
+
 	/**
-	 * Function for getting the id of the map frame
-	 * @return id id of the map frame
+	 * Function for getting the status of map frame in terms of in front
+	 * @return
 	 */
-	public int getId() {
-		return id;
+	public boolean isInFront() {
+		return alwaysInFront;
 	}
-	
+
+	/**
+	 * Function for getting the status of map frame in terms of locked/unlocked
+	 * @return
+	 */
+	public boolean isLocked() {
+		return locked;
+	}
+
 	/**
 	 * Function for locking/unlocking the map frame
 	 */
@@ -283,46 +317,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		
 		repaintMapWindow();
 	}
-
-	/**
-	 * Function for setting the map frame always on top
-	 */
-	public void alwaysFront() {
-		
-		if (alwaysInFront) {
-			alwaysInFront = false;
-		} else {
-			alwaysInFront = true;
-		}
-		
-		mainFrame.getDesktop().getManager().addToFront(id, this);
-		
-	}
-
-	/**
-	 * Function for getting the status of map frame in terms of locked/unlocked
-	 * @return
-	 */
-	public boolean isLocked() {
-		return locked;
-	}
-
-	/**
-	 * Function for getting the status of map frame in terms of in front
-	 * @return
-	 */
-	public boolean isInFront() {
-		return alwaysInFront;
-	}
-
-	/**
-	 * Function for getting the chartpanel(map) of the map frame
-	 * @return
-	 */
-	public ChartPanel getChartPanel() {
-		return chartPanel;
-	}
-
+	
 	/**
 	 * Function for setting the key bindings for the map frame
 	 */
@@ -392,7 +387,40 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		content.getActionMap().put("panRight", panRight);
 
 	}
+
+	/**
+	 * Function for setting the title of the map frame when double-clicking on the title
+	 */
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		if (arg0.getClickCount() == 2){
+			rename();
+		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+	}
 	
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
 	/**
 	 * Function for renaming the map frame
 	 */
@@ -412,51 +440,23 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	}
 
 	/**
-	 * Function for getting the glassPanel of the map frame
-	 * @return glassPanel the glassPanel of the map frame
+	 * Function for repainting the mapframe after e.g. resize
 	 */
-	public JPanel getGlassPanel() {
-		return glassPanel;
-	}
-
-	/**
-	 * Function for getting the loadingPanel of the map frame
-	 * @return loadingPanel the loadingPanel of the map frame
-	 */
-	public JPanel getLoadingPanel() {
-		return loadingPanel;
-	}
-	
-	/**
-	 * Function for setting the title of the map frame when double-clicking on the title
-	 */
-	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		if (arg0.getClickCount() == 2){
-			rename();
-		}
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void repaintMapWindow() {
+				
+		width = mapFrame.getSize().width;
+		int innerHeight = mapFrame.getSize().height - moveHandlerHeight - chartPanelOffset;
+		height = mapFrame.getSize().height;
+				
+		if(locked)
+			innerHeight = mapFrame.getSize().height - 4; // 4 for border
+		
+		// And finally set the size and repaint it
+		chartPanel.setSize(width, innerHeight);
+		chartPanel.setPreferredSize(new Dimension(width, innerHeight));
+		this.setSize(width, height);
+		this.revalidate();
+		this.repaint();
 
 	}
 

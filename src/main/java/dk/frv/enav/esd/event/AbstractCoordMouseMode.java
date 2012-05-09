@@ -49,6 +49,9 @@ public abstract class AbstractCoordMouseMode extends AbstractMouseMode implement
 	
 	protected Set<IMapCoordListener> coordListeners = new HashSet<IMapCoordListener>();
 
+	/**
+	 * Constructor for the abstract MouseMode
+	 */
     public AbstractCoordMouseMode() {
     	this("", true);
     }
@@ -61,56 +64,6 @@ public abstract class AbstractCoordMouseMode extends AbstractMouseMode implement
      */
     public AbstractCoordMouseMode(String modeID, boolean shouldConsumeEvents) {
         super(modeID, shouldConsumeEvents);
-    }
-
-    /**
-     * Fires a mouse location to the InformationDelegator, and then calls the
-     * super class method which calls the MouseSupport method.
-     * 
-     * @param e MouseEvent to be handled
-     */
-    public void mouseMoved(MouseEvent e) {
-        fireMouseLocation(e);
-        super.mouseMoved(e);
-    }
-
-    /**
-     * Fires a mouse location to the InformationDelegator, and then calls the
-     * super class method which calls the MouseSupport method.
-     * 
-     * @param e mouse event.
-     */
-    public void mouseDragged(MouseEvent e) {
-        fireMouseLocation(e);
-        /* disabled because it interferes with route editing and zooming */
-        //super.mouseDragged(e);
-    }
-
-    /**
-     * If the MouseMode has been made inactive, clean out any input that might
-     * have been made to the info line.
-     */
-    public void setActive(boolean active) {
-        
-    }
-
-    /**
-     * Sends the mouse event location, x/y and lat/lon, to the
-     * InformationDelegator.
-     */
-    public void fireMouseLocation(MouseEvent e) {
-        int x = e.getX();
-        int y = e.getY();
-        LatLonPoint llp = null;
-
-        if (coordListeners.size() > 0) {
-            if (e.getSource() instanceof MapBean) {
-                llp = ((MapBean) e.getSource()).getProjection().inverse(x, y);
-                for (IMapCoordListener listener : coordListeners) {
-					listener.receiveCoord(llp);
-				}
-            }
-        }
     }
 
     /**
@@ -142,22 +95,84 @@ public abstract class AbstractCoordMouseMode extends AbstractMouseMode implement
         }
     }
 
-    public void setProperties(String prefix, Properties props) {
-        super.setProperties(prefix, props);
+    /**
+     * Sends the mouse event location, x/y and lat/lon, to the
+     * InformationDelegator.
+     */
+    public void fireMouseLocation(MouseEvent e) {
+        int x = e.getX();
+        int y = e.getY();
+        LatLonPoint llp = null;
+
+        if (coordListeners.size() > 0) {
+            if (e.getSource() instanceof MapBean) {
+                llp = ((MapBean) e.getSource()).getProjection().inverse(x, y);
+                for (IMapCoordListener listener : coordListeners) {
+					listener.receiveCoord(llp);
+				}
+            }
+        }
     }
 
+    /**
+     * Get the properties
+     */
     public Properties getProperties(Properties props) {
         props = super.getProperties(props);
         return props;
     }
 
+    /**
+     * Get the property info
+     */
     public Properties getPropertyInfo(Properties props) {
         props = super.getPropertyInfo(props);
         return props;
     }
 
+    /**
+     * Fires a mouse location to the InformationDelegator, and then calls the
+     * super class method which calls the MouseSupport method.
+     * 
+     * @param e mouse event.
+     */
+    public void mouseDragged(MouseEvent e) {
+        fireMouseLocation(e);
+        /* disabled because it interferes with route editing and zooming */
+        //super.mouseDragged(e);
+    }
+
+    /**
+     * Fires a mouse location to the InformationDelegator, and then calls the
+     * super class method which calls the MouseSupport method.
+     * 
+     * @param e MouseEvent to be handled
+     */
+    public void mouseMoved(MouseEvent e) {
+        fireMouseLocation(e);
+        super.mouseMoved(e);
+    }
+
+    /**
+     * Event on property change
+     */
     public void propertyChange(PropertyChangeEvent evt) {
     	
+    }
+
+    /**
+     * If the MouseMode has been made inactive, clean out any input that might
+     * have been made to the info line.
+     */
+    public void setActive(boolean active) {
+        
+    }
+
+    /**
+     * Set properties
+     */
+    public void setProperties(String prefix, Properties props) {
+        super.setProperties(prefix, props);
     }
 	
 }

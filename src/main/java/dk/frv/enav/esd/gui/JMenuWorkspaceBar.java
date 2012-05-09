@@ -1,3 +1,32 @@
+/*
+ * Copyright 2012 Danish Maritime Authority. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *   1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ *   2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation and/or
+ * other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY Danish Maritime Safety Administration ``AS IS'' 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of Danish Maritime Authority.
+ * 
+ */
 package dk.frv.enav.esd.gui;
 
 import java.awt.event.ActionEvent;
@@ -21,7 +50,7 @@ import dk.frv.enav.esd.gui.fileselection.WorkspaceFileFilter;
 public class JMenuWorkspaceBar extends JMenuBar {
 
 	/**
-	 * 
+	 * Toolbar used in the mainframe
 	 */
 	private static final long serialVersionUID = 1L;
 	private JMenu maps;
@@ -30,6 +59,10 @@ public class JMenuWorkspaceBar extends JMenuBar {
 	private JMainDesktopPane desktop;
 	// private MainFrame mainFrame;
 
+	/**
+	 * Constructor
+	 * @param mainFrame
+	 */
 	public JMenuWorkspaceBar(final MainFrame mainFrame) {
 		super();
 
@@ -190,48 +223,12 @@ public class JMenuWorkspaceBar extends JMenuBar {
 
 	}
 	
-	
-	public void unLockAll(){
-		List<JMapFrame> mapWindows = mainFrame.getMapWindows();
-		for (int i = 0; i < mapWindows.size(); i++) {
-			
-			if (mapWindows.get(i).isLocked()){
-				mapWindows.get(i).lockUnlockWindow();	
-			}
-		}
-		
-	    Iterator<Entry<Integer, JMenu>> it = mapMenus.entrySet().iterator();
-	    while (it.hasNext()) {
-//	    	JMenu menu = it.next().getValue();
-//	    	menu.getItem(0);
-	    	((JCheckBoxMenuItem) it.next().getValue().getItem(0)).setSelected(false);
-//	    	locked.setSelected(true);
-//	        Map.Entry pairs = (Map.Entry)it.next();
-//	        pairs
-//	        
-//	        System.out.println(pairs.getKey() + " = " + pairs.getValue());
-//	        it.remove(); // avoids a ConcurrentModificationException
-	    }
-		
-
-	}
-	
-	public void lockAll(){
-		List<JMapFrame> mapWindows = mainFrame.getMapWindows();
-		for (int i = 0; i < mapWindows.size(); i++) {
-			
-			if (!mapWindows.get(i).isLocked()){
-				mapWindows.get(i).lockUnlockWindow();	
-			}
-		}
-		
-		
-	    Iterator<Entry<Integer, JMenu>> it = mapMenus.entrySet().iterator();
-	    while (it.hasNext()) {
-	    	((JCheckBoxMenuItem) it.next().getValue().getItem(0)).setSelected(true);
-	    }
-	}
-
+	/**
+	 * Added mapWindow to the toolbar
+	 * @param window to be added
+	 * @param locked locked setting
+	 * @param alwaysInFront setting
+	 */
 	public void addMap(final JMapFrame window, boolean locked, boolean alwaysInFront) {
 		JMenu mapWindow = new JMenu(window.getTitle());
 
@@ -284,12 +281,39 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		});		
 
 	}
+	
+	/**
+	 * Set all windows to have a locked status
+	 */
+	public void lockAll(){
+		List<JMapFrame> mapWindows = mainFrame.getMapWindows();
+		for (int i = 0; i < mapWindows.size(); i++) {
+			
+			if (!mapWindows.get(i).isLocked()){
+				mapWindows.get(i).lockUnlockWindow();	
+			}
+		}
+		
+		
+	    Iterator<Entry<Integer, JMenu>> it = mapMenus.entrySet().iterator();
+	    while (it.hasNext()) {
+	    	((JCheckBoxMenuItem) it.next().getValue().getItem(0)).setSelected(true);
+	    }
+	}
 
+	/**
+	 * Remove a map from the toolbar
+	 * @param window
+	 */
 	public void removeMapMenu(final JMapFrame window) {
 		JMenu menuItem = mapMenus.get(window.getId());
 		maps.remove(menuItem);
 	}
 
+	/**
+	 * Rename a mapwindow in the toolbar
+	 * @param window
+	 */
 	public void renameMapMenu(final JMapFrame window) {
 		JMenu menuItem = mapMenus.get(window.getId());
 
@@ -305,18 +329,10 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		maps.insert(menuItem, menuPosition);
 	}
 
-	
-	public void selectWorkspace() throws IOException{
-		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir") + "\\workspaces");
-        fc.setFileFilter(new WorkspaceFileFilter());	
-        
-        int returnVal = fc.showOpenDialog(mainFrame);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-            mainFrame.loadNewWorkspace(file.getParent(), file.getName());
-        }
-	}
-	
+	/**
+	 * Function used to save a workspace
+	 * @throws IOException
+	 */
 	public void saveWorkspace() throws IOException{
 		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir") + "\\workspaces");
         fc.setFileFilter(new WorkspaceFileFilter());	
@@ -331,5 +347,49 @@ public class JMenuWorkspaceBar extends JMenuBar {
             }
             mainFrame.saveWorkSpace(filename);
         }
+	}
+
+	
+	/**
+	 * Load a workspace from a file
+	 * @throws IOException
+	 */
+	public void selectWorkspace() throws IOException{
+		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir") + "\\workspaces");
+        fc.setFileFilter(new WorkspaceFileFilter());	
+        
+        int returnVal = fc.showOpenDialog(mainFrame);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            mainFrame.loadNewWorkspace(file.getParent(), file.getName());
+        }
+	}
+	
+	/**
+	 * unlock all windows
+	 */
+	public void unLockAll(){
+		List<JMapFrame> mapWindows = mainFrame.getMapWindows();
+		for (int i = 0; i < mapWindows.size(); i++) {
+			
+			if (mapWindows.get(i).isLocked()){
+				mapWindows.get(i).lockUnlockWindow();	
+			}
+		}
+		
+	    Iterator<Entry<Integer, JMenu>> it = mapMenus.entrySet().iterator();
+	    while (it.hasNext()) {
+//	    	JMenu menu = it.next().getValue();
+//	    	menu.getItem(0);
+	    	((JCheckBoxMenuItem) it.next().getValue().getItem(0)).setSelected(false);
+//	    	locked.setSelected(true);
+//	        Map.Entry pairs = (Map.Entry)it.next();
+//	        pairs
+//	        
+//	        System.out.println(pairs.getKey() + " = " + pairs.getValue());
+//	        it.remove(); // avoids a ConcurrentModificationException
+	    }
+		
+
 	}
 }

@@ -81,16 +81,23 @@ import dk.frv.enav.ins.status.IStatusComponent;
 public class AisHandler extends MapHandlerChild implements IAisHandler,
 		IStatusComponent, Runnable {
 
-	private static final Logger LOG = Logger.getLogger(AisHandler.class);
-
-	protected static final String aisViewFile = ".aisview";
-
+	/**
+	 * AisMessageExtended class used in storing messages from the AisTransponder
+	 *
+	 */
 	public class AisMessageExtended {
 		public String name;
 		public long MMSI;
 		public double hdg;
 		public String dst;
 
+		/**
+		 * Datastructure for the extended ais messages
+		 * @param name - name of ship
+		 * @param key - mmsi of ship
+		 * @param hdg - heading of ship
+		 * @param dst - distance to ship
+		 */
 		public AisMessageExtended(String name, Long key, double hdg, String dst) {
 			this.name = name;
 			this.MMSI = key;
@@ -98,6 +105,10 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 			this.dst = dst;
 		}
 	}
+
+	private static final Logger LOG = Logger.getLogger(AisHandler.class);
+
+	protected static final String aisViewFile = ".aisview";
 
 	// How long targets are saved without reports
 	protected static final long TARGET_TTL = 60 * 60 * 1000; // One hour
@@ -112,13 +123,55 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	protected boolean showIntendedRouteDefault = false;
 	protected boolean strictAisMode = true;
 
+	/**
+	 * Empty constructor not used
+	 */
 	public AisHandler() {
 
 	}
 
+	/**
+	 * Constructor used in connection with routes
+	 * @param showIntendedRouteDefault - show the ships intended routs be displays
+	 * @param strictAisMode - use strict Ais Mode
+	 */
 	public AisHandler(boolean showIntendedRouteDefault, boolean strictAisMode) {
 		this.showIntendedRouteDefault = showIntendedRouteDefault;
 		this.strictAisMode = strictAisMode;
+	}
+
+	/**
+	 * Add listener to AisHandler
+	 * @param targetListener - class that is added to listeners
+	 */
+	public synchronized void addListener(IAisTargetListener targetListener) {
+		listeners.add(targetListener);
+	}
+
+	/**
+	 * Find and init bean function used in initializing other classes
+	 */
+	@Override
+	public void findAndInit(Object obj) {
+		if (obj instanceof AisServices) {
+			aisServices = (AisServices) obj;
+		}
+	}
+
+	/**
+	 * Return the aisStatus
+	 * @return - aisStatus
+	 */
+	public AisStatus getAisStatus() {
+		return aisStatus;
+	}
+
+	/**
+	 * get aisstatus as a Component status type
+	 */
+	@Override
+	public ComponentStatus getStatus() {
+		return aisStatus;
 	}
 
 	/**
@@ -136,6 +189,117 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 			return new AtoNTarget(atonTargets.get(mmsi));
 		}
 		return null;
+	}
+
+	/**
+	 * Return list of vessels
+	 * @return vesseltargets
+	 */
+	public Map<Long, VesselTarget> getVesselTargets() {
+		return vesselTargets;
+	}
+
+	/**
+	 * Function used to hide all intended routes
+	 */
+	public synchronized void hideAllIntendedRoutes() {
+		for (VesselTarget vesselTarget : vesselTargets.values()) {
+			VesselTargetSettings vesselTargetSettings = vesselTarget
+					.getSettings();
+			if (vesselTargetSettings.isShowRoute()
+					&& vesselTarget.hasIntendedRoute()) {
+				vesselTargetSettings.setShowRoute(false);
+				publishUpdate(vesselTarget);
+			}
+		}
+	}
+
+	/**
+	 * Determine if mmsi belongs to a SART
+	 * 
+	 * @param mmsi
+	 * @return startsWith
+	 */
+	public boolean isSarTarget(long mmsi) {
+		// AIS-SART transponder MMSI begins with 970
+		String strMmsi = Long.toString(mmsi);
+		boolean startsWith = strMmsi.startsWith(sartMmsiPrefix);
+		return startsWith;
+	}
+
+	/**
+	 * Try to load AIS view from disk
+	 */
+	public synchronized void loadView() {
+		AisStore aisStore = null;
+
+		try {
+			FileInputStream fileIn = new FileInputStream(aisViewFile);
+			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+			aisStore = (AisStore) objectIn.readObject();
+			objectIn.close();
+			fileIn.close();
+		} catch (FileNotFoundException e) {
+			// Not an error
+		} catch (Exception e) {
+			LOG.error("Failed to load AIS view file: " + e.getMessage());
+			// Delete possible corrupted or old file
+			(new File(aisViewFile)).delete();
+		}
+
+		if (aisStore == null) {
+			return;
+		}
+
+		// Retrieve targets
+		if (aisStore.getVesselTargets() != null) {
+			vesselTargets = aisStore.getVesselTargets();
+		}
+		if (aisStore.getAtonTargets() != null) {
+			atonTargets = aisStore.getAtonTargets();
+		}
+		if (aisStore.getSarTargets() != null) {
+			sarTargets = aisStore.getSarTargets();
+		}
+
+		LOG.info("AIS handler loaded total targets: "
+				+ (vesselTargets.size() + atonTargets.size() + sarTargets
+						.size()));
+
+		// Update status to update old and gone (twice for old and gone)
+		updateStatus();
+		updateStatus();
+	}
+
+	/**
+	 * Publish all vessels
+	 */
+	protected synchronized void publishAll() {
+		LOG.debug("Published all targets");
+		publishAll(vesselTargets.values());
+		publishAll(atonTargets.values());
+		publishAll(sarTargets.values());
+	}
+
+	/**
+	 * Publish a specific collection
+	 * @param targets collection to be published
+	 */
+	protected synchronized void publishAll(Collection<?> targets) {
+		for (Object aisTarget : targets) {
+			publishUpdate((AisTarget) aisTarget);
+		}
+	}
+
+	/**
+	 * Publish the update of a target to all listeners
+	 * 
+	 * @param aisTarget
+	 */
+	protected synchronized void publishUpdate(AisTarget aisTarget) {
+		for (IAisTargetListener listener : listeners) {
+			listener.targetUpdated(aisTarget);
+		}
 	}
 
 	/**
@@ -201,18 +365,65 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 		}
 	}
 
-	public synchronized void hideAllIntendedRoutes() {
-		for (VesselTarget vesselTarget : vesselTargets.values()) {
-			VesselTargetSettings vesselTargetSettings = vesselTarget
-					.getSettings();
-			if (vesselTargetSettings.isShowRoute()
-					&& vesselTarget.hasIntendedRoute()) {
-				vesselTargetSettings.setShowRoute(false);
-				publishUpdate(vesselTarget);
-			}
+	/**
+	 * Remove a class from being a listener
+	 * @param targetListener target to be removed
+	 */
+	public synchronized void removeListener(IAisTargetListener targetListener) {
+		listeners.remove(targetListener);
+	}
+
+	/**
+	 * Run method used when creating the Thread
+	 */
+	@Override
+	public void run() {
+		
+		// Publish loaded targets
+		EeINS.sleep(2000);
+		publishAll();
+
+		while (true) {
+			EeINS.sleep(10000);
+			// Update status on targets
+			updateStatus();
+
+//			List<AisMessageExtended> shipList = getShipList();
+//
+//			System.out.println("Recieving AIS:");
+//			for (int i = 0; i < shipList.size(); i++) {
+//				System.out.println("ID " + shipList.get(i).MMSI + " : "
+//						+ shipList.get(i).name);
+//			}
+//			System.out.println("AIS Recieved");
+
 		}
 	}
 
+	/**
+	 * Save AIS view to file
+	 */
+	public synchronized void saveView() {
+		AisStore aisStore = new AisStore();
+		aisStore.setVesselTargets(vesselTargets);
+		aisStore.setAtonTargets(atonTargets);
+		aisStore.setSarTargets(sarTargets);
+
+		try {
+			FileOutputStream fileOut = new FileOutputStream(aisViewFile);
+			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+			objectOut.writeObject(aisStore);
+			objectOut.close();
+			fileOut.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			LOG.error("Failed to save Ais view file: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Show the all intended routes
+	 */
 	public synchronized void showAllIntendedRoutes() {
 		for (VesselTarget vesselTarget : vesselTargets.values()) {
 			VesselTargetSettings vesselTargetSettings = vesselTarget
@@ -249,50 +460,6 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	}
 
 	/**
-	 * Update intended route of vessel target
-	 * 
-	 * @param mmsi
-	 * @param routeData
-	 */
-	protected synchronized void updateIntendedRoute(long mmsi,
-			AisIntendedRoute routeData) {
-		// Try to find exiting target
-		VesselTarget vesselTarget = vesselTargets.get(mmsi);
-		// If not exists, wait for it to be created by position report
-		if (vesselTarget == null) {
-			return;
-		}
-		// Update intented route
-		vesselTarget.setAisRouteData(routeData);
-		publishUpdate(vesselTarget);
-	}
-
-	/**
-	 * Update vessel target statics
-	 * 
-	 * @param mmsi
-	 * @param staticData
-	 */
-	protected synchronized void updateStatics(long mmsi,
-			VesselStaticData staticData) {
-		// Determine if this is SART
-		if (isSarTarget(mmsi)) {
-			updateSartStatics(mmsi, staticData);
-			return;
-		}
-
-		// Try to find exiting target
-		VesselTarget vesselTarget = vesselTargets.get(mmsi);
-		// If not exists, wait for it to be created by position report
-		if (vesselTarget == null) {
-			return;
-		}
-		// Update static data
-		vesselTarget.setStaticData(staticData);
-
-	}
-
-	/**
 	 * Update class b vessel statics
 	 * 
 	 * @param msg24
@@ -317,34 +484,22 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	}
 
 	/**
-	 * Update SART statics
+	 * Update intended route of vessel target
 	 * 
 	 * @param mmsi
-	 * @param staticData
+	 * @param routeData
 	 */
-	protected synchronized void updateSartStatics(long mmsi,
-			VesselStaticData staticData) {
+	protected synchronized void updateIntendedRoute(long mmsi,
+			AisIntendedRoute routeData) {
 		// Try to find exiting target
-		SarTarget sarTarget = sarTargets.get(mmsi);
+		VesselTarget vesselTarget = vesselTargets.get(mmsi);
 		// If not exists, wait for it to be created by position report
-		if (sarTarget == null) {
+		if (vesselTarget == null) {
 			return;
 		}
-		// Update static data
-		sarTarget.setStaticData(staticData);
-	}
-
-	/**
-	 * Determine if mmsi belongs to a SART
-	 * 
-	 * @param mmsi
-	 * @return startsWith
-	 */
-	public boolean isSarTarget(long mmsi) {
-		// AIS-SART transponder MMSI begins with 970
-		String strMmsi = Long.toString(mmsi);
-		boolean startsWith = strMmsi.startsWith(sartMmsiPrefix);
-		return startsWith;
+		// Update intented route
+		vesselTarget.setAisRouteData(routeData);
+		publishUpdate(vesselTarget);
 	}
 
 	/**
@@ -415,35 +570,46 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	}
 
 	/**
-	 * Publish the update of a target to all listeners
+	 * Update SART statics
 	 * 
-	 * @param aisTarget
+	 * @param mmsi
+	 * @param staticData
 	 */
-	protected synchronized void publishUpdate(AisTarget aisTarget) {
-		for (IAisTargetListener listener : listeners) {
-			listener.targetUpdated(aisTarget);
+	protected synchronized void updateSartStatics(long mmsi,
+			VesselStaticData staticData) {
+		// Try to find exiting target
+		SarTarget sarTarget = sarTargets.get(mmsi);
+		// If not exists, wait for it to be created by position report
+		if (sarTarget == null) {
+			return;
 		}
+		// Update static data
+		sarTarget.setStaticData(staticData);
 	}
 
-	protected synchronized void publishAll() {
-		LOG.debug("Published all targets");
-		publishAll(vesselTargets.values());
-		publishAll(atonTargets.values());
-		publishAll(sarTargets.values());
-	}
-
-	protected synchronized void publishAll(Collection<?> targets) {
-		for (Object aisTarget : targets) {
-			publishUpdate((AisTarget) aisTarget);
+	/**
+	 * Update vessel target statics
+	 * 
+	 * @param mmsi
+	 * @param staticData
+	 */
+	protected synchronized void updateStatics(long mmsi,
+			VesselStaticData staticData) {
+		// Determine if this is SART
+		if (isSarTarget(mmsi)) {
+			updateSartStatics(mmsi, staticData);
+			return;
 		}
-	}
 
-	public synchronized void addListener(IAisTargetListener targetListener) {
-		listeners.add(targetListener);
-	}
+		// Try to find exiting target
+		VesselTarget vesselTarget = vesselTargets.get(mmsi);
+		// If not exists, wait for it to be created by position report
+		if (vesselTarget == null) {
+			return;
+		}
+		// Update static data
+		vesselTarget.setStaticData(staticData);
 
-	public synchronized void removeListener(IAisTargetListener targetListener) {
-		listeners.remove(targetListener);
 	}
 
 	/**
@@ -536,114 +702,5 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public void run() {
-		
-		// Publish loaded targets
-		EeINS.sleep(2000);
-		publishAll();
-
-		while (true) {
-			EeINS.sleep(10000);
-			// Update status on targets
-			updateStatus();
-
-//			List<AisMessageExtended> shipList = getShipList();
-//
-//			System.out.println("Recieving AIS:");
-//			for (int i = 0; i < shipList.size(); i++) {
-//				System.out.println("ID " + shipList.get(i).MMSI + " : "
-//						+ shipList.get(i).name);
-//			}
-//			System.out.println("AIS Recieved");
-
-		}
-	}
-
-	@Override
-	public void findAndInit(Object obj) {
-		if (obj instanceof AisServices) {
-			aisServices = (AisServices) obj;
-		}
-	}
-
-	@Override
-	public ComponentStatus getStatus() {
-		return aisStatus;
-	}
-
-	public AisStatus getAisStatus() {
-		return aisStatus;
-	}
-
-	public Map<Long, VesselTarget> getVesselTargets() {
-		return vesselTargets;
-	}
-
-	/**
-	 * Try to load AIS view from disk
-	 */
-	public synchronized void loadView() {
-		AisStore aisStore = null;
-
-		try {
-			FileInputStream fileIn = new FileInputStream(aisViewFile);
-			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-			aisStore = (AisStore) objectIn.readObject();
-			objectIn.close();
-			fileIn.close();
-		} catch (FileNotFoundException e) {
-			// Not an error
-		} catch (Exception e) {
-			LOG.error("Failed to load AIS view file: " + e.getMessage());
-			// Delete possible corrupted or old file
-			(new File(aisViewFile)).delete();
-		}
-
-		if (aisStore == null) {
-			return;
-		}
-
-		// Retrieve targets
-		if (aisStore.getVesselTargets() != null) {
-			vesselTargets = aisStore.getVesselTargets();
-		}
-		if (aisStore.getAtonTargets() != null) {
-			atonTargets = aisStore.getAtonTargets();
-		}
-		if (aisStore.getSarTargets() != null) {
-			sarTargets = aisStore.getSarTargets();
-		}
-
-		LOG.info("AIS handler loaded total targets: "
-				+ (vesselTargets.size() + atonTargets.size() + sarTargets
-						.size()));
-
-		// Update status to update old and gone (twice for old and gone)
-		updateStatus();
-		updateStatus();
-	}
-
-	/**
-	 * Save AIS view to file
-	 */
-	public synchronized void saveView() {
-		AisStore aisStore = new AisStore();
-		aisStore.setVesselTargets(vesselTargets);
-		aisStore.setAtonTargets(atonTargets);
-		aisStore.setSarTargets(sarTargets);
-
-		try {
-			FileOutputStream fileOut = new FileOutputStream(aisViewFile);
-			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-			objectOut.writeObject(aisStore);
-			objectOut.close();
-			fileOut.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			LOG.error("Failed to save Ais view file: " + e.getMessage());
-		}
 	}
 }

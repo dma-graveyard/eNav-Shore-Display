@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Danish Maritime Authority. All rights reserved.
+ * Copyright 2012 Danish Maritime Authority. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -38,52 +38,69 @@ import dk.frv.enav.common.xml.msi.MsiLocation;
 import dk.frv.enav.esd.msi.MsiHandler;
 import dk.frv.enav.ins.common.text.Formatter;
 
-
 /**
  * Table model for MSI dialog
  */
 public class MsiTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
-	
-	private static final String[] COLUMN_NAMES = {"ID", "Ver", "Priority", "Updated", "Main Area", "Message", "Valid from", "Valid until"};
-	
+
+	private static final String[] COLUMN_NAMES = { "ID", "Ver", "Priority", "Updated", "Main Area", "Message",
+			"Valid from", "Valid until" };
+
 	private MsiHandler msiHandler;
 	private List<MsiHandler.MsiMessageExtended> messages;
-	
+
 	public MsiTableModel(MsiHandler msiHandler) {
 		super();
 		this.msiHandler = msiHandler;
 		updateMessages();
 	}
-	
+
 	public void updateMessages() {
-		//Is filtered or not?
-		if(false) {
+		// Is filtered or not?
+		if (false) {
 			messages = msiHandler.getFilteredMessageList();
-		} else {
+		} 
+		else {
 			messages = msiHandler.getMessageList();
 		}
 	}
-	
+
+	/**
+	 * Return messages
+	 * @return
+	 */
 	public List<MsiHandler.MsiMessageExtended> getMessages() {
 		return messages;
 	}
-	
+
+	/**
+	 * Return the column names
+	 */
 	@Override
 	public String getColumnName(int column) {
 		return COLUMN_NAMES[column];
 	}
 
+	/**
+	 * Get the column count
+	 */
 	@Override
 	public int getColumnCount() {
 		return COLUMN_NAMES.length;
 	}
 
+	/**
+	 * Get the row count
+	 */
 	@Override
 	public int getRowCount() {
 		return messages.size();
 	}
 
+	/**
+	 * Get column class at specific index
+	 */
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		Object value = getValueAt(0, columnIndex);
@@ -92,7 +109,10 @@ public class MsiTableModel extends AbstractTableModel {
 		}
 		return value.getClass();
 	}
-	
+
+	/**
+	 * Get the value at a specific row and colum index 
+	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		MsiHandler.MsiMessageExtended message = messages.get(rowIndex);
@@ -105,7 +125,7 @@ public class MsiTableModel extends AbstractTableModel {
 		case 2:
 			return message.msiMessage.getPriority();
 		case 3:
-			Date updated = message.msiMessage.getUpdated(); 
+			Date updated = message.msiMessage.getUpdated();
 			if (updated == null) {
 				updated = message.msiMessage.getCreated();
 			}
@@ -121,9 +141,9 @@ public class MsiTableModel extends AbstractTableModel {
 			if (msgShort == null) {
 				msgShort = "";
 			}
-//			if (msgShort.length() > 32) {
-//				msgShort = msgShort.substring(0, 28) + " ...";
-//			}
+			// if (msgShort.length() > 32) {
+			// msgShort = msgShort.substring(0, 28) + " ...";
+			// }
 			return msgShort;
 		case 6:
 			return Formatter.formatShortDateTime(message.msiMessage.getValidFrom());
@@ -131,8 +151,8 @@ public class MsiTableModel extends AbstractTableModel {
 			return Formatter.formatShortDateTime(message.msiMessage.getValidTo());
 		default:
 			return "";
-				
+
 		}
 	}
-	
+
 }

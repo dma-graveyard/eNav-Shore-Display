@@ -54,6 +54,9 @@ public abstract class InfoPanel extends JPanel {
 	private JLabel textLabel;
 	private JLabel imageLabel;
 
+	/**
+	 * Constructor
+	 */
 	public InfoPanel() {
 		super();
 		FlowLayout flowLayout = new FlowLayout();
@@ -71,6 +74,10 @@ public abstract class InfoPanel extends JPanel {
 		setBackground(new Color(83, 83, 83));
 	}
 
+	/**
+	 * Constructor with an image
+	 * @param image
+	 */
 	public InfoPanel(ImageIcon image) {
 		super();
 		imageLabel =  new JLabel(new ImageIcon("images/loading.gif"));
@@ -85,12 +92,9 @@ public abstract class InfoPanel extends JPanel {
 		setVisible(false);
 	}
 
-	
-	public void showText(String text) {
-		textLabel.setText(text);
-		resizeAndShow();
-	}
-
+	/**
+	 * Resize and display label
+	 */
 	public void resizeAndShow() {
 		validate();
 		Dimension d = textLabel.getSize();
@@ -98,17 +102,34 @@ public abstract class InfoPanel extends JPanel {
 		setVisible(true);
 	}
 
+	/**
+	 * Set position of element
+	 * @param x location
+	 * @param y location
+	 */
 	public void setPos(int x, int y) {
 		Rectangle rect = getBounds();
 		System.out.println("Setting at " + x + ", " + y);
 		setBounds(x, y, (int) rect.getWidth(), (int) rect.getHeight());
 	}
 
+	/**
+	 * Show the image
+	 */
 	public void showImage(){
 		validate();
 		Dimension d = imageLabel.getSize();
 		this.setSize(d.width, d.height);
 		setVisible(true);
+	}
+
+	/**
+	 * Show text
+	 * @param text
+	 */
+	public void showText(String text) {
+		textLabel.setText(text);
+		resizeAndShow();
 	}
 
 }

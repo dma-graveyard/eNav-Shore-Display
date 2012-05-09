@@ -1,3 +1,32 @@
+/*
+ * Copyright 2012 Danish Maritime Authority. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *   1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ *   2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation and/or
+ * other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY Danish Maritime Safety Administration ``AS IS'' 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of Danish Maritime Authority.
+ * 
+ */
 package dk.frv.enav.esd.gui;
 
 import java.awt.Component;
@@ -10,7 +39,7 @@ import javax.swing.JInternalFrame;
 
 public class JMainDesktopPane extends JDesktopPane {
 	/**
-	 * 
+	 * DesktopPane used for internalframes
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -19,6 +48,10 @@ public class JMainDesktopPane extends JDesktopPane {
 	private JMainDesktopManager manager;
 	private MainFrame mainFrame;
 
+	/**
+	 * Initialize the desktop pane
+	 * @param mainFrame
+	 */
 	public JMainDesktopPane(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
 		manager = new JMainDesktopManager(this);
@@ -31,24 +64,11 @@ public class JMainDesktopPane extends JDesktopPane {
 	// checkDesktopSize();
 	// }
 
-	public JMainDesktopManager getManager() {
-		return manager;
-	}
-
-	public Component add(JInternalFrame frame, boolean workspaceWindow) {
-		Component retval = super.add(frame);
-		// checkDesktopSize();
-
-		moveToFront(frame);
-		// frame.setVisible(true);
-		try {
-			frame.setSelected(true);
-		} catch (PropertyVetoException e) {
-			frame.toBack();
-		}
-		return retval;
-	}
-
+	/**
+	 * Add a component
+	 * @param frame element to be added
+	 * @return
+	 */
 	public Component add(JInternalFrame frame) {
 		JInternalFrame[] array = getAllFrames();
 		Point p;
@@ -98,6 +118,56 @@ public class JMainDesktopPane extends JDesktopPane {
 		return retval;
 	}
 
+	/**
+	 * Added a window that comes from a workspace
+	 * @param frame to be added
+	 * @param workspaceWindow indicates if it is loaded from a workspace or not
+	 * @return
+	 */
+	public Component add(JInternalFrame frame, boolean workspaceWindow) {
+		Component retval = super.add(frame);
+		// checkDesktopSize();
+
+		moveToFront(frame);
+		// frame.setVisible(true);
+		try {
+			frame.setSelected(true);
+		} catch (PropertyVetoException e) {
+			frame.toBack();
+		}
+		return retval;
+	}
+
+	/**
+	 * Cascade all internal frames
+	 */
+	public void cascadeFrames() {
+		int x = 0;
+		int y = 0;
+		JInternalFrame allFrames[] = getAllFrames();
+
+		// manager.setNormalSize();
+		int frameHeight = (getBounds().height - 5) - allFrames.length * FRAME_OFFSET;
+		int frameWidth = (getBounds().width - 5) - allFrames.length * FRAME_OFFSET;
+		for (int i = allFrames.length - 1; i >= 0; i--) {
+			allFrames[i].setSize(frameWidth, frameHeight);
+			allFrames[i].setLocation(x, y);
+			x = x + FRAME_OFFSET;
+			y = y + FRAME_OFFSET;
+		}
+	}
+
+	/**
+	 * Return the JMainDesktopManager
+	 * @return manager
+	 */
+	public JMainDesktopManager getManager() {
+		return manager;
+	}
+
+	/**
+	 * Function called when one of its components are closed
+	 */
 	public void remove(Component c) {
 
 		if (c instanceof JMapFrame) {
@@ -118,22 +188,21 @@ public class JMainDesktopPane extends JDesktopPane {
 	}
 
 	/**
-	 * Cascade all internal frames
+	 * Sets all component size properties ( maximum, minimum, preferred) to the
+	 * given dimension.
 	 */
-	public void cascadeFrames() {
-		int x = 0;
-		int y = 0;
-		JInternalFrame allFrames[] = getAllFrames();
+	public void setAllSize(Dimension d) {
+		setMinimumSize(d);
+		setMaximumSize(d);
+		setPreferredSize(d);
+	}
 
-		// manager.setNormalSize();
-		int frameHeight = (getBounds().height - 5) - allFrames.length * FRAME_OFFSET;
-		int frameWidth = (getBounds().width - 5) - allFrames.length * FRAME_OFFSET;
-		for (int i = allFrames.length - 1; i >= 0; i--) {
-			allFrames[i].setSize(frameWidth, frameHeight);
-			allFrames[i].setLocation(x, y);
-			x = x + FRAME_OFFSET;
-			y = y + FRAME_OFFSET;
-		}
+	/**
+	 * Sets all component size properties ( maximum, minimum, preferred) to the
+	 * given width and height.
+	 */
+	public void setAllSize(int width, int height) {
+		setAllSize(new Dimension(width, height));
 	}
 
 	/**
@@ -166,24 +235,6 @@ public class JMainDesktopPane extends JDesktopPane {
 				x = x + frameWidth;
 			}
 		}
-	}
-
-	/**
-	 * Sets all component size properties ( maximum, minimum, preferred) to the
-	 * given dimension.
-	 */
-	public void setAllSize(Dimension d) {
-		setMinimumSize(d);
-		setMaximumSize(d);
-		setPreferredSize(d);
-	}
-
-	/**
-	 * Sets all component size properties ( maximum, minimum, preferred) to the
-	 * given width and height.
-	 */
-	public void setAllSize(int width, int height) {
-		setAllSize(new Dimension(width, height));
 	}
 
 	// private void checkDesktopSize() {

@@ -35,31 +35,45 @@ package dk.frv.enav.esd.event;
 public class ClickTimer {
 	
 	private static ClickTimer clickTimer;
-	private long startTime;
-	private int interval;
-	
-	private ClickTimer() {
-		
-	}
-	
 	public synchronized static ClickTimer getClickTimer(){
 		if(clickTimer == null){
 			clickTimer = new ClickTimer();
 		}
 		return clickTimer;
 	}
+	private long startTime;
 	
-	public void startTime(){
-		startTime = System.currentTimeMillis();
+	private int interval;
+	
+	/**
+	 * Constructor
+	 */
+	private ClickTimer() {
+		
 	}
 	
+	/**
+	 * Has he interval been exceeded
+	 * @return
+	 */
 	public boolean isIntervalExceeded(){
 		long endTime = System.currentTimeMillis();
 		long difference = endTime - startTime;
 		return difference > interval;
 	}
 	
+	/**
+	 * Set interval
+	 * @param interval
+	 */
 	public void setInterval(int interval) {
 		this.interval = interval;
+	}
+	
+	/**
+	 * Start timer
+	 */
+	public void startTime(){
+		startTime = System.currentTimeMillis();
 	}
 }

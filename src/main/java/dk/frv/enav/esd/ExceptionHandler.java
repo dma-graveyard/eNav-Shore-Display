@@ -49,6 +49,9 @@ public class ExceptionHandler implements UncaughtExceptionHandler {
 	
 	private static final Logger LOG = Logger.getLogger(ExceptionHandler.class);
 	
+	/**
+	 * Function used in standard handling of Exceptions
+	 */
 	@Override
 	public void uncaughtException(Thread t, Throwable e) {
 		LOG.error("Uncaught exception from thread " + t.getName());

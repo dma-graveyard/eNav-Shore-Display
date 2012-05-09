@@ -64,40 +64,164 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(MainFrame.class);
+
+	private static Image getAppIcon() {
+		java.net.URL imgURL = ESD.class.getResource("/images/appicon.png");
+		if (imgURL != null) {
+			return new ImageIcon(imgURL).getImage();
+		}
+		LOG.error("Could not find app icon");
+		return null;
+	}
+
 	private int windowCount = 0;
 	private Dimension size = new Dimension(1000, 700);
 	private Point location;
 	private JMenuWorkspaceBar topMenu;
 	private boolean fullscreen = false;
 	private int mouseMode = 2;
+
 	private BeanContextServicesSupport beanHandler;
-	
-	
 	private List<JMapFrame> mapWindows;
 	private JMainDesktopPane desktop;
+
 	private JScrollPane scrollPane;
-	
 	private boolean toolbarsLocked = false;
 	private ToolBar toolbar = new ToolBar(this);
 	private NotificationArea notificationArea = new NotificationArea(this);
-	private NotificationCenter notificationCenter  = new NotificationCenter();
+	private NotificationCenter notificationCenter = new NotificationCenter();
+
 	private StatusArea statusArea = new StatusArea(this);
 
-
+	/**
+	 * Constructor
+	 */
 	public MainFrame() {
 		super();
 		initGUI();
 
 	}
 
+	/**
+	 * Create and add a new map window
+	 * 
+	 * @return
+	 */
+	public JMapFrame addMapWindow() {
+		windowCount++;
+		JMapFrame window = new JMapFrame(windowCount, this);
+
+		desktop.add(window);
+
+		mapWindows.add(window);
+		// window.toFront();
+
+		topMenu.addMap(window, false, false);
+
+		return window;
+	}
+
+	/**
+	 * Add a new mapWindow with specific paramters, usually called when loading
+	 * a workspace
+	 * 
+	 * @param workspace
+	 * @param locked
+	 * @param alwaysInFront
+	 * @param center
+	 * @param scale
+	 * @return
+	 */
+	public JMapFrame addMapWindow(boolean workspace, boolean locked, boolean alwaysInFront, Point2D center, float scale) {
+		windowCount++;
+		JMapFrame window = new JMapFrame(windowCount, this, center, scale);
+		desktop.add(window, workspace);
+		mapWindows.add(window);
+		window.toFront();
+		topMenu.addMap(window, locked, alwaysInFront);
+
+		return window;
+	}
+
+	/**
+	 * Return the desktop
+	 * 
+	 * @return
+	 */
+	public JMainDesktopPane getDesktop() {
+		return desktop;
+	}
+
+	/**
+	 * Return a list of all active mapwindows
+	 * 
+	 * @return
+	 */
+	public List<JMapFrame> getMapWindows() {
+		return mapWindows;
+	}
+
+	/**
+	 * Return the max resolution possible across all monitors
+	 * @return
+	 */
+	public Dimension getMaxResolution() {
+		int width = 0;
+		int height = 0;
+
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+
+		for (GraphicsDevice curGs : gs) {
+			DisplayMode mode = curGs.getDisplayMode();
+			width += mode.getWidth();
+
+			// System.out.println("Width: " + width);
+
+			if (height < mode.getHeight()) {
+				height = mode.getHeight();
+			}
+
+		}
+		return new Dimension(width, height);
+
+	}
+
+	/**
+	 * Return current active mouseMode
+	 * @return
+	 */
 	public int getMouseMode() {
 		return mouseMode;
 	}
 
-	public void setMouseMode(int mouseMode) {
-		this.mouseMode = mouseMode;
+	/**
+	 * Return the notification area
+	 * @return
+	 */
+	public NotificationArea getNotificationArea() {
+		return notificationArea;
 	}
 
+	/**
+	 * Return the status area
+	 * @return
+	 */
+	public StatusArea getStatusArea() {
+		return statusArea;
+	}
+
+	/**
+	 * Return the toolbar
+	 * @return
+	 */
+	public ToolBar getToolbar() {
+		return toolbar;
+	}
+
+	/**
+	 * Initialize the GUI
+	 */
 	private void initGUI() {
 
 		beanHandler = ESD.getBeanHandler();
@@ -136,7 +260,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		// getContentPane().add(scrollPane);
 		this.setContentPane(scrollPane);
 
-		//desktop.setBackground(Color.LIGHT_GRAY);
+		// desktop.setBackground(Color.LIGHT_GRAY);
 		desktop.setBackground(new Color(39, 39, 39));
 
 		mapWindows = new ArrayList<JMapFrame>();
@@ -144,20 +268,20 @@ public class MainFrame extends JFrame implements WindowListener {
 		topMenu = new JMenuWorkspaceBar(this);
 		this.setJMenuBar(topMenu);
 
-		//Initiate the permanent window elements
+		// Initiate the permanent window elements
 		desktop.getManager().setStatusArea(statusArea);
 
 		desktop.getManager().setNotificationArea(notificationArea);
-		
+
 		desktop.getManager().setToolbar(toolbar);
 
 		desktop.getManager().setNotCenter(notificationCenter);
-		
+
 		desktop.add(statusArea, true);
 		desktop.add(notificationCenter, true);
 		desktop.add(toolbar, true);
 		desktop.add(notificationArea, true);
-		
+
 		beanHandler.add(notificationArea);
 		// dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
@@ -169,83 +293,80 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	}
 
-	public void toggleNotificationCenter() {
-		notificationCenter.toggleVisibility();
-	}
-	
+	/**
+	 * Return the status on toolbars
+	 * @return
+	 */
 	public boolean isToolbarsLocked() {
 		return toolbarsLocked;
 	}
 
-
-	public ToolBar getToolbar() {
-		return toolbar;
-	}
-	
-	public StatusArea getStatusArea() {
-		return statusArea;
-	}
-
-	public NotificationArea getNotificationArea() {
-		return notificationArea;
-	}
-
-	public void toggleBarsLock() {
-		
-		if (toolbarsLocked){
-			toolbarsLocked = false;
-		}else{
-			toolbarsLocked = true;
-		}
-		
-		toolbar.toggleLock();
-		notificationArea.toggleLock();
-		statusArea.toggleLock();
-	}
-
-	private static Image getAppIcon() {
-		java.net.URL imgURL = ESD.class.getResource("/images/appicon.png");
-		if (imgURL != null) {
-			return new ImageIcon(imgURL).getImage();
-		}
-		LOG.error("Could not find app icon");
-		return null;
-	}
-
-	public List<JMapFrame> getMapWindows() {
-		return mapWindows;
-	}
-
-	public JMapFrame addMapWindow(boolean workspace, boolean locked, boolean alwaysInFront, Point2D center, float scale) {
-		windowCount++;
-		JMapFrame window = new JMapFrame(windowCount, this, center, scale);
-		desktop.add(window, workspace);
-		mapWindows.add(window);
-		window.toFront();
-		topMenu.addMap(window, locked, alwaysInFront);
-
-		return window;
-	}
-
-	public JMapFrame addMapWindow() {
-		windowCount++;
-		JMapFrame window = new JMapFrame(windowCount, this);
-
-		desktop.add(window);
-
-		mapWindows.add(window);
-		// window.toFront();
-
-		topMenu.addMap(window, false, false);
-
-		return window;
-	}
-
+	/**
+	 * Load and setup a nwe workspace from a file
+	 * @param parent
+	 * @param filename
+	 */
 	public void loadNewWorkspace(String parent, String filename) {
 		Workspace workspace = ESD.getSettings().loadWorkspace(parent, filename);
 		setWorkSpace(workspace);
 	}
 
+	/**
+	 * Close a mapWindow
+	 * @param window
+	 */
+	public void removeMapWindow(JMapFrame window) {
+		topMenu.removeMapMenu(window);
+		mapWindows.remove(window);
+	}
+
+	/**
+	 * Rename a mapwindow
+	 * @param window
+	 */
+	public void renameMapWindow(JMapFrame window) {
+		topMenu.renameMapMenu(window);
+	}
+
+	/**
+	 * Save the window settings
+	 */
+	public void saveSettings() {
+		// Save gui settings
+		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
+		guiSettings.setFullscreen(fullscreen);
+		guiSettings.setMaximized((getExtendedState() & MAXIMIZED_BOTH) > 0);
+		guiSettings.setAppLocation(getLocation());
+		guiSettings.setAppDimensions(getSize());
+
+		// Save map settings
+		// chartPanel.saveSettings();
+
+	}
+
+	/**
+	 * Save the workspace with a given name
+	 * @param filename
+	 */
+	public void saveWorkSpace(String filename) {
+		ESD.getSettings().getWorkspace().setToolbarPosition(toolbar.getLocation());
+		ESD.getSettings().getWorkspace().setNotificationAreaPosition(notificationArea.getLocation());
+		ESD.getSettings().getWorkspace().setStatusPosition(statusArea.getLocation());
+		ESD.getSettings().saveCurrentWorkspace(mapWindows, filename);
+	}
+
+	/**
+	 * Set the mouse mode
+	 * @param mouseMode
+	 */
+	public void setMouseMode(int mouseMode) {
+		this.mouseMode = mouseMode;
+	}
+
+	/**
+	 * Set a workspace as active
+	 * @param workspace
+	 */
 	public void setWorkSpace(Workspace workspace) {
 
 		while (mapWindows.size() != 0) {
@@ -292,49 +413,33 @@ public class MainFrame extends JFrame implements WindowListener {
 			}
 
 		}
-		
-		
-		//Bring toolbar elements to the front
+
+		// Bring toolbar elements to the front
 		statusArea.toFront();
 		toolbar.toFront();
 		notificationArea.toFront();
 	}
 
-	public void removeMapWindow(JMapFrame window) {
-		topMenu.removeMapMenu(window);
-		mapWindows.remove(window);
+	/**
+	 * Toggle the toolbars as locked
+	 */
+	public void toggleBarsLock() {
+		toolbarsLocked = !toolbarsLocked;
+		
+//		if (toolbarsLocked) {
+//			toolbarsLocked = false;
+//		} else {
+//			toolbarsLocked = true;
+//		}
+
+		toolbar.toggleLock();
+		notificationArea.toggleLock();
+		statusArea.toggleLock();
 	}
 
-	public void renameMapWindow(JMapFrame window) {
-		topMenu.renameMapMenu(window);
-	}
-
-	public JMainDesktopPane getDesktop() {
-		return desktop;
-	}
-
-	public Dimension getMaxResolution() {
-		int width = 0;
-		int height = 0;
-
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice[] gs = ge.getScreenDevices();
-
-		for (GraphicsDevice curGs : gs) {
-			DisplayMode mode = curGs.getDisplayMode();
-			width += mode.getWidth();
-
-			// System.out.println("Width: " + width);
-
-			if (height < mode.getHeight()) {
-				height = mode.getHeight();
-			}
-
-		}
-		return new Dimension(width, height);
-
-	}
-
+	/**
+	 * Set the maindow in fullscreen mode
+	 */
 	public void toggleFullScreen() {
 
 		// System.out.println(this.getLocationOnScreen());
@@ -342,10 +447,8 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		if (!fullscreen) {
 			location = this.getLocation();
-//			System.out.println("Size is: " + size);
-			
-			
-			
+			// System.out.println("Size is: " + size);
+
 			this.setSize(getMaxResolution());
 			// setLocationRelativeTo(null);
 			this.setLocation(0, 0);
@@ -357,9 +460,9 @@ public class MainFrame extends JFrame implements WindowListener {
 		} else {
 			// setExtendedState(JFrame.NORMAL);
 			fullscreen = false;
-			if (size.getHeight() != 0 && size.getWidth() != 0){
+			if (size.getHeight() != 0 && size.getWidth() != 0) {
 				size = Toolkit.getDefaultToolkit().getScreenSize();
-//				size = new Dimension(1000, 700);	
+				// size = new Dimension(1000, 700);
 			}
 			this.setSize(size);
 			this.setLocation(location);
@@ -369,24 +472,11 @@ public class MainFrame extends JFrame implements WindowListener {
 		}
 	}
 
-	public void saveSettings() {
-		// Save gui settings
-		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
-		guiSettings.setFullscreen(fullscreen);
-		guiSettings.setMaximized((getExtendedState() & MAXIMIZED_BOTH) > 0);
-		guiSettings.setAppLocation(getLocation());
-		guiSettings.setAppDimensions(getSize());
-
-		// Save map settings
-		// chartPanel.saveSettings();
-
-	}
-
-	public void saveWorkSpace(String filename) {
-		ESD.getSettings().getWorkspace().setToolbarPosition(toolbar.getLocation());
-		ESD.getSettings().getWorkspace().setNotificationAreaPosition(notificationArea.getLocation());
-		ESD.getSettings().getWorkspace().setStatusPosition(statusArea.getLocation());
-		ESD.getSettings().saveCurrentWorkspace(mapWindows, filename);
+	/**
+	 * Show or hide the notificationCenter
+	 */
+	public void toggleNotificationCenter() {
+		notificationCenter.toggleVisibility();
 	}
 
 	@Override
@@ -397,6 +487,9 @@ public class MainFrame extends JFrame implements WindowListener {
 	public void windowClosed(WindowEvent we) {
 	}
 
+	/**
+	 * Function called on close event, saves the settings on close
+	 */
 	@Override
 	public void windowClosing(WindowEvent we) {
 

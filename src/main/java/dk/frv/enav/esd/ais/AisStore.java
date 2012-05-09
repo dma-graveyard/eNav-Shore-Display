@@ -46,33 +46,60 @@ public class AisStore implements Serializable {
 	private Map<Long, AtoNTarget> atonTargets;
 	private Map<Long, VesselTarget> vesselTargets;
 	private Map<Long, SarTarget> sarTargets;	
-	
+
+	/**
+	 * Constructor
+	 */
 	public AisStore() {
 		
 	}
 
+	/**
+	 * Returns the targets of type Aton
+	 * @return
+	 */
 	public Map<Long, AtoNTarget> getAtonTargets() {
 		return atonTargets;
 	}
 
-	public void setAtonTargets(Map<Long, AtoNTarget> atonTargets) {
-		this.atonTargets = atonTargets;
-	}
-
-	public Map<Long, VesselTarget> getVesselTargets() {
-		return vesselTargets;
-	}
-
-	public void setVesselTargets(Map<Long, VesselTarget> vesselTargets) {
-		this.vesselTargets = vesselTargets;
-	}
-
+	/**
+	 * Returns the targets of type SAR
+	 * @return
+	 */
 	public Map<Long, SarTarget> getSarTargets() {
 		return sarTargets;
 	}
 
+	/**
+	 * Returns the targets
+	 * @return
+	 */
+	public Map<Long, VesselTarget> getVesselTargets() {
+		return vesselTargets;
+	}
+
+	/**
+	 * Target the aton targets
+	 * @param atonTargets
+	 */
+	public void setAtonTargets(Map<Long, AtoNTarget> atonTargets) {
+		this.atonTargets = atonTargets;
+	}
+
+	/**
+	 * Set the SAR targets
+	 * @param sarTargets
+	 */
 	public void setSarTargets(Map<Long, SarTarget> sarTargets) {
 		this.sarTargets = sarTargets;
+	}
+
+	/**
+	 * Set the vessel targets
+	 * @param vesselTargets
+	 */
+	public void setVesselTargets(Map<Long, VesselTarget> vesselTargets) {
+		this.vesselTargets = vesselTargets;
 	}
 		
 }

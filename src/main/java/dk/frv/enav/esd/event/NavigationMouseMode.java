@@ -47,7 +47,7 @@ import dk.frv.enav.esd.gui.ChartPanel;
 
 
 /**
- * The mouse mode used in navigation mode
+ * The mouse mode used in navigation mode - click zoom mode
  */
 public class NavigationMouseMode extends AbstractCoordMouseMode {
 	private static final long serialVersionUID = 1L;
@@ -70,17 +70,6 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
     Cursor navCursor; 
 	
 	
-    /**
-     * Construct a NavMouseMode. Sets the ID of the mode to the modeID, the
-     * consume mode to true, and the cursor to the crosshair.
-     */
-    public NavigationMouseMode(ChartPanel chartPanel) {
-        this(true);
-//        this.chartPanel = chartPanel;
-        clickTimer = ClickTimer.getClickTimer();
-        maxScale = ESD.getSettings().getMapSettings().getMaxScale();
-    }
-
     /**
      * Construct a NavMouseMode. Lets you set the consume mode. If the events
      * are consumed, then a MouseEvent is sent only to the first
@@ -109,34 +98,65 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
     }
 
     /**
-     * Handle a mousePressed MouseListener event. Erases the old navigation
-     * rectangle if there is one, and then keeps the press point for reference
-     * later.
-     * 
-     * @param e MouseEvent to be handled
+     * Construct a NavMouseMode. Sets the ID of the mode to the modeID, the
+     * consume mode to true, and the cursor to the crosshair.
      */
-    public void mousePressed(MouseEvent e) {
-//    	chartPanel.getMap().setCursor(navCursorMouseClicked);
-        e.getComponent().requestFocus();
-        clickTimer.setInterval(500);
-        clickTimer.startTime();
-        if (!mouseSupport.fireMapMousePressed(e) && e.getSource() instanceof MapBean) {
-            // set the new first point
-            point1 = e.getPoint();
-            // ensure the second point isn't set.
-            point2 = null;
-            autoZoom = true;
+    public NavigationMouseMode(ChartPanel chartPanel) {
+        this(true);
+//        this.chartPanel = chartPanel;
+        clickTimer = ClickTimer.getClickTimer();
+        maxScale = ESD.getSettings().getMapSettings().getMaxScale();
+    }
+
+    public void findAndInit(Object someObj) {
+    	if (someObj instanceof ChartPanel) {
+           chartPanel = (ChartPanel) someObj;
         }
+    	super.findAndInit(someObj);
     }
     
-    private void setNewScale(Proj p, float factor) {
-    	float newScale = p.getScale() * factor;
-    	if (newScale < maxScale) {
-    		newScale = maxScale;
-    	}
-    	p.setScale(newScale);
+    /**
+     * Given a MapBean, which provides the projection, and the starting point of
+     * a box (pt1), look at pt2 to see if it represents the ratio of the
+     * projection map size. If it doesn't, provide a point that does.
+     */
+    protected Point getRatioPoint(MapBean map, Point pt1, Point pt2) {
+        Projection proj = map.getProjection();
+        float mapRatio = (float) proj.getHeight() / (float) proj.getWidth();
+
+        float boxHeight = (float) (pt1.y - pt2.y);
+        float boxWidth = (float) (pt1.x - pt2.x);
+        float boxRatio = Math.abs(boxHeight / boxWidth);
+        int isNegative = -1;
+        if (boxRatio > mapRatio) {
+            // box is too tall, adjust boxHeight
+            if (boxHeight < 0)
+                isNegative = 1;
+            boxHeight = Math.abs(mapRatio * boxWidth);
+            pt2.y = pt1.y + (isNegative * (int) boxHeight);
+
+        } else if (boxRatio < mapRatio) {
+            // box is too wide, adjust boxWidth
+            if (boxWidth < 0)
+                isNegative = 1;
+            boxWidth = Math.abs(boxHeight / mapRatio);
+            pt2.x = pt1.x + (isNegative * (int) boxWidth);
+        }
+        return pt2;
     }
     
+    /**
+     * Called by the MapBean when it repaints, to let the MouseMode know when to
+     * update itself on the map. PaintListener interface.
+     */
+    public void listenerPaint(java.awt.Graphics g) {
+        // will be properly rejected of point1, point2 == null
+        paintRectangle(g, point1, point2);
+    }
+
+    /**
+     * Event fired on mouseclick
+     */
     public void mouseClicked(MouseEvent e) {
     	super.mouseClicked(e);
     	Object obj = e.getSource();
@@ -182,6 +202,107 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
             p.setCenter(llp);
             map.setProjection(p);
 //            chartPanel.manualProjChange();
+        }
+    }
+
+    /**
+     * Handle a mouseDragged MouseMotionListener event. A rectangle is drawn
+     * from the mousePressed point, since I'm assuming that I'm drawing a box to
+     * zoom the map to. If a previous box was drawn, it is erased.
+     * 
+     * @param e MouseEvent to be handled
+     */
+    public void mouseDragged(MouseEvent e) {
+    	if(e.getSource() instanceof MapBean){
+    		super.mouseDragged(e);
+    		if(!mouseDragged)
+    			layerMouseDrag = mouseSupport.fireMapMouseDragged(e);
+			if(!layerMouseDrag){
+		        if(!javax.swing.SwingUtilities.isLeftMouseButton(e))
+		        	return;
+		        mouseDragged = true;
+	            
+		        if (!autoZoom)
+	                return;
+	
+	            // clean up the old rectangle, since point2 has the old
+	            // value.
+	            paintRectangle((MapBean) e.getSource(), point1, point2);
+	            // paint new rectangle
+	            // point2 = e.getPoint();
+
+	            if (!e.isControlDown()){
+	            point2 = getRatioPoint((MapBean) e.getSource(), point1, e.getPoint());
+	            }
+	            else{
+	            	point2 = e.getPoint();
+	            }
+
+	            paintRectangle((MapBean) e.getSource(), point1, point2);
+			}
+    	}
+    }
+
+    /**
+     * Handle a mouseEntered MouseListener event. The boolean autoZoom is set to
+     * true, which will make the delegate ask the map to zoom in to a box that
+     * is drawn.
+     * 
+     * @param e MouseEvent to be handled
+     */
+    public void mouseEntered(MouseEvent e) {
+        super.mouseEntered(e);
+        autoZoom = true;
+    }
+
+    // Mouse Motion Listener events
+    // /////////////////////////////
+
+    /**
+     * Handle a mouseExited MouseListener event. The boolean autoZoom is set to
+     * false, which will cause the delegate to NOT ask the map to zoom in on a
+     * box. If a box is being drawn, it will be erased. The point1 is kept in
+     * case the mouse comes back on the screen with the button still down. Then,
+     * a new box will be drawn with the original mouse press position.
+     * 
+     * @param e MouseEvent to be handled
+     */
+    public void mouseExited(MouseEvent e) {
+
+        super.mouseExited(e);
+
+        if (e.getSource() instanceof MapBean) {
+            // don't zoom in, because the mouse is off the window.
+            autoZoom = false;
+            // clean up the last box drawn
+            paintRectangle((MapBean) e.getSource(), point1, point2);
+            // set the second point to null so that a new box will be
+            // drawn if the mouse comes back, and the box will use the
+            // old
+            // starting point, if the mouse button is still down.
+            point2 = null;
+
+        }
+    }
+
+    /**
+     * Handle a mousePressed MouseListener event. Erases the old navigation
+     * rectangle if there is one, and then keeps the press point for reference
+     * later.
+     * 
+     * @param e MouseEvent to be handled
+     */
+    public void mousePressed(MouseEvent e) {
+//    	chartPanel.getMap().setCursor(navCursorMouseClicked);
+        e.getComponent().requestFocus();
+        clickTimer.setInterval(500);
+        clickTimer.startTime();
+        if (!mouseSupport.fireMapMousePressed(e) && e.getSource() instanceof MapBean) {
+            // set the new first point
+            point1 = e.getPoint();
+            // ensure the second point isn't set.
+            point2 = null;
+            autoZoom = true;
         }
     }
 
@@ -277,131 +398,6 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
     }
 
     /**
-     * Handle a mouseEntered MouseListener event. The boolean autoZoom is set to
-     * true, which will make the delegate ask the map to zoom in to a box that
-     * is drawn.
-     * 
-     * @param e MouseEvent to be handled
-     */
-    public void mouseEntered(MouseEvent e) {
-        super.mouseEntered(e);
-        autoZoom = true;
-    }
-
-    /**
-     * Handle a mouseExited MouseListener event. The boolean autoZoom is set to
-     * false, which will cause the delegate to NOT ask the map to zoom in on a
-     * box. If a box is being drawn, it will be erased. The point1 is kept in
-     * case the mouse comes back on the screen with the button still down. Then,
-     * a new box will be drawn with the original mouse press position.
-     * 
-     * @param e MouseEvent to be handled
-     */
-    public void mouseExited(MouseEvent e) {
-
-        super.mouseExited(e);
-
-        if (e.getSource() instanceof MapBean) {
-            // don't zoom in, because the mouse is off the window.
-            autoZoom = false;
-            // clean up the last box drawn
-            paintRectangle((MapBean) e.getSource(), point1, point2);
-            // set the second point to null so that a new box will be
-            // drawn if the mouse comes back, and the box will use the
-            // old
-            // starting point, if the mouse button is still down.
-            point2 = null;
-
-        }
-    }
-
-    // Mouse Motion Listener events
-    // /////////////////////////////
-
-    /**
-     * Handle a mouseDragged MouseMotionListener event. A rectangle is drawn
-     * from the mousePressed point, since I'm assuming that I'm drawing a box to
-     * zoom the map to. If a previous box was drawn, it is erased.
-     * 
-     * @param e MouseEvent to be handled
-     */
-    public void mouseDragged(MouseEvent e) {
-    	if(e.getSource() instanceof MapBean){
-    		super.mouseDragged(e);
-    		if(!mouseDragged)
-    			layerMouseDrag = mouseSupport.fireMapMouseDragged(e);
-			if(!layerMouseDrag){
-		        if(!javax.swing.SwingUtilities.isLeftMouseButton(e))
-		        	return;
-		        mouseDragged = true;
-	            
-		        if (!autoZoom)
-	                return;
-	
-	            // clean up the old rectangle, since point2 has the old
-	            // value.
-	            paintRectangle((MapBean) e.getSource(), point1, point2);
-	            // paint new rectangle
-	            // point2 = e.getPoint();
-
-	            if (!e.isControlDown()){
-	            point2 = getRatioPoint((MapBean) e.getSource(), point1, e.getPoint());
-	            }
-	            else{
-	            	point2 = e.getPoint();
-	            }
-
-	            paintRectangle((MapBean) e.getSource(), point1, point2);
-			}
-    	}
-    }
-
-    /**
-     * Given a MapBean, which provides the projection, and the starting point of
-     * a box (pt1), look at pt2 to see if it represents the ratio of the
-     * projection map size. If it doesn't, provide a point that does.
-     */
-    protected Point getRatioPoint(MapBean map, Point pt1, Point pt2) {
-        Projection proj = map.getProjection();
-        float mapRatio = (float) proj.getHeight() / (float) proj.getWidth();
-
-        float boxHeight = (float) (pt1.y - pt2.y);
-        float boxWidth = (float) (pt1.x - pt2.x);
-        float boxRatio = Math.abs(boxHeight / boxWidth);
-        int isNegative = -1;
-        if (boxRatio > mapRatio) {
-            // box is too tall, adjust boxHeight
-            if (boxHeight < 0)
-                isNegative = 1;
-            boxHeight = Math.abs(mapRatio * boxWidth);
-            pt2.y = pt1.y + (isNegative * (int) boxHeight);
-
-        } else if (boxRatio < mapRatio) {
-            // box is too wide, adjust boxWidth
-            if (boxWidth < 0)
-                isNegative = 1;
-            boxWidth = Math.abs(boxHeight / mapRatio);
-            pt2.x = pt1.x + (isNegative * (int) boxWidth);
-        }
-        return pt2;
-    }
-
-    /**
-     * Draws or erases boxes between two screen pixel points. The graphics from
-     * the map is set to XOR mode, and this method uses two colors to make the
-     * box disappear if on has been drawn at these coordinates, and the box to
-     * appear if it hasn't.
-     * 
-     * @param pt1 one corner of the box to drawn, in window pixel coordinates.
-     * @param pt2 the opposite corner of the box.
-     */
-    protected void paintRectangle(MapBean map, Point pt1, Point pt2) {
-        if (map != null) {
-            paintRectangle(map.getGraphics(), pt1, pt2);
-        }
-    }
-
-    /**
      * Draws or erases boxes between two screen pixel points. The graphics from
      * the map is set to XOR mode, and this method uses two colors to make the
      * box disappear if on has been drawn at these coordinates, and the box to
@@ -435,19 +431,31 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
     }
 
     /**
-     * Called by the MapBean when it repaints, to let the MouseMode know when to
-     * update itself on the map. PaintListener interface.
+     * Draws or erases boxes between two screen pixel points. The graphics from
+     * the map is set to XOR mode, and this method uses two colors to make the
+     * box disappear if on has been drawn at these coordinates, and the box to
+     * appear if it hasn't.
+     * 
+     * @param pt1 one corner of the box to drawn, in window pixel coordinates.
+     * @param pt2 the opposite corner of the box.
      */
-    public void listenerPaint(java.awt.Graphics g) {
-        // will be properly rejected of point1, point2 == null
-        paintRectangle(g, point1, point2);
+    protected void paintRectangle(MapBean map, Point pt1, Point pt2) {
+        if (map != null) {
+            paintRectangle(map.getGraphics(), pt1, pt2);
+        }
     }
     
-    public void findAndInit(Object someObj) {
-    	if (someObj instanceof ChartPanel) {
-           chartPanel = (ChartPanel) someObj;
-        }
-    	super.findAndInit(someObj);
+    /**
+     * Set scale
+     * @param p
+     * @param factor
+     */
+    private void setNewScale(Proj p, float factor) {
+    	float newScale = p.getScale() * factor;
+    	if (newScale < maxScale) {
+    		newScale = maxScale;
+    	}
+    	p.setScale(newScale);
     }
     
 }
