@@ -33,6 +33,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -99,9 +100,10 @@ public abstract class InfoPanel extends JPanel {
 
 	public void setPos(int x, int y) {
 		Rectangle rect = getBounds();
+		System.out.println("Setting at " + x + ", " + y);
 		setBounds(x, y, (int) rect.getWidth(), (int) rect.getHeight());
 	}
-	
+
 	public void showImage(){
 		validate();
 		Dimension d = imageLabel.getSize();

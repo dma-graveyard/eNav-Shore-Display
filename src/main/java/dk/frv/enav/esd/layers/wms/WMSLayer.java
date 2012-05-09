@@ -26,21 +26,26 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 	@Override
 	public void run() {
 		while (shouldRun) {
-			ESD.sleep(700);
+			ESD.sleep(1000);
 
-			if (this.isVisible()) {
+			if (this.isVisible() && jMapFrame.getWidth()>0 && jMapFrame.getWidth() >0) {
 				// Check is changed
+				if (height != chartPanel.getMap().getHeight() || width != chartPanel.getMap().getWidth()){
+					wmsInfoPanel.setPos( (jMapFrame.getChartPanel().getHeight() / 2) -50, (jMapFrame.getChartPanel().getWidth() / 2) - 50);
+				}
+				
 				if (upperLeftLon != chartPanel.getMap().getProjection().getUpperLeft().getX()
 						|| upperLeftLat != chartPanel.getMap().getProjection().getUpperLeft().getY()
 						|| lowerRightLon != chartPanel.getMap().getProjection().getLowerRight().getX()
 						|| lowerRightLat != chartPanel.getMap().getProjection().getLowerRight().getY()
 						|| width != chartPanel.getMap().getWidth() || height != chartPanel.getMap().getHeight()) {
 
+					
 					// System.out.println("New request");
 					// wmsInfoPanel.showText("Loading");
 //					System.out.println(jMapFrame.getHeight());
 //					System.out.println(jMapFrame.getWidth());
-					wmsInfoPanel.setPos( (jMapFrame.getHeight() / 2 - 50) , (jMapFrame.getWidth() / 2) - 50);
+					
 					
 					wmsInfoPanel.displayLoadingImage();
 					// wmsInfoPanel.setVisible(true);
@@ -54,6 +59,9 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 
 					width = chartPanel.getMap().getWidth();
 					height = chartPanel.getMap().getHeight();
+					
+					System.out.println(height);
+					System.out.println(width);
 
 					// System.out.println(chartPanel.getMap().getProjection().forward(chartPanel.getMap().getProjection().getLowerRight()));
 					// System.out.println(upperLeftLon);
