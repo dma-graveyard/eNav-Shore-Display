@@ -68,6 +68,7 @@ import dk.frv.enav.esd.settings.MapSettings;
 
 /**
  * The panel with chart. Initializes all layers to be shown on the map.
+ * @author David A. Camre (davidcamre@gmail.com)
  */
 public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 

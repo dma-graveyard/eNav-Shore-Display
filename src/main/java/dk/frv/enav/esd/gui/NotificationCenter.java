@@ -52,6 +52,8 @@ import dk.frv.enav.esd.msi.MsiHandler;
 /**
  * Notification Center responsible for display all notifications
  * 
+ * @author David A. Camre (davidcamre@gmail.com)
+ * 
  */
 public class NotificationCenter extends ComponentFrame implements ListSelectionListener, ActionListener,
 		IMsiUpdateListener {

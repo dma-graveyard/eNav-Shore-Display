@@ -57,6 +57,7 @@ import dk.frv.enav.esd.settings.Workspace;
 
 /**
  * The main frame containing map and panels
+ * @author David A. Camre (davidcamre@gmail.com)
  */
 public class MainFrame extends JFrame implements WindowListener {
 

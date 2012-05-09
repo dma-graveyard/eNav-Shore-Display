@@ -47,11 +47,13 @@ import javax.swing.JMenuItem;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.gui.fileselection.WorkspaceFileFilter;
 
+/**
+ * Toolbar used in the mainframe
+ * @author David A. Camre (davidcamre@gmail.com
+ *
+ */
 public class JMenuWorkspaceBar extends JMenuBar {
 
-	/**
-	 * Toolbar used in the mainframe
-	 */
 	private static final long serialVersionUID = 1L;
 	private JMenu maps;
 	private HashMap<Integer, JMenu> mapMenus;

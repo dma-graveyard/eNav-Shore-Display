@@ -34,7 +34,7 @@ import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 
 /**
  * Class for setting up a map frame
- * @author Steffen D. Sommer (steffendsommer@gmail.com), David N. J. Andersen (davidcamre@gmail.com)
+ * @author Steffen D. Sommer (steffendsommer@gmail.com), David A. Camre (davidcamre@gmail.com)
  */
 public class JMapFrame extends JInternalFrame implements MouseListener  {
 	
