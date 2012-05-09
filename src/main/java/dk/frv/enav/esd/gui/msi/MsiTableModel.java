@@ -121,9 +121,9 @@ public class MsiTableModel extends AbstractTableModel {
 			if (msgShort == null) {
 				msgShort = "";
 			}
-			if (msgShort.length() > 32) {
-				msgShort = msgShort.substring(0, 28) + " ...";
-			}
+//			if (msgShort.length() > 32) {
+//				msgShort = msgShort.substring(0, 28) + " ...";
+//			}
 			return msgShort;
 		case 6:
 			return Formatter.formatShortDateTime(message.msiMessage.getValidFrom());
