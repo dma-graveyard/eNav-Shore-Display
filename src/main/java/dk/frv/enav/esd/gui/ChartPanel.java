@@ -286,11 +286,11 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		initChartDefault();
 
 		// Set last postion
-		// map.setCenter(mapSettings.getCenter());
+		 map.setCenter(mapSettings.getCenter());
 		// System.out.println("Map center set");
 
 		// Get from settings
-		// map.setScale(mapSettings.getScale());
+		 map.setScale(mapSettings.getScale());
 
 		add(map);
 
