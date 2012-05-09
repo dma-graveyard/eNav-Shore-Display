@@ -50,8 +50,8 @@ import javax.swing.border.EtchedBorder;
 public abstract class InfoPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
-	private JLabel textLabel = new JLabel();
-	private JLabel imageLabel = new JLabel(new ImageIcon("images/loading.gif"));
+	private JLabel textLabel;
+	private JLabel imageLabel;
 
 	public InfoPanel() {
 		super();
@@ -61,19 +61,31 @@ public abstract class InfoPanel extends JPanel {
 		flowLayout.setHgap(0);
 //		setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
+		textLabel = new JLabel();
 		add(textLabel);
-		add(imageLabel);
 		setVisible(false);
 		textLabel.setFont(new Font("Arial", Font.PLAIN, 11));
 		textLabel.setBackground(new Color(83, 83, 83));
 		textLabel.setForeground(new Color(237, 237, 237));
 		setBackground(new Color(83, 83, 83));
-		imageLabel.setVisible(false);
-		
 	}
 
+	public InfoPanel(ImageIcon image) {
+		super();
+		imageLabel =  new JLabel(new ImageIcon("images/loading.gif"));
+		FlowLayout flowLayout = new FlowLayout();
+		setLayout(flowLayout);
+		flowLayout.setVgap(0);
+		flowLayout.setHgap(0);
+		this.setBackground(null);
+		this.setBorder(null);
+		this.setOpaque(false);
+		add(imageLabel);
+		setVisible(false);
+	}
+
+	
 	public void showText(String text) {
-		imageLabel.setVisible(false);
 		textLabel.setText(text);
 		resizeAndShow();
 	}
@@ -90,10 +102,7 @@ public abstract class InfoPanel extends JPanel {
 		setBounds(x, y, (int) rect.getWidth(), (int) rect.getHeight());
 	}
 	
-	public void showImage(ImageIcon image){
-		imageLabel.setVisible(true);
-//		imageLabel.setIcon(image);
-		setOpaque(false);
+	public void showImage(){
 		validate();
 		Dimension d = imageLabel.getSize();
 		this.setSize(d.width, d.height);

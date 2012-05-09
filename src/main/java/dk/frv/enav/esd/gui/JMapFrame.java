@@ -42,6 +42,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	private int id;
 	private final MainFrame mainFrame;
 	private JPanel glassPanel;
+	private JPanel loadingPanel;
 	private JLabel moveHandler;
 	private JPanel mapPanel;
 	private JPanel masterPanel;
@@ -63,6 +64,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		this.setVisible(true);
 
 		initGlassPane();
+		initLoadingPane();
 		chartPanel.initChart();
 		initGUI();
 	}
@@ -77,6 +79,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		this.setVisible(true);
 
 		initGlassPane();
+		initLoadingPane();
 		chartPanel.initChart(center, scale);
 		initGUI();
 	}
@@ -227,6 +230,12 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		glassPanel.setVisible(false);
 	}
 
+	private void initLoadingPane() {
+		loadingPanel = (JPanel) getGlassPane();
+		loadingPanel.setLayout(null);
+		loadingPanel.setVisible(false);
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -388,6 +397,10 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		return glassPanel;
 	}
 
+	public JPanel getLoadingPanel() {
+		return loadingPanel;
+	}
+	
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub

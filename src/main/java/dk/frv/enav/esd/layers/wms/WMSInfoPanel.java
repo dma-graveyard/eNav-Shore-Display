@@ -45,22 +45,14 @@ import dk.frv.enav.esd.gui.InfoPanel;
 public class WMSInfoPanel extends InfoPanel {
 
 	private static final long serialVersionUID = 1L;
+	static ImageIcon loadingImg = new ImageIcon("images/loading.gif");
 	
 	public WMSInfoPanel() {
-		super();
-		this.setBorder(null);
-		this.setBackground(null);
+		super(loadingImg);
 	}
 	
 	public void displayLoadingImage(){
-		ImageIcon loadingImg = new ImageIcon("images/loading.gif");
-//		ImageIcon loadingImg = new ImageIcon("images/appicon.png");
-		showImage(loadingImg);
+		showImage();
+	}
 
-	}
-	
-	public void showInfo(String text) {
-//		String encText = message.getEncText();
-		showText(text);
-	}
 }
