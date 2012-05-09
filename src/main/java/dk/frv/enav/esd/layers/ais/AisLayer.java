@@ -22,6 +22,11 @@ import dk.frv.enav.ins.ais.VesselTarget;
 import dk.frv.enav.ins.gui.MainFrame;
 import dk.frv.enav.ins.layers.ais.AisTargetInfoPanel;
 
+/**
+ * The class AisLayer is the layer containing all AIS targets. The class handles
+ * the drawing of vessels on the chartPanel.
+ * @author Claes N. Ladefoged, claesnl@gmail.com
+ */
 public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVesselAisListener, MapMouseListener {
 	private static final long serialVersionUID = 1L;
 	private OMGraphicList list = new OMGraphicList();
@@ -37,6 +42,9 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	volatile boolean shouldRun = true;
 	private float mapScale = 0;
 
+	/**
+	 * Keeps the AisLayer thread alive
+	 */
 	@Override
 	public void run() {
 		while (shouldRun) {
@@ -45,19 +53,31 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		}
 	}
 
+	/**
+	 * Starts the AisLayer thread
+	 */
 	public AisLayer() {
 		(new Thread(this)).start();
 	}
 
+	/**
+	 * Kills the AisLayer thread
+	 */
 	public void stop() {
 		shouldRun = false;
 	}
 
+	/**
+	 * Clears all targets from the map and in the local memory
+	 */
 	public void mapClearTargets() {
 		list.clear();
 		drawnVessels.clear();
 	}
 
+	/**
+	 * Draws or updates the vessels on the map
+	 */
 	private void drawVessels() {
 		if (aisHandler != null) {
 
@@ -141,12 +161,6 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	}
 
 	@Override
-	public boolean mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		return false;
@@ -218,5 +232,11 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	public void mouseMoved() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public boolean mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

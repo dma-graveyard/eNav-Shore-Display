@@ -15,6 +15,12 @@ import dk.frv.ais.message.AisMessage;
 
 import dk.frv.enav.ins.ais.VesselStaticData;
 
+/**
+ * Vessel class that maintains all the components in a vessel
+ * 
+ * @author Claes N. Ladefoged, claesnl@gmail.com
+ * 
+ */
 public class Vessel extends OMGraphicList {
 	private static final long serialVersionUID = 1L;
 	private VesselLayer vessel;
@@ -35,6 +41,12 @@ public class Vessel extends OMGraphicList {
 	public static final float STROKE_WIDTH = 1.5f;
 	private Color shipColor = new Color(78, 78, 78);
 
+	/**
+	 * Vessel initialization with icon, circle, heading, speedvector, callsign
+	 * and name/mmsi.
+	 * 
+	 * @param MMSI Key of vessel
+	 */
 	public Vessel(long MMSI) {
 		super();
 		this.MMSI = MMSI;
@@ -70,6 +82,18 @@ public class Vessel extends OMGraphicList {
 		this.add(nameMMSI);
 	}
 
+	/**
+	 * Updates all the vessel layers with position, data and heading where
+	 * needed. Shows them on the map depending on mapScale.
+	 * 
+	 * @param trueHeading Direction of vessel icon
+	 * @param lat Latitude position of vessel
+	 * @param lon Longitude position of vessel
+	 * @param staticData Static information of vessel
+	 * @param sog Speed over ground
+	 * @param cogR Course over ground in radians
+	 * @param mapScale Scale of the chartMap
+	 */
 	public void updateLayers(double trueHeading, double lat, double lon, VesselStaticData staticData, double sog,
 			double cogR, float mapScale) {
 		vessel.setLocation(lat, lon);
@@ -131,27 +155,51 @@ public class Vessel extends OMGraphicList {
 		showVesselIcon(b2);
 		showVesselCirc(!b2);
 	}
-	
+
+	/**
+	 * Toggle visibility of vessel icon on map
+	 * @param b Boolean that tells if layer should be shown or not
+	 */
 	public void showVesselIcon(boolean b) {
 		vessel.setVisible(b);
 	}
-	
+
+	/**
+	 * Toggle visibility of vessel circle on map
+	 * @param b Boolean that tells if layer should be shown or not
+	 */
 	public void showVesselCirc(boolean b) {
 		vesCirc.setVisible(b);
 	}
 
+	/**
+	 * Toggle visibility of heading vector on map
+	 * @param b Boolean that tells if layer should be shown or not
+	 */
 	public void showHeading(boolean b) {
 		heading.setVisible(b);
 	}
 
+	/**
+	 * Toggle visibility of speed vector on map
+	 * @param b Boolean that tells if layer should be shown or not
+	 */
 	public void showSpeedVector(boolean b) {
 		speedVector.setVisible(b);
 	}
 
+	/**
+	 * Toggle visibility of call sign label on map
+	 * @param b Boolean that tells if layer should be shown or not
+	 */
 	public void showCallSign(boolean b) {
 		callSign.setVisible(b);
 	}
 
+	/**
+	 * Toggle visibility of name label on map
+	 * @param b Boolean that tells if layer should be shown or not
+	 */
 	public void showName(boolean b) {
 		nameMMSI.setVisible(b);
 	}

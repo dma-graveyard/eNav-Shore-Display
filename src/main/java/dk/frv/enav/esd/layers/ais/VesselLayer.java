@@ -5,6 +5,12 @@ import javax.swing.ImageIcon;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.ins.common.graphics.CenterRaster;
 
+/**
+ * Vessel layer that creates a directed vessel with icon
+ * 
+ * @author Claes N. Ladefoged, claesnl@gmail.com
+ * 
+ */
 public class VesselLayer extends CenterRaster {
 	private static final long serialVersionUID = 1L;
 	private long MMSI;
@@ -14,11 +20,19 @@ public class VesselLayer extends CenterRaster {
 	private double trueHeading;
 	private String shipType;
 
+	/**
+	 * Initialize a vessel with default icon
+	 * @param MMSI Key of vessel
+	 */
 	public VesselLayer(long MMSI) {
 		super(0, 0, 24, 24, new ImageIcon(ESD.class.getResource("/images/vesselIcons/white1_90.png")));
 		this.MMSI = MMSI;
 	}
 
+	/**
+	 * Rotates vessel icon
+	 * @param trueHeading Direction of vessel icon
+	 */
 	public void setHeading(double trueHeading) {
 		if (this.trueHeading != trueHeading) {
 			this.trueHeading = trueHeading;
@@ -26,6 +40,11 @@ public class VesselLayer extends CenterRaster {
 		}
 	}
 
+	/**
+	 * Moves the vessel icon
+	 * @param lat Latitude position of vessel icon
+	 * @param lon Longitude position of vessel icon
+	 */
 	public void setLocation(double lat, double lon) {
 		if (this.lat != lat || this.lon != lon) {
 			this.lat = lat;
@@ -35,6 +54,10 @@ public class VesselLayer extends CenterRaster {
 		}
 	}
 
+	/**
+	 * Changes vessel icon based on ship type
+	 * @param shipType Ship type relative to "GUIDELINES FOR THE INSTALLATION OF A SHIPBORNE AUTOMATIC IDENTIFICATION SYSTEM (AIS)"
+	 */
 	public void setImageIcon(String shipType) {
 		if(this.shipType != shipType) {	
 			this.shipType = shipType;
@@ -73,6 +96,10 @@ public class VesselLayer extends CenterRaster {
 		}
 	}
 
+	/**
+	 * Get the MMSI attached to the layer
+	 * @return MMSI Key of vessel
+	 */
 	public long getMMSI() {
 		return this.MMSI;
 	}

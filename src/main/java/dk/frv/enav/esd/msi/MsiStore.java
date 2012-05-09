@@ -162,7 +162,6 @@ public class MsiStore implements Serializable {
 	
 	/**
 	 * Sets msi warnings visible if they are within a rectangle given by the routes' waypoints.
-	 * @param routes List of routes for which to enable msi warnings at
 	 */
 	public synchronized void setVisibility() {
 		return;
