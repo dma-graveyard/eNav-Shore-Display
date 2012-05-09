@@ -125,7 +125,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	 * Get target with mmsi
 	 * 
 	 * @param mmsi
-	 * @return
+	 * @return null
 	 */
 	public synchronized AisTarget getTarget(long mmsi) {
 		if (vesselTargets.containsKey(mmsi)) {
@@ -338,12 +338,13 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	 * Determine if mmsi belongs to a SART
 	 * 
 	 * @param mmsi
-	 * @return
+	 * @return startsWith
 	 */
 	public boolean isSarTarget(long mmsi) {
 		// AIS-SART transponder MMSI begins with 970
 		String strMmsi = Long.toString(mmsi);
-		return strMmsi.startsWith(sartMmsiPrefix);
+		boolean startsWith = strMmsi.startsWith(sartMmsiPrefix);
+		return startsWith;
 	}
 
 	/**
