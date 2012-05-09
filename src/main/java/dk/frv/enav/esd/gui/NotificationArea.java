@@ -25,6 +25,10 @@ import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 import dk.frv.enav.esd.msi.IMsiUpdateListener;
 import dk.frv.enav.esd.msi.MsiHandler;
 
+/**
+ * Class for setting up the notification area of the application
+ * @author Steffen D. Sommer (steffendsommer@gmail.com)
+ */
 public class NotificationArea extends ComponentFrame implements IMsiUpdateListener {
 	
 	private static final long serialVersionUID = 1L;	
@@ -36,7 +40,6 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 	private static int notificationHeight = 25;
 	private static int notificationWidth = 125;
 	private static int notificationPanelOffset = 4;
-	//private ArrayList<JLabel> notifications = new ArrayList<JLabel>();
 	private HashMap<String, JPanel> notifications = new HashMap<String, JPanel>();
 	private HashMap<String, String> services = new HashMap<String, String>();
 	private HashMap<String, Integer> unreadMessages = new HashMap<String, Integer>();
@@ -53,6 +56,10 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 	Border paddingLeftPressed = BorderFactory.createMatteBorder(0, 8, 0, 0, new Color(45, 45, 45));
 	Border notificationPaddingPressed = BorderFactory.createCompoundBorder(paddingBottom, paddingLeftPressed);
 
+	/**
+	 * Constructor for setting up the notification area
+	 * @param mainFrame
+	 */
 	public NotificationArea(final MainFrame mainFrame) {
 		
 		// Setup location
@@ -81,7 +88,6 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 		// Create the grid for the notifications
         notificationPanel = new JPanel();
 		notificationPanel.setLayout(new GridLayout(0,1));
-        //notificationPanel.setLayout(new GridBagLayout());
 		notificationPanel.setBorder(BorderFactory.createEmptyBorder(5,5,0,5));
 		notificationPanel.setBackground(new Color(83, 83, 83));
 		
@@ -94,6 +100,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 		services.put("msi", "MSI");
 		
 		msi.addMouseListener(new MouseAdapter() {  
+			
 			public void mousePressed(MouseEvent e) {
 				msi.setBorder(notificationPaddingPressed);
 				msi.setBackground(new Color(45, 45, 45));
@@ -104,16 +111,16 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 		    	msi.setBackground(new Color(65, 65, 65));
 		    	mainFrame.toggleNotificationCenter();
 		    }  
+		    
 		});
 		
 		// Notification: AIS
-		//final JLabel ais = new JLabel("AIS");
 		final JPanel ais = new JPanel();
 		notifications.put("ais", ais);
-		//unreadMessages.put("ais", 23);
 		services.put("ais", "AIS");
 		
 		ais.addMouseListener(new MouseAdapter() {  
+			
 			public void mousePressed(MouseEvent e) {
 				ais.setBorder(notificationPaddingPressed);
 				ais.setBackground(new Color(45, 45, 45));
@@ -124,6 +131,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 		    	ais.setBackground(new Color(65, 65, 65));
 		    	mainFrame.toggleNotificationCenter();
 		    }  
+		    
 		});
 		
 		
@@ -137,9 +145,16 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 	 
 	    // And finally refresh the notification area
 	    repaintNotificationArea();
+	    
 	}
 	
-	public void addMessage(String service, int messageCount) throws InterruptedException {
+	/**
+	 * Function for setting the number of unread messages for a specific service
+	 * @param service		service for which the unread messages should be set
+	 * @param messageCount	the number of unread messages to be set
+	 * @throws InterruptedException
+	 */
+	public void setMessages(String service, int messageCount) throws InterruptedException {
 				
 		JLabel unread = unreadMessagesLabels.get(service);
 		JLabel unreadIndicator = indicatorLabels.get(service);
@@ -148,12 +163,15 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 		if(currentCount == null)
 			currentCount = 0;
 		
+		// If no unread messages, remove the red indicator for the service
 		if(messageCount == 0)
 			unreadIndicator.setOpaque(false);
 		
+		// Update the unread messages label if it differs
 		if(messageCount != currentCount)
 			unread.setText(Integer.toString(messageCount));
-				
+		
+		// If new unread messages are received, start the blinking indicator
 		if(messageCount > currentCount) {
 			unreadIndicator.setOpaque(true);
 			newMessage(service);
@@ -162,23 +180,32 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 		unreadMessages.put(service, messageCount);
 	}
 	
-	public void newMessage(final String key) throws InterruptedException {
+	/**
+	 * Function for blinking the unread indicator for a service
+	 * @param service The service which should blink, indicating new unread messages
+	 * @throws InterruptedException
+	 */
+	public void newMessage(final String service) throws InterruptedException {
 				
 		final int blinks = 20;
 		
 		final Runnable doChangeIndicator = new Runnable() {
-			JLabel unreadIndicator = indicatorLabels.get(key);
+			
+			JLabel unreadIndicator = indicatorLabels.get(service);
 		    boolean changeColor = false;
 		    public void run() {
-			if (changeColor = !changeColor) {
-				unreadIndicator.setBackground(new Color(165, 80, 80));
-			} else {
-				unreadIndicator.setBackground(new Color(206, 120, 120));
-			}
+		    	
+		    	if (changeColor = !changeColor) {
+		    		unreadIndicator.setBackground(new Color(165, 80, 80));
+		    	} else {
+		    		unreadIndicator.setBackground(new Color(206, 120, 120));
+		    	}
+		    	
 		    }
 		};
 
 		Runnable doBlinkIndicator = new Runnable() {
+			
 		    public void run() {
 		    	for (int i = 0; i < blinks; i++) {
 				    try {
@@ -189,17 +216,20 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 				    }
 				}
 		    }
+		    
 		};
 		
 		new Thread(doBlinkIndicator).start();
+		
 	}
 	
-	/*
+	/**
 	 * Function for locking/unlocking the notification area
-	 * Author: Steffen D. Sommer
 	 */
 	public void toggleLock() {
+		
 		if(locked) {
+			
 			masterPanel.add(moveHandler, BorderLayout.NORTH);
 			locked = false;
 			repaintNotificationArea();
@@ -211,6 +241,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 			this.setLocation(new_location);
 
 		} else {
+			
 			masterPanel.remove(moveHandler);
 			locked = true;
 			repaintNotificationArea();
@@ -220,12 +251,12 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 			int newY = (int) (this.getLocation().getY());
 			Point new_location = new Point(newX, (newY + moveHandlerHeight));
 			this.setLocation(new_location);
+			
 		}
 	}
 	
-	/*
-	 * Function for refreshing the notification area after editing notifications, size etc.
-	 * Author: Steffen D. Sommer
+	/**
+	 * Function for refreshing the notification area after editing notifications
 	 */
 	public void repaintNotificationArea() {
 		
@@ -243,7 +274,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 			Integer messageCount = unreadMessages.get(entry.getKey());
 			
 			if(messageCount == null)
-					messageCount = 0;
+				messageCount = 0;
 			
 			if(service == null)
 				service = "";
@@ -255,7 +286,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 			servicePanel.setBorder(notificationPadding);
 			servicePanel.setPreferredSize(new Dimension(notificationWidth, notificationHeight));
 			
-			// Create labels for each value
+			// Create labels for each service
 			// The label
 			JLabel notification = new JLabel(service);
 			notification.setPreferredSize(new Dimension(76, notificationHeight));
@@ -274,12 +305,11 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 			// The unread indicator
 			JLabel unreadIndicator = new JLabel();
 			unreadIndicator.setPreferredSize(new Dimension(7, notificationHeight));
-			
 			servicePanel.add(unreadIndicator);
-			
+	
 			notificationPanel.add(servicePanel);
 		
-			// Make list of indicator labels to use when blinking
+			// Make list of labels to use when updating service
 			indicatorLabels.put(entry.getKey(), unreadIndicator);
 			unreadMessagesLabels.put(entry.getKey(), messages);
 			
@@ -302,38 +332,46 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 		
 	}
 	
-	/*
+	/**
 	 * Function for getting the width of the notification area
-	 * @return width Width of the notification areas
+	 * @return width width of the notification area
 	 */
 	public int getWidth() {
 		return width;
 	}
 	
-	/*
+	/**
 	 * Function for getting the height of the notification area
-	 * @return height Height of the notification area
+	 * @return height height of the notification area
 	 */
 	public int getHeight() {
 		return height;
 	}
 	
+	/**
+	 * Function overriding from IMsiUpdateListener to set this class as a MSI listener
+	 */
 	@Override
 	public void findAndInit(Object obj) {
+		
 		if (obj instanceof MsiHandler) {
 			msiHandler = (MsiHandler)obj;
 			msiHandler.addListener(this);
 		}
+		
 	}
 
+	/**
+	 * Function overriding from IMsiUpdateListener for doing stuff when MSI messages are incoming
+	 */
 	@Override
 	public void msiUpdate() {
-		//msiHandler.getUnAcknowledgedMSI();
+		
 		try {
-			addMessage("msi", msiHandler.getUnAcknowledgedMSI());
+			setMessages("msi", msiHandler.getUnAcknowledgedMSI());
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
 }

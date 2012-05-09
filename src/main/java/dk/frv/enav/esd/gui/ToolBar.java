@@ -21,6 +21,10 @@ import javax.swing.border.EtchedBorder;
 
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 
+/**
+ * Class for setting up the toolbar of the application
+ * @author Steffen D. Sommer (steffendsommer@gmail.com)
+ */
 public class ToolBar extends JInternalFrame {
 	
 	private static final long serialVersionUID = 1L;	
@@ -40,7 +44,10 @@ public class ToolBar extends JInternalFrame {
 	private Border toolPaddingBorder = BorderFactory.createMatteBorder(0, 0, 3, 3, new Color(83, 83, 83));
 	private Border toolInnerEtchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(37, 37, 37), new Color(52, 52, 52));
 	
-
+	/**
+	 * Constructor for setting up the toolbar
+	 * @param mainFrame reference to the mainframe
+	 */
 	public ToolBar(final MainFrame mainFrame) {
 		
 		// Setup location
@@ -74,7 +81,6 @@ public class ToolBar extends JInternalFrame {
 		
 		
 		// Setup toolitems (add here for more toolitems)
-		// Tool: Select TODO
 		final JLabel select = new JLabel(toolbarIcon("images/toolbar/select.png"));
 		select.addMouseListener(new MouseAdapter() {  
 		    public void mouseReleased(MouseEvent e) {  
@@ -119,8 +125,7 @@ public class ToolBar extends JInternalFrame {
 		zoom.setBorder(toolPaddingBorder);
 		toolItems.add(zoom);
 		
-		
-		
+		// Tool: WMS layer
 		final JLabel wms = new JLabel(toolbarIcon("images/toolbar/wms_small.png"));
 		wms.setName("wms");
 		wms.addMouseListener(new MouseAdapter() {  
@@ -137,9 +142,6 @@ public class ToolBar extends JInternalFrame {
 			    		mainFrame.getMapWindows().get(i).getChartPanel().getWmsLayer().setVisible(true);
 			    		mainFrame.getMapWindows().get(i).getChartPanel().getBgLayer().setVisible(false);
 			    		
-
-
-			    		
 			            wms.setBackground(new Color(55, 55, 55));
 			            wms.setBorder(BorderFactory.createCompoundBorder(toolPaddingBorder, toolInnerEtchedBorder));
 			            wms.setOpaque(true);
@@ -154,6 +156,7 @@ public class ToolBar extends JInternalFrame {
         wms.setOpaque(true);
 		
 
+        
 	    // Create the masterpanel for aligning
 	    masterPanel = new JPanel(new BorderLayout());
 	    masterPanel.add(moveHandler, BorderLayout.NORTH);
@@ -176,13 +179,12 @@ public class ToolBar extends JInternalFrame {
 	    	setActiveToolItem(select);	
 	    }
 		
-	    
-	    
 	}
 	
-	/*
+	
+	/**
 	 * Function for setting the active tool item in the toolbar
-	 * Author: Steffen D. Sommer
+	 * @param tool reference to the active tool
 	 */
 	public void setActiveToolItem(JLabel tool) {
 		// Inactive all tools
@@ -201,20 +203,21 @@ public class ToolBar extends JInternalFrame {
         tool.setOpaque(true);
 	}
 	
-	/*
+	/**
 	 * Function for resizing the icons for the toolbar
-	 * Author: Steffen D. Sommer
+	 * @param 	imgpath		path of the image
+	 * @return	newimage	the newly created and resized image
 	 */
 	public ImageIcon toolbarIcon(String imgpath) {
 		ImageIcon icon = new ImageIcon(imgpath);
 		Image img = icon.getImage();  
 		Image newimg = img.getScaledInstance(iconWidth, iconHeight,  java.awt.Image.SCALE_DEFAULT);  
-		return new ImageIcon(newimg); 
+		ImageIcon newImage = new ImageIcon(newimg);
+		return newImage; 
 	}
 	
-	/*
+	/**
 	 * Function for locking/unlocking the toolbar
-	 * Author: Steffen D. Sommer
 	 */
 	public void toggleLock() {
 		if(locked) {
@@ -241,9 +244,8 @@ public class ToolBar extends JInternalFrame {
 		}
 	}
 	
-	/*
-	 * Function for refreshing the toolbar after editing toolitems, size etc.
-	 * Author: Steffen D. Sommer
+	/**
+	 * Function for refreshing the toolbar after editing toolitems
 	 */
 	public void repaintToolbar() {
 		
@@ -269,17 +271,17 @@ public class ToolBar extends JInternalFrame {
 		this.repaint();
 	}
 	
-	/*
+	/**
 	 * Function for getting the width of the toolbar
-	 * @return width Width of the toolbar
+	 * @return width width of the toolbar
 	 */
 	public int getWidth() {
 		return width;
 	}
 	
-	/*
+	/**
 	 * Function for getting the height of the toolbar
-	 * @return height Height of the toolbar
+	 * @return height height of the toolbar
 	 */
 	public int getHeight() {
 		return height;

@@ -1,5 +1,8 @@
 package dk.frv.enav.esd.gui;
 
+/*
+ * This model is not used yet - will be implemented!
+ */
 public class NotificationService {
 
 	public String name;

@@ -26,6 +26,10 @@ import dk.frv.enav.esd.event.IMapCoordListener;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 import dk.frv.enav.ins.common.text.Formatter;
 
+/**
+ * Class for setting up the status area of the application
+ * @author Steffen D. Sommer (steffendsommer@gmail.com)
+ */
 public class StatusArea extends JInternalFrame implements IMapCoordListener, BeanContextChild {
 	
 	private static final long serialVersionUID = 1L;	
@@ -41,6 +45,10 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 	public int width;
 	public int height;
 
+	/**
+	 * Constructor for setting up the status area
+	 * @param mainFrame reference to the mainframe
+	 */
 	public StatusArea(MainFrame mainFrame) {
 		
 		// Setup location
@@ -52,7 +60,6 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 		setRootPaneCheckingEnabled(false);
 		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).setNorthPane(null);
 		this.setBorder(null);
-		
 		
         // Create the top movehandler (for dragging)
         moveHandler = new JLabel("Status", JLabel.CENTER);
@@ -72,20 +79,15 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
         statusPanel.setBorder(BorderFactory.createEmptyBorder(3,3,0,0));
         statusPanel.setBackground(new Color(83, 83, 83));
 		
+        
 		
 		// Add status items here
-        
 		// Status: X coordinate
 		statusItems.put("LAT", new JLabel(" LAT: N/A"));
         
 		// Status: Y coordinate
 		statusItems.put("LON", new JLabel(" LON: N/A"));
 
-		
-
-		
-		// Status: Z coordinate
-//		statusItems.put("Z", new JLabel("Z: 3.122"));
 				
 
 	    // Create the masterpanel for aligning
@@ -99,12 +101,13 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 	    repaintToolbar();
 	}
 	
-	/*
+	/**
 	 * Function for locking/unlocking the status bar
-	 * Author: Steffen D. Sommer
 	 */
 	public void toggleLock() {
+		
 		if(locked) {
+			
 			masterPanel.add(moveHandler, BorderLayout.NORTH);
 			locked = false;
 			repaintToolbar();
@@ -116,6 +119,7 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 			this.setLocation(new_location);
 
 		} else {
+			
 			masterPanel.remove(moveHandler);
 			locked = true;
 			repaintToolbar();
@@ -125,12 +129,12 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 			int newY = (int) (this.getLocation().getY());
 			Point new_location = new Point(newX, (newY + moveHandlerHeight));
 			this.setLocation(new_location);
+			
 		}
 	}
 	
-	/*
-	 * Function for refreshing the status bar after editing status items, size etc.
-	 * Author: Steffen D. Sommer
+	/**
+	 * Function for refreshing the status area after editing status items
 	 */
 	public void repaintToolbar() {
 		
@@ -159,34 +163,38 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 		
 	}
 	
-	/*
+	/**
 	 * Function for getting the width of the status bar
-	 * @return width Width of the status bar
+	 * @return width width of the status bar
 	 */
 	public int getWidth() {
 		return width;
 	}
 	
-	/*
+	
+	/**
 	 * Function for getting the height of the status bar
-	 * @return height Height of the status bar
+	 * @return height height of the status bar
 	 */
 	public int getHeight() {
 		return height;
 	}
 
+	/**
+	 * Overriding function for setting the behavior when a coordinate is received
+	 * @param llp point including lat and lon
+	 */
 	@Override
-	public void recieveCoord(LatLonPoint llp) {
+	public void receiveCoord(LatLonPoint llp) {
+		
 		statusItems.get("LAT").setText(" LAT  " + Formatter.latToPrintable(llp.getLatitude()));
 		statusItems.get("LON").setText(" LON " + Formatter.lonToPrintable(llp.getLongitude()));
-
-		
+	
 	}
 
 	@Override
 	public void addVetoableChangeListener(String arg0, VetoableChangeListener arg1) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -198,14 +206,11 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 	@Override
 	public void removeVetoableChangeListener(String arg0, VetoableChangeListener arg1) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void setBeanContext(BeanContext arg0) throws PropertyVetoException {
 		// TODO Auto-generated method stub
-		
 	}
 	
-	// TODO: Add methods for updating the hashmap containing status values
 }

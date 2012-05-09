@@ -32,6 +32,10 @@ import javax.swing.border.EtchedBorder;
 
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 
+/**
+ * Class for setting up a map frame
+ * @author Steffen D. Sommer (steffendsommer@gmail.com), David N. J. Andersen (davidcamre@gmail.com)
+ */
 public class JMapFrame extends JInternalFrame implements MouseListener  {
 	
 	private static final long serialVersionUID = 1L;
@@ -50,10 +54,16 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	private boolean maximized = false;
 	public int width;
 	public int height;
-	private static int chartPanelOffset = 6;
+	private static int chartPanelOffset = 12;
 	JInternalFrame mapFrame = null;
 
+	/**
+	 * Constructor for setting up the map frame
+	 * @param id		id number for this map frame
+	 * @param mainFrame	reference to the mainframe
+	 */
 	public JMapFrame(int id, MainFrame mainFrame) {
+		
 		super("New Window " + id, true, true, true, true);
 
 		this.mainFrame = mainFrame;
@@ -67,9 +77,18 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		initLoadingPane();
 		chartPanel.initChart();
 		initGUI();
+		
 	}
 	
+	/**
+	 * Overloaded constructor for setting up the map frame
+	 * @param id		id number for this map frame
+	 * @param mainFrame	reference to the map frame
+	 * @param center	where to center map - david help
+	 * @param scale		how to scale the map - david help
+	 */
 	public JMapFrame(int id, MainFrame mainFrame, Point2D center, float scale) {
+		
 		super("New Window " + id, true, true, true, true);
 
 		this.mainFrame = mainFrame;
@@ -82,8 +101,12 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		initLoadingPane();
 		chartPanel.initChart(center, scale);
 		initGUI();
+		
 	}
 	
+	/**
+	 * Function for setting up custom GUI for the map frame
+	 */
 	public void initGUI(){
 		makeKeyBindings();
 		
@@ -96,15 +119,10 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 			}
 		});
 		
-		//getDesktopPane().getDesktopManager()
-		
-		//((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().addMouseListener(this);
-		//actions = (MouseMotionListener[])((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).getNorthPane().getListeners(MouseMotionListener.class);
-		
 		// Strip off
 		setRootPaneCheckingEnabled(false);
 		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).setNorthPane(null);
-		this.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+		this.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
 		
 		// Map tools
 		mapPanel = new JPanel(new GridLayout(1,3));
@@ -125,6 +143,8 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
         moveHandler.setFont(new Font("Arial", Font.BOLD, 9));
         moveHandler.setForeground(new Color(200, 200, 200));
         moveHandler.addMouseListener(this);
+        moveHandler.addMouseListener(mml);
+        moveHandler.addMouseMotionListener(mml);
 		actions = moveHandler.getListeners(MouseMotionListener.class);
         mapPanel.add(moveHandler);
         
@@ -135,20 +155,21 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
         
         JLabel minimize = new JLabel(new ImageIcon("images/window/minimize.png"));
         minimize.addMouseListener(new MouseAdapter() {  
+        	
 		    public void mouseReleased(MouseEvent e) { 
 		    	try {
 		    		mapFrame.setIcon(true);
 				} catch (PropertyVetoException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-		    	System.out.println("Minimizing");
 		    }
+		    
         });
         mapToolsPanel.add(minimize);
         
         final JLabel maximize = new JLabel(new ImageIcon("images/window/maximize.png"));
         maximize.addMouseListener(new MouseAdapter() {  
+        	
 		    public void mouseReleased(MouseEvent e) { 
 		    	try {
 		    		if(maximized) {
@@ -161,55 +182,50 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		    			maximize.setIcon(new ImageIcon("images/window/restore.png"));
 		    		}
 				} catch (PropertyVetoException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-		    	System.out.println("Maximizing");
 		    }
+		    
         });
         mapToolsPanel.add(maximize);
         
         JLabel close = new JLabel(new ImageIcon("images/window/close.png"));
         close.addMouseListener(new MouseAdapter() {  
+        	
 		    public void mouseReleased(MouseEvent e) { 
+		    	
 		    	try {
 		    		mapFrame.setClosed(true);
 				} catch (PropertyVetoException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-		    	System.out.println("Closing");
 		    }
+		    
         });
         mapToolsPanel.add(close);
-        
         mapPanel.add(mapToolsPanel);
         
-
         // Create the masterpanel for aligning
 	    masterPanel = new JPanel(new BorderLayout());
 	    masterPanel.add(mapPanel, BorderLayout.NORTH);
 	    masterPanel.add(chartPanel, BorderLayout.SOUTH);
 	    masterPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
-	    //this.getContentPane().add(masterPanel);
         
 	    this.setContentPane(masterPanel);
-
 	    repaintMapWindow();
 	}
 
+	/**
+	 * Function for repainting the mapframe after e.g. resize
+	 */
 	public void repaintMapWindow() {
-		
-		System.out.println("Repainting: " + mapFrame.getSize().width + " og " + mapFrame.getSize().height);
-		
+				
 		width = mapFrame.getSize().width;
 		int innerHeight = mapFrame.getSize().height - moveHandlerHeight - chartPanelOffset;
 		height = mapFrame.getSize().height;
-		
-		//System.out.println("WHAT? "+ innerHeight +" - "+ chartPanelOffset +" - "+ moveHandlerHeight);
-		
+				
 		if(locked)
-			innerHeight = mapFrame.getSize().height - 4; // 1 for border
+			innerHeight = mapFrame.getSize().height - 4; // 4 for border
 		
 		// And finally set the size and repaint it
 		chartPanel.setSize(width, innerHeight);
@@ -218,62 +234,38 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		this.revalidate();
 		this.repaint();
 
-		//((javax.swing.plaf.basic.BasicInternalFrameUI) this.getUI()).getNorthPane().addMouseListener(this);
-		//actions = (MouseMotionListener[]) ((javax.swing.plaf.basic.BasicInternalFrameUI) this.getUI()).getNorthPane()
-		//		.getListeners(MouseMotionListener.class);
-
 	}
 	
+	/**
+	 * Function for initializing the glasspane - david help
+	 */
 	private void initGlassPane() {
 		glassPanel = (JPanel) getGlassPane();
 		glassPanel.setLayout(null);
 		glassPanel.setVisible(false);
 	}
 
+	/**
+	 * Function for initializing the loading animation
+	 */
 	private void initLoadingPane() {
 		loadingPanel = (JPanel) getGlassPane();
 		loadingPanel.setLayout(null);
 		loadingPanel.setVisible(false);
 	}
 	
+	/**
+	 * Function for getting the id of the map frame
+	 * @return id id of the map frame
+	 */
 	public int getId() {
 		return id;
 	}
 	
+	/**
+	 * Function for locking/unlocking the map frame
+	 */
 	public void lockUnlockWindow(){
-		/*
-		if (locked){
-//			for (int i = 0; i < actions.length; i++)
-//				northPanel.addMouseMotionListener( actions[i] );
-=======
-
-	public void lockUnlockWindow() {
-		if (locked) {
-			// for (int i = 0; i < actions.length; i++)
-			// northPanel.addMouseMotionListener( actions[i] );
->>>>>>> 679ae7c2f498c106be433b77b59033967a6985dd
-			this.setResizable(true);
-			setRootPaneCheckingEnabled(true);
-			this.updateUI();
-			((javax.swing.plaf.basic.BasicInternalFrameUI) this.getUI()).getNorthPane().addMouseListener(this);
-
-			// System.out.println(northPanel.getMouseListeners().length);
-
-			locked = false;
-		} else {
-
-			// for (int i = 0; i < actions.length; i++)
-			// northPanel.removeMouseMotionListener( actions[i] );
-
-			this.setResizable(false);
-			setRootPaneCheckingEnabled(false);
-			((javax.swing.plaf.basic.BasicInternalFrameUI) this.getUI()).setNorthPane(null);
-			this.setBorder(null);
-			// this.updateUI();
-			// this.updateUI();
-			locked = true;
-		}
-		*/
 		
 		if(locked) {
 			
@@ -289,32 +281,53 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 			
 		}
 		
-		
 		repaintMapWindow();
 	}
 
+	/**
+	 * Function for setting the map frame always on top
+	 */
 	public void alwaysFront() {
+		
 		if (alwaysInFront) {
 			alwaysInFront = false;
 		} else {
 			alwaysInFront = true;
 		}
+		
 		mainFrame.getDesktop().getManager().addToFront(id, this);
+		
 	}
 
+	/**
+	 * Function for getting the status of map frame in terms of locked/unlocked
+	 * @return
+	 */
 	public boolean isLocked() {
 		return locked;
 	}
 
+	/**
+	 * Function for getting the status of map frame in terms of in front
+	 * @return
+	 */
 	public boolean isInFront() {
 		return alwaysInFront;
 	}
 
+	/**
+	 * Function for getting the chartpanel(map) of the map frame
+	 * @return
+	 */
 	public ChartPanel getChartPanel() {
 		return chartPanel;
 	}
 
+	/**
+	 * Function for setting the key bindings for the map frame
+	 */
 	private void makeKeyBindings() {
+		
 		JPanel content = (JPanel) getContentPane();
 		InputMap inputMap = content.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 
@@ -380,31 +393,46 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 
 	}
 	
+	/**
+	 * Function for renaming the map frame
+	 */
 	public void rename(){
+		
 		String title =
 	        JOptionPane.showInputDialog(this, "Enter a new title:", this.getTitle());
+		
 		if (title != null){
+			
 			this.setTitle(title);
 			mainFrame.renameMapWindow(this);
 			moveHandler.setText(title);
 
 		}
+		
 	}
 
-	
-	
+	/**
+	 * Function for getting the glassPanel of the map frame
+	 * @return glassPanel the glassPanel of the map frame
+	 */
 	public JPanel getGlassPanel() {
 		return glassPanel;
 	}
 
+	/**
+	 * Function for getting the loadingPanel of the map frame
+	 * @return loadingPanel the loadingPanel of the map frame
+	 */
 	public JPanel getLoadingPanel() {
 		return loadingPanel;
 	}
 	
+	/**
+	 * Function for setting the title of the map frame when double-clicking on the title
+	 */
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		if (arg0.getClickCount() == 1){
+		if (arg0.getClickCount() == 2){
 			rename();
 		}
 	}

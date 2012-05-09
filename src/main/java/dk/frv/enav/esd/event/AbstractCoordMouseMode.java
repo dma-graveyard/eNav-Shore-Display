@@ -107,7 +107,7 @@ public abstract class AbstractCoordMouseMode extends AbstractMouseMode implement
             if (e.getSource() instanceof MapBean) {
                 llp = ((MapBean) e.getSource()).getProjection().inverse(x, y);
                 for (IMapCoordListener listener : coordListeners) {
-					listener.recieveCoord(llp);
+					listener.receiveCoord(llp);
 				}
             }
         }
