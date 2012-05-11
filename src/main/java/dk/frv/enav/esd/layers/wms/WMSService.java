@@ -124,7 +124,7 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 			wmsList.clear();
 			//wmsList.add(new CenterRaster(55.6760968, 12.568337, 445, 472, new ImageIcon(url)));
 			ImageIcon wmsImg = new ImageIcon(url);
-			
+//			wmsImg.setDescription("WMS image");
 			if (wmsImg.getIconHeight() == -1 || wmsImg.getIconWidth() ==-1){
 				System.out.println("no WMS");
 				wmsList.add(new CenterRaster(this.wmsullat, this.wmsullon, this.wmsWidth, this.wmsHeight, new ImageIcon("images/noWMSAvailable.jpg")));

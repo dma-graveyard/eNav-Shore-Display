@@ -314,7 +314,7 @@ public class ESD {
 		// Set default exception handler
 		Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
 
-		VERSION = "2.0 Sprint 2";
+		VERSION = "3.0 Sprint 3";
 		LOG.info("Starting ESD version " + VERSION);
 		LOG.info("Copyright (C) 2012 Danish Maritime Safety Administration");
 		LOG.info("This program comes with ABSOLUTELY NO WARRANTY.");
