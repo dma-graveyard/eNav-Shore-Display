@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Danish Maritime Authority. All rights reserved.
+ * Copyright 2012 Danish Maritime Authority. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -11,7 +11,7 @@
  * this list of conditions and the following disclaimer in the documentation and/or
  * other materials provided with the distribution.
  * 
- * THIS SOFTWARE IS PROVIDED BY Danish Maritime Authority ``AS IS'' 
+ * THIS SOFTWARE IS PROVIDED BY Danish Maritime Safety Administration ``AS IS'' 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
  * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> OR CONTRIBUTORS BE LIABLE FOR
@@ -56,16 +56,15 @@ import dk.frv.enav.ins.common.util.Calculator;
 import dk.frv.enav.ins.gps.GnssTime;
 import dk.frv.enav.ins.route.ActiveRoute;
 
-
 /**
  * Serializable class to store MSI information
  */
 public class MsiStore implements Serializable {
 	// TODO: If class changed, generate a new serial version ID
 	private static final long serialVersionUID = -5653288769636767014L;
-	private static final Logger LOG = Logger.getLogger(MsiStore.class);	
+	private static final Logger LOG = Logger.getLogger(MsiStore.class);
 	private static final String msiFile = ".msi";
-	
+
 	private Map<Integer, MsiMessage> messages = new TreeMap<Integer, MsiMessage>();
 	private int lastMessage = 0;
 	private Set<Integer> acknowledged = new HashSet<Integer>();
@@ -73,11 +72,19 @@ public class MsiStore implements Serializable {
 	private Set<Integer> visibleRoute = new HashSet<Integer>();
 	private Set<Integer> relevant = new HashSet<Integer>();
 	private Set<Integer> allVisible = new HashSet<Integer>();
-	
+
+	/**
+	 * Constructor
+	 */
 	public MsiStore() {
 
 	}
-	
+
+	/**
+	 * Boolean to tell us if there's valid unacknowledged messages
+	 * 
+	 * @return
+	 */
 	public synchronized boolean hasValidUnacknowledged() {
 		Date now = GnssTime.getInstance().getDate();
 		for (Integer msgId : messages.keySet()) {
@@ -91,29 +98,41 @@ public class MsiStore implements Serializable {
 		}
 		return false;
 	}
-	
+
+	/**
+	 * Boolean to tell us if there's valid unacknowledged messages currently
+	 * filtered
+	 * 
+	 * @return
+	 */
 	public synchronized boolean hasValidVisibleUnacknowledged() {
 		Date now = GnssTime.getInstance().getDate();
 		for (Integer msgId : messages.keySet()) {
 			MsiMessage msg = messages.get(msgId);
-			if(msg.getValidFrom() != null && msg.getValidFrom().after(now)) {
+			if (msg.getValidFrom() != null && msg.getValidFrom().after(now)) {
 				continue;
 			}
-			
-			if(!acknowledged.contains(msgId) && (visibleGPS.contains(msgId) || visibleRoute.contains(msgId))) {
+
+			if (!acknowledged.contains(msgId) && (visibleGPS.contains(msgId) || visibleRoute.contains(msgId))) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
+	/**
+	 * Update the store of messages
+	 * 
+	 * @param newMessages
+	 * @param calculationPosition
+	 */
 	public synchronized void update(List<MsiMessage> newMessages, GeoLocation calculationPosition) {
 		for (MsiMessage newMessage : newMessages) {
 			// Update lastMessage
 			if (newMessage.getId() > lastMessage) {
-				lastMessage = newMessage.getId(); 
+				lastMessage = newMessage.getId();
 			}
-			// Remove acknowledge if existing message  
+			// Remove acknowledge if existing message
 			acknowledged.remove(newMessage.getMessageId());
 			if (newMessage.getDeleted() != null) {
 				// Remove message
@@ -126,10 +145,13 @@ public class MsiStore implements Serializable {
 		visibleGPS.clear();
 		saveToFile();
 	}
-	
+
 	/**
-	 * Sets msi warnings visible if they are in the radius of the given location (ship location)
-	 * @param calculationPosition Current location of own ship
+	 * Sets msi warnings visible if they are in the radius of the given location
+	 * (ship location)
+	 * 
+	 * @param calculationPosition
+	 *            Current location of own ship
 	 */
 	public synchronized void setVisibility(GeoLocation calculationPosition) {
 		visibleGPS.clear();
@@ -137,13 +159,13 @@ public class MsiStore implements Serializable {
 		while (it.hasNext()) {
 			Map.Entry<Integer, MsiMessage> entry = it.next();
 			MsiMessage msiMessage = entry.getValue();
-			
+
 			// TODO Handle general area. For now they are show in list
 			if (!msiMessage.hasLocation()) {
 				visibleGPS.add(msiMessage.getMessageId());
 				continue;
-			}			
-			
+			}
+
 			List<MsiPoint> msiPoints = msiMessage.getLocation().getPoints();
 			Double distance = Double.MAX_VALUE;
 			for (MsiPoint msiPoint : msiPoints) {
@@ -151,26 +173,32 @@ public class MsiStore implements Serializable {
 				double currentDistance = Calculator.range(calculationPosition, msiLocation, Heading.GC);
 				distance = Math.min(currentDistance, distance);
 			}
-//			if(distance <= EeINS.getSettings().getEnavSettings().getMsiRelevanceFromOwnShipRange()) {
-			if(distance <= 40) {
+			// if(distance <=
+			// EeINS.getSettings().getEnavSettings().getMsiRelevanceFromOwnShipRange())
+			// {
+			if (distance <= 40) {
 				visibleGPS.add(msiMessage.getMessageId());
 			}
 		}
 		LOG.debug("Relevance calculation performed at:" + calculationPosition.getLatitude() + ", "
 				+ calculationPosition.getLongitude() + " yielded " + visibleGPS.size() + " visible warnings");
 	}
-	
+
 	/**
-	 * Sets msi warnings visible if they are within a rectangle given by the routes' waypoints.
+	 * Sets msi warnings visible if they are within a rectangle given by the
+	 * routes' waypoints.
 	 */
 	public synchronized void setVisibility() {
 		return;
 	}
-	
+
 	/**
-	 * Sets relevance for MSI warnings in proximity of an active route. Currently implemented with a bounding
-	 * box method, but later should be implemented with calculation of cross track distance from route to point
-	 * @param route Active route
+	 * Sets relevance for MSI warnings in proximity of an active route.
+	 * Currently implemented with a bounding box method, but later should be
+	 * implemented with calculation of cross track distance from route to point
+	 * 
+	 * @param route
+	 *            Active route
 	 */
 	public synchronized void setRelevance(ActiveRoute route) {
 		relevant.clear();
@@ -178,31 +206,38 @@ public class MsiStore implements Serializable {
 		while (it.hasNext()) {
 			Map.Entry<Integer, MsiMessage> entry = it.next();
 			MsiMessage msiMessage = entry.getValue();
-			
+
 			// TODO Handle general area. For now they are show in list
 			if (!msiMessage.hasLocation()) {
 				relevant.add(msiMessage.getMessageId());
 				continue;
 			}
-			
+
 			boolean contained = false;
 			List<MsiPoint> msiPoints = msiMessage.getLocation().getPoints();
 			for (MsiPoint msiPoint : msiPoints) {
 				GeoLocation msiLocation = new GeoLocation(msiPoint.getLatitude(), msiPoint.getLongitude());
-				if(route.isPointWithingBBox(msiLocation)) {
+				if (route.isPointWithingBBox(msiLocation)) {
 					contained = true;
 				}
 			}
-			if(contained) {
+			if (contained) {
 				relevant.add(msiMessage.getMessageId());
 			}
 		}
 	}
-	
+
+	/**
+	 * Clear the relevance variable
+	 */
 	public synchronized void clearRelevance() {
 		relevant.clear();
 	}
-	
+
+	/**
+	 * Remove unvalid messages
+	 * @return
+	 */
 	public synchronized boolean cleanup() {
 		List<Integer> doDelete = new ArrayList<Integer>();
 		Date now = GnssTime.getInstance().getDate();
@@ -218,16 +253,27 @@ public class MsiStore implements Serializable {
 		}
 		return (doDelete.size() > 0);
 	}
-	
+
+	/**
+	 * Delete a msi message
+	 * @param msiMessage
+	 */
 	public synchronized void deleteMessage(MsiMessage msiMessage) {
 		acknowledged.remove(msiMessage.getMessageId());
-		messages.remove(msiMessage.getMessageId());		
+		messages.remove(msiMessage.getMessageId());
 	}
-	
+
+	/**
+	 * Get last message
+	 * @return
+	 */
 	public synchronized int getLastMessage() {
 		return lastMessage;
 	}
-	
+
+	/**
+	 * Save the msi messages to a file
+	 */
 	public synchronized void saveToFile() {
 		try {
 			FileOutputStream fileOut = new FileOutputStream(msiFile);
@@ -239,7 +285,11 @@ public class MsiStore implements Serializable {
 			LOG.error("Failed to save MSI file: " + e.getMessage());
 		}
 	}
-	
+
+	/**
+	 * Load a msi message from file
+	 * @return
+	 */
 	public static MsiStore loadFromFile() {
 		try {
 			FileInputStream fileIn = new FileInputStream(msiFile);
@@ -257,22 +307,38 @@ public class MsiStore implements Serializable {
 		}
 		return new MsiStore();
 	}
-	
+
+	/**
+	 * Get the acknowledged messages
+	 * @return
+	 */
 	public synchronized Set<Integer> getAcknowledged() {
 		return acknowledged;
 	}
-	
+
+	/**
+	 * Get the visible messages
+	 * @return
+	 */
 	public synchronized Set<Integer> getVisible() {
 		allVisible.clear();
 		allVisible.addAll(visibleGPS);
 		allVisible.addAll(visibleRoute);
 		return allVisible;
 	}
-	
+
+	/**
+	 * Get the relevant messages
+	 * @return
+	 */
 	public synchronized Set<Integer> getRelevant() {
 		return relevant;
 	}
-	
+
+	/**
+	 * Get all the messages
+	 * @return
+	 */
 	public synchronized Map<Integer, MsiMessage> getMessages() {
 		return messages;
 	}

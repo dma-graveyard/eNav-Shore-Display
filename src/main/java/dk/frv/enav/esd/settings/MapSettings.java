@@ -51,6 +51,22 @@ public class MapSettings implements Serializable {
 	public MapSettings() {
 	}
 
+	public LatLonPoint getCenter() {
+		return center;
+	}
+
+	public int getMaxScale() {
+		return maxScale;
+	}
+
+	public float getScale() {
+		return scale;
+	}
+
+	/**
+	 * Read the properties element and set the internal variables
+	 * @param props
+	 */
 	public void readProperties(Properties props) {
 		center.setLatitude(PropUtils.doubleFromProperties(props, PREFIX + "center_lat", center.getLatitude()));
 		center.setLongitude(PropUtils.doubleFromProperties(props, PREFIX + "center_lon", center.getLongitude()));
@@ -58,6 +74,19 @@ public class MapSettings implements Serializable {
 		maxScale = PropUtils.intFromProperties(props, PREFIX + "maxScale", maxScale);
 	}
 
+	public void setCenter(LatLonPoint center) {
+		this.center = center;
+	}
+
+	public void setMaxScale(int maxScale) {
+		this.maxScale = maxScale;
+	}
+	
+	/**
+	 * Set the properties to the value from the internal, usually called
+	 * when saving settings to file
+	 * @param props
+	 */
 	public void setProperties(Properties props) {
 		props.put(PREFIX + "center_lat", Double.toString(center.getLatitude()));
 		props.put(PREFIX + "center_lon", Double.toString(center.getLongitude()));
@@ -65,29 +94,9 @@ public class MapSettings implements Serializable {
 		props.put(PREFIX + "maxScale", Integer.toString(maxScale));
 
 	}
-
-	public LatLonPoint getCenter() {
-		return center;
-	}
-
-	public void setCenter(LatLonPoint center) {
-		this.center = center;
-	}
-
-	public float getScale() {
-		return scale;
-	}
-
+	
 	public void setScale(float scale) {
 		this.scale = scale;
-	}
-	
-	public int getMaxScale() {
-		return maxScale;
-	}
-	
-	public void setMaxScale(int maxScale) {
-		this.maxScale = maxScale;
 	}
 	
 }

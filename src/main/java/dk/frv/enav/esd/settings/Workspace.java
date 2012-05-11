@@ -54,92 +54,174 @@ public class Workspace implements Serializable {
 	private List<String> name = new ArrayList<String>();
 	private List<Dimension> size = new ArrayList<Dimension>();
 	private List<Point> position = new ArrayList<Point>();
-//	private Point position = new Point(10, 10);
+	// private Point position = new Point(10, 10);
 	private List<Boolean> locked = new ArrayList<Boolean>();
 	private List<Boolean> alwaysInFront = new ArrayList<Boolean>();
 	private List<LatLonPoint> center = new ArrayList<LatLonPoint>();
-//	private LatLonPoint center = new LatLonPoint.Double(56, 11);
+	// private LatLonPoint center = new LatLonPoint.Double(56, 11);
 	private List<Float> scale = new ArrayList<Float>();
 	private List<Boolean> maximized = new ArrayList<Boolean>();
 	private Point toolbarPosition = new Point();
 	private Point notificationAreaPosition = new Point();
 	private Point statusPosition = new Point();
-	
-
 
 	public Workspace() {
 	}
 
+	public List<Boolean> getAlwaysInFront() {
+		return alwaysInFront;
+	}
+
+	public List<LatLonPoint> getCenter() {
+		return center;
+	}
+
+	public List<String> getName() {
+		return name;
+	}
+
+	public Point getNotificationAreaPosition() {
+		return notificationAreaPosition;
+	}
+
+	public List<Point> getPosition() {
+		return position;
+	}
+
+	public List<Float> getScale() {
+		return scale;
+	}
+
+	public List<Dimension> getSize() {
+		return size;
+	}
+
+	public Point getStatusPosition() {
+		return statusPosition;
+	}
+
+	public Point getToolbarPosition() {
+		return toolbarPosition;
+	}
+
+	public List<Boolean> isLocked() {
+		return locked;
+	}
+
+	public List<Boolean> isMaximized() {
+		return maximized;
+	}
+
+	public boolean isValidWorkspace() {
+		return validWorkspace;
+	}
+
+	/**
+	 * Read the properties element and set the internal variables
+	 * 
+	 * @param props
+	 */
 	public void readProperties(Properties props) {
-		
+
 		try {
-			Collections.addAll(name, (props.getProperty(PREFIX + "name").split("//"))); 
+			Collections.addAll(name, (props.getProperty(PREFIX + "name").split("//")));
 
 			String[] w = props.getProperty(PREFIX + "size_w").split("//");
 			String[] h = props.getProperty(PREFIX + "size_h").split("//");
-			
+
 			for (int i = 0; i < w.length; i++) {
 				size.add(new Dimension((int) Double.parseDouble(w[i]), (int) Double.parseDouble(h[i])));
 			}
-		
+
 			String[] x = props.getProperty(PREFIX + "position_x").split("//");
 			String[] y = props.getProperty(PREFIX + "position_y").split("//");
-			
+
 			for (int i = 0; i < x.length; i++) {
 				position.add(new Point((int) Double.parseDouble(x[i]), (int) Double.parseDouble(y[i])));
 			}
-			
+
 			String[] lockedInput = props.getProperty(PREFIX + "locked").split("//");
 			for (int i = 0; i < lockedInput.length; i++) {
-				locked.add(   Boolean.parseBoolean(lockedInput[i]) );
+				locked.add(Boolean.parseBoolean(lockedInput[i]));
 			}
-			
+
 			String[] maximizedInput = props.getProperty(PREFIX + "maximized").split("//");
 			for (int i = 0; i < maximizedInput.length; i++) {
-				maximized.add(   Boolean.parseBoolean(maximizedInput[i]) );
+				maximized.add(Boolean.parseBoolean(maximizedInput[i]));
 			}
-			
-			
+
 			String[] alwaysInFrontInput = props.getProperty(PREFIX + "alwaysInFront").split("//");
 			for (int i = 0; i < alwaysInFrontInput.length; i++) {
-				alwaysInFront.add(   Boolean.parseBoolean(alwaysInFrontInput[i]));
+				alwaysInFront.add(Boolean.parseBoolean(alwaysInFrontInput[i]));
 			}
-			
+
 			String[] center_lat = props.getProperty(PREFIX + "center_lat").split("//");
 			String[] center_lon = props.getProperty(PREFIX + "center_lon").split("//");
 
 			for (int i = 0; i < w.length; i++) {
 				center.add(new LatLonPoint.Double(Double.parseDouble(center_lat[i]), Double.parseDouble(center_lon[i])));
 			}
-			
+
 			String[] scaleInput = props.getProperty(PREFIX + "scale").split("//");
 			for (int i = 0; i < scaleInput.length; i++) {
-				scale.add(   Float.parseFloat(scaleInput[i]) );
+				scale.add(Float.parseFloat(scaleInput[i]));
 			}
-			
-			
+
 			double x_pos = PropUtils.doubleFromProperties(props, PREFIX + "toolbar_pos_x", toolbarPosition.getX());
 			double y_pos = PropUtils.doubleFromProperties(props, PREFIX + "toolbar_pos_y", toolbarPosition.getY());
 			toolbarPosition.setLocation(x_pos, y_pos);
-			
-			x_pos = PropUtils.doubleFromProperties(props, PREFIX + "notification_pos_x", notificationAreaPosition.getX());
-			y_pos = PropUtils.doubleFromProperties(props, PREFIX + "notification_pos_y", notificationAreaPosition.getY());
+
+			x_pos = PropUtils.doubleFromProperties(props, PREFIX + "notification_pos_x",
+					notificationAreaPosition.getX());
+			y_pos = PropUtils.doubleFromProperties(props, PREFIX + "notification_pos_y",
+					notificationAreaPosition.getY());
 			notificationAreaPosition.setLocation(x_pos, y_pos);
-			
-			
+
 			x_pos = PropUtils.doubleFromProperties(props, PREFIX + "status_pos_x", statusPosition.getX());
 			y_pos = PropUtils.doubleFromProperties(props, PREFIX + "status_pos_y", statusPosition.getY());
 			statusPosition.setLocation(x_pos, y_pos);
-			
-			
+
 			validWorkspace = true;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
-		
-		
+
 	}
 
+	public void setAlwaysInFront(List<Boolean> alwaysInFront) {
+		this.alwaysInFront = alwaysInFront;
+	}
+
+	public void setCenter(List<LatLonPoint> center) {
+		this.center = center;
+	}
+
+	public void setLocked(List<Boolean> locked) {
+		this.locked = locked;
+	}
+
+	public void setMaximized(List<Boolean> maximized) {
+		this.maximized = maximized;
+	}
+
+	public void setName(List<String> name) {
+		this.name = name;
+	}
+
+	public void setNotificationAreaPosition(Point notificationAreaPosition) {
+		this.notificationAreaPosition = notificationAreaPosition;
+	}
+
+	public void setPosition(List<Point> position) {
+		this.position = position;
+	}
+
+	/**
+	 * Set the properties to the value from the internal, usually called when
+	 * saving settings to file
+	 * 
+	 * @param props
+	 */
 	public void setProperties(Properties props, List<JMapFrame> mapWindows) {
 		String name = "";
 		String size_h = "";
@@ -152,7 +234,7 @@ public class Workspace implements Serializable {
 		String scale = "";
 		String alwaysInFront = "";
 		String maximized = "";
-		
+
 		for (int i = 0; i < mapWindows.size(); i++) {
 			name = name + mapWindows.get(i).getTitle() + "//";
 			size_h = size_h + mapWindows.get(i).getSize().getHeight() + "//";
@@ -165,7 +247,7 @@ public class Workspace implements Serializable {
 			center_lon = center_lon + mapWindows.get(i).getChartPanel().getMap().getCenter().getX() + "//";
 			scale = scale + mapWindows.get(i).getChartPanel().getMap().getScale() + "//";
 			alwaysInFront = alwaysInFront + mapWindows.get(i).isInFront() + "//";
-			
+
 		}
 		props.put(PREFIX + "name", name);
 		props.put(PREFIX + "size_h", size_h);
@@ -181,118 +263,33 @@ public class Workspace implements Serializable {
 
 		props.put(PREFIX + "toolbar_pos_x", Double.toString(toolbarPosition.getX()));
 		props.put(PREFIX + "toolbar_pos_y", Double.toString(toolbarPosition.getY()));
-		
+
 		props.put(PREFIX + "notification_pos_x", Double.toString(notificationAreaPosition.getX()));
 		props.put(PREFIX + "notification_pos_y", Double.toString(notificationAreaPosition.getY()));
-		
+
 		props.put(PREFIX + "status_pos_x", Double.toString(statusPosition.getX()));
 		props.put(PREFIX + "status_pos_y", Double.toString(statusPosition.getY()));
-		
-	}
 
-	
-	
-	public Point getToolbarPosition() {
-		return toolbarPosition;
-	}
-
-	public void setToolbarPosition(Point toolbarPosition) {
-		this.toolbarPosition = toolbarPosition;
-	}
-
-	public Point getNotificationAreaPosition() {
-		return notificationAreaPosition;
-	}
-
-	public void setNotificationAreaPosition(Point notificationAreaPosition) {
-		this.notificationAreaPosition = notificationAreaPosition;
-	}
-
-	public Point getStatusPosition() {
-		return statusPosition;
-	}
-
-	public void setStatusPosition(Point statusPosition) {
-		this.statusPosition = statusPosition;
-	}
-
-	public boolean isValidWorkspace() {
-		return validWorkspace;
-	}
-
-	public void setValidWorkspace(boolean validWorkspace) {
-		this.validWorkspace = validWorkspace;
-	}
-
-	public List<Boolean> getAlwaysInFront() {
-		return alwaysInFront;
-	}
-
-	public void setAlwaysInFront(List<Boolean> alwaysInFront) {
-		this.alwaysInFront = alwaysInFront;
-	}
-
-	public List<String> getName() {
-		return name;
-	}
-
-	public void setName(List<String> name) {
-		this.name = name;
-	}
-
-	public List<Dimension> getSize() {
-		return size;
-	}
-
-	public void setSize(List<Dimension> size) {
-		this.size = size;
-	}
-
-	public List<Point> getPosition() {
-		return position;
-	}
-
-	public void setPosition(List<Point> position) {
-		this.position = position;
-	}
-
-	public List<Boolean> isLocked() {
-		return locked;
-	}
-
-	public void setLocked(List<Boolean> locked) {
-		this.locked = locked;
-	}
-	
-	public List<Boolean> isMaximized() {
-		return maximized;
-	}
-
-	public void setMaximized(List<Boolean> maximized) {
-		this.maximized = maximized;
-	}
-
-	public List<LatLonPoint> getCenter() {
-		return center;
-	}
-
-	public void setCenter(List<LatLonPoint> center) {
-		this.center = center;
-	}
-
-	public List<Float> getScale() {
-		return scale;
 	}
 
 	public void setScale(List<Float> scale) {
 		this.scale = scale;
 	}
 
+	public void setSize(List<Dimension> size) {
+		this.size = size;
+	}
 
+	public void setStatusPosition(Point statusPosition) {
+		this.statusPosition = statusPosition;
+	}
 
-	
+	public void setToolbarPosition(Point toolbarPosition) {
+		this.toolbarPosition = toolbarPosition;
+	}
 
-	
+	public void setValidWorkspace(boolean validWorkspace) {
+		this.validWorkspace = validWorkspace;
+	}
 
-	
 }

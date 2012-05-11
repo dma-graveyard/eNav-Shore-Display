@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Danish Maritime Authority. All rights reserved.
+ * Copyright 2012 Danish Maritime Authority. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -11,7 +11,7 @@
  * this list of conditions and the following disclaimer in the documentation and/or
  * other materials provided with the distribution.
  * 
- * THIS SOFTWARE IS PROVIDED BY Danish Maritime Authority ``AS IS'' 
+ * THIS SOFTWARE IS PROVIDED BY Danish Maritime Safety Administration ``AS IS'' 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
  * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> OR CONTRIBUTORS BE LIABLE FOR
@@ -53,7 +53,10 @@ import dk.frv.enav.esd.gui.JMapFrame;
 import dk.frv.enav.esd.msi.MsiHandler;
 import dk.frv.enav.ins.gps.GnssTime;
 
-
+/**
+ * Layer handling all msi messages
+ *
+ */
 public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener {	
 	private static final long serialVersionUID = 1L;
 
@@ -66,10 +69,16 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 	private OMGraphic closest = null;
 	private MsiInfoPanel msiInfoPanel = null;	
 	
+	/**
+	 * Constructor for the layer
+	 */
 	public MsiLayer() {
 		
 	}
-	
+
+	/**
+	 * Call an update on messages if something has changed
+	 */
 	public void doUpdate() {
 		graphics.clear();
 		Date now = GnssTime.getInstance().getDate();
@@ -102,24 +111,6 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 	
 	
 	@Override
-	public synchronized OMGraphicList prepare() {
-
-		graphics.project(getProjection());
-		return graphics;
-	}
-	
-	public void zoomTo(MsiMessage msiMessage) {		
-		if (!msiMessage.hasLocation()) {
-			return;
-		}
-		
-		MsiLocation msiLocation = msiMessage.getLocation();
-		GeoLocation center = msiLocation.getCenter();
-		mapBean.setCenter(center.getLatitude(), center.getLongitude());
-		mapBean.setScale(80000);		
-	}
-	
-	@Override
 	public void findAndInit(Object obj) {
 		if (obj instanceof MsiHandler) {
 			msiHandler = (MsiHandler)obj;
@@ -133,7 +124,7 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 			jMapFrame.getGlassPanel().add(msiInfoPanel);
 		}		
 	}
-
+	
 	public MapMouseListener getMapMouseListener() {
         return this;
     }
@@ -154,7 +145,7 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean mouseDragged(MouseEvent arg0) {
 		// TODO Auto-generated method stub
@@ -227,6 +218,28 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 	public boolean mouseReleased(MouseEvent e) {
 
 		return false;
+	}
+
+	@Override
+	public synchronized OMGraphicList prepare() {
+
+		graphics.project(getProjection());
+		return graphics;
+	}
+
+	/**
+	 * Move and center the map around a specific msi message
+	 * @param msiMessage
+	 */
+	public void zoomTo(MsiMessage msiMessage) {		
+		if (!msiMessage.hasLocation()) {
+			return;
+		}
+		
+		MsiLocation msiLocation = msiMessage.getLocation();
+		GeoLocation center = msiLocation.getCenter();
+		mapBean.setCenter(center.getLatitude(), center.getLongitude());
+		mapBean.setScale(80000);		
 	}	
 
 }

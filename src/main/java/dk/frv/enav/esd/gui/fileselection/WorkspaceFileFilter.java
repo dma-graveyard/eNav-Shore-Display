@@ -37,7 +37,6 @@ import javax.swing.filechooser.FileFilter;
  * Workspace filter used to filter what files are displayed in the JFileChooser,
  * we only display directors or .workspace files
  * 
- * @author David
  * 
  */
 public class WorkspaceFileFilter extends FileFilter {

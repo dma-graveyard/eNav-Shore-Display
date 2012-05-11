@@ -77,6 +77,9 @@ public class Settings implements Serializable {
 		this.settingsFile = settingsFile;
 	}
 		
+	/**
+	 * Load the settings files as well as the workspace files
+	 */
 	public void loadFromFile() {
 		// Open properties file
 		Properties props = new Properties();
@@ -108,6 +111,12 @@ public class Settings implements Serializable {
 		}
 	}
 
+	/**
+	 * Load a workspace
+	 * @param parent
+	 * @param filename
+	 * @return
+	 */
 	public Workspace loadWorkspace(String parent, String filename){
 		Properties workspaceProp = new Properties();
 		if (!PropUtils.loadProperties(workspaceProp, parent, filename)) {
@@ -121,6 +130,9 @@ public class Settings implements Serializable {
 		return workspace;
 	}
 	
+	/**
+	 * Save the settings to the files
+	 */
 	public void saveToFile() {
 		Properties props = new Properties();
 //		aisSettings.setProperties(props);
@@ -149,6 +161,11 @@ public class Settings implements Serializable {
 	}
 	
 	
+	/**
+	 * Save the current workspace
+	 * @param mapWindows
+	 * @param filename
+	 */
 	public void saveCurrentWorkspace(List<JMapFrame> mapWindows, String filename){
 		Properties props = new Properties();
 		workspace.setProperties(props, mapWindows);

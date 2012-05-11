@@ -1,34 +1,49 @@
+/*
+ * Copyright 2012 Danish Maritime Authority. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *   1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ *   2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation and/or
+ * other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY Danish Maritime Safety Administration ``AS IS'' 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of Danish Maritime Authority.
+ * 
+ */
 package dk.frv.enav.esd.layers.wms;
 
-import java.awt.Container;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
-
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import com.bbn.openmap.image.ImageServerConstants;
-import com.bbn.openmap.image.WMTConstants;
 import com.bbn.openmap.omGraphics.OMGraphicList;
-import com.bbn.openmap.omGraphics.OMRaster;
-import com.bbn.openmap.plugin.WebImagePlugIn;
-import com.bbn.openmap.proj.Projection;
 import com.bbn.openmap.plugin.wms.WMSPlugIn;
+import com.bbn.openmap.proj.Projection;
 
-import dk.frv.enav.esd.ais.VesselAisHandler;
-import dk.frv.enav.esd.gui.ChartPanel;
+import dk.frv.enav.esd.ESD;
 import dk.frv.enav.ins.common.graphics.CenterRaster;
-import dk.frv.enav.ins.gui.MainFrame;
 
-// http://kortforsyningen.kms.dk/soe_enc_primar?ignoreillegallayers=TRUE&transparent=TRUE&login=StatSofart&password=114karls&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326&WIDTH=445&HEIGHT=472&LAYERS=cells&STYLES=style-id-245&TRANSPARENT=TRUE&FORMAT=image/gif&BBOX=612615.5069764,6871781.27364377,622761.062857702,6882542.40257854
-// http://kortforsyningen.kms.dk/ftopo?ignoreillegallayers=TRUE&transparent=TRUE&service=WMS&REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&LAYERS=ftk_f100&STYLES=&FORMAT=image/png&BGCOLOR=0xFFFFFF&TRANSPARENT=TRUE&SRS=EPSG:32629&BBOX=612615.5069764,6871781.27364377,622761.062857702,6882542.40257854&WIDTH=445&HEIGHT=472&ticket=5e1212b2670a2b1905d01affb02ffaa5
 
 public class WMSService extends WMSPlugIn implements ImageServerConstants {
 
 	private OMGraphicList wmsList = new OMGraphicList();
-	private String queryString = "";
+	private String wmsQuery = "";
 	private String bbox;
 	private String width;
 	private String height;
@@ -39,20 +54,25 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 	private Double deltaX = 0.0013;
 	private Double deltaY = 0.00058;
 	
+	/**
+	 * Constructor for the WMS Service - loads the WMS server from the settings file
+	 */
 	public WMSService() {
 		super();
-		setImageFormat("image/gif");
-		setLayers("cells");
-		setWmsVersion("1.1.1");
-		setStyles("style-id-246");
-		setVendorSpecificNames("EPSG");
-		setVendorSpecificValues("4326");
-//		setVendorSpecificValues("3857");
-		setQueryHeader("http://kortforsyningen.kms.dk/soe_enc_primar");
-		setTransparent("TRUE");
-		
+		wmsQuery = ESD.getSettings().getGuiSettings().getWmsQuery();
 	}
 	
+	/**
+	 * Set the position of the WMS image and what area we wish to display
+	 * @param ullon
+	 * @param ullat
+	 * @param upperLeftLon
+	 * @param upperLeftLat
+	 * @param lowerRightLon
+	 * @param lowerRightLat
+	 * @param w
+	 * @param h
+	 */
 	public void setWMSPosition(Double ullon, Double ullat, Double upperLeftLon, Double upperLeftLat, Double lowerRightLon, Double lowerRightLat, int w, int h){
 		this.wmsWidth = w;
 		this.wmsHeight = h;
@@ -68,40 +88,28 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 	}
 	
 
-	
+	/**
+	 * Get the generated WMS query
+	 * @return
+	 */
 	public String getQueryString(){	
-//		queryString = "http://kartta.liikennevirasto.fi/meriliikenne/dgds/wms_ip/merikartta?&REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&LAYERS=cells&FORMAT=image/gif&TRANSPARENT=true&SRS=EPSG:4326";
-//		queryString = queryString + "&BBOX="+bbox		
-//				+ "&WIDTH=" + width 
-//				+ "&HEIGHT=" + height;
-		
-		
-		queryString = getQueryHeader() 
-				+ "?ignoreillegallayers=TRUE" 
-				+ "&transparent=" + getTransparent()
-				+ "&login=StatSofart"
-				+ "&password=114karls"
-				+ "&VERSION=" + getWmsVersion()
-				+ "&REQUEST=GetMap"
-				+ "&SRS=" + getVendorSpecificNames() + ":" + getVendorSpecificValues()
+		String queryString = wmsQuery
 				+ "&BBOX="+bbox				
 				+ "&WIDTH=" + width 
-				+ "&HEIGHT=" + height
-				+ "&LAYERS=" + getLayers()
-				+ "&STYLES=" + getStyles() 
-				+ "&FORMAT=" + getImageFormat()
-				+ "&service=WMS"				
-				;
-
-//queryString = "http://kartta.liikennevirasto.fi/meriliikenne/dgds/wms_ip/merikartta?&REQUEST=GetMap&SERVICE=WMS&VERSION=1.1.1&LAYERS=cells&FORMAT=image/gif&TRANSPARENT=true&SRS=EPSG:4326&BBOX=16.8763,58.81432171570781,22.5013,61.60697637138628&WIDTH=256&HEIGHT=260";
+				+ "&HEIGHT=" + height;
+				
+			
+		
 //		System.out.println(queryString);
-//		this.seti
-
 		
 		return queryString;
 	}
 	
 
+	/**
+	 * After the query has been generated this completes it and returns a OMGraphiclist of the graphics
+	 * @return
+	 */
 	public OMGraphicList getWmsList() {
 		
 		java.net.URL url = null;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Danish Maritime Authority. All rights reserved.
+ * Copyright 2012 Danish Maritime Authority. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -11,7 +11,7 @@
  * this list of conditions and the following disclaimer in the documentation and/or
  * other materials provided with the distribution.
  * 
- * THIS SOFTWARE IS PROVIDED BY Danish Maritime Authority ``AS IS'' 
+ * THIS SOFTWARE IS PROVIDED BY Danish Maritime Safety Administration ``AS IS'' 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
  * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> OR CONTRIBUTORS BE LIABLE FOR
@@ -63,6 +63,10 @@ public class MsiLocationGraphic extends OMGraphicList {
 	private Rectangle hatchFillRectangle;
 	private BufferedImage hatchFill;
 	
+	/**
+	 * Constructor
+	 * @param msiMessage
+	 */
 	public MsiLocationGraphic(MsiMessage msiMessage) {
 		super();
 		this.msiMessage = msiMessage;
@@ -103,6 +107,10 @@ public class MsiLocationGraphic extends OMGraphicList {
 		}
 	}
 	
+	/**
+	 * Draw a circle MSI
+	 * @param point
+	 */
 	private void drawCircle(MsiPoint point) {
 		if (point.getRadius() < LOWER_RADIUS_LIMIT) {
 			return;
@@ -114,6 +122,9 @@ public class MsiLocationGraphic extends OMGraphicList {
 		add(radiusCircle);
 	}
 	
+	/**
+	 * Draw a msi polygon
+	 */
 	private void drawPolygon() {
 		MsiLocation msiLocation = msiMessage.getLocation();
 		// space for lat-lon points plus first lat-lon pair to close the polygon
@@ -133,6 +144,9 @@ public class MsiLocationGraphic extends OMGraphicList {
 		add(poly);
 	}
 	
+	/**
+	 * Draw msi poly line
+	 */
 	private void drawPolyline() {
 		MsiLocation msiLocation = msiMessage.getLocation();
 		double[] polyPoints = new double[msiLocation.getPoints().size() * 2];

@@ -50,12 +50,48 @@ public class GuiSettings implements Serializable {
 	private boolean fullscreen = false;
 	private boolean multipleInstancesAllowed = false;
 	private String workspace = "";
+	private String wmsQuery = "";
 
-	
+	/**
+	 * Constructor
+	 */
 	public GuiSettings() {
 
 	}
 
+	public Dimension getAppDimensions() {
+		return appDimensions;
+	}
+
+	public Point getAppLocation() {
+		return appLocation;
+	}
+
+	public String getWmsQuery() {
+		return wmsQuery;
+	}
+
+	public String getWorkspace() {
+		return workspace;
+	}
+
+	public boolean isFullscreen() {
+		return fullscreen;
+	}
+
+	public boolean isMaximized() {
+		return maximized;
+	}
+
+	public boolean isMultipleInstancesAllowed() {
+		return multipleInstancesAllowed;
+	}
+
+	
+	/**
+	 * Read the properties element and set the internal variables
+	 * @param props
+	 */
 	public void readProperties(Properties props) {
 		maximized = PropUtils.booleanFromProperties(props, PREFIX + "maximized", maximized);
 		double x = PropUtils.doubleFromProperties(props, PREFIX + "appLocation_x", appLocation.getX());
@@ -66,8 +102,34 @@ public class GuiSettings implements Serializable {
 		appDimensions.setSize(w, h);
 		fullscreen = PropUtils.booleanFromProperties(props, PREFIX + "fullscreen", fullscreen);
 		workspace = props.getProperty(PREFIX + "workspace");
+		wmsQuery = props.getProperty(PREFIX + "wmsQuery");
 	}
 
+	public void setAppDimensions(Dimension appDimensions) {
+		this.appDimensions = appDimensions;
+	}
+
+	public void setAppLocation(Point appLocation) {
+		this.appLocation = appLocation;
+	}
+
+	public void setFullscreen(boolean fullscreen) {
+		this.fullscreen = fullscreen;
+	}
+
+	public void setMaximized(boolean maximized) {
+		this.maximized = maximized;
+	}
+
+	public void setMultipleInstancesAllowed(boolean multipleInstancesAllowed) {
+		this.multipleInstancesAllowed = multipleInstancesAllowed;
+	}
+
+	/**
+	 * Set the properties to the value from the internal, usually called
+	 * when saving settings to file
+	 * @param props
+	 */
 	public void setProperties(Properties props) {
 		props.put(PREFIX + "maximized", Boolean.toString(maximized));
 		props.put(PREFIX + "appLocation_x", Double.toString(appLocation.getX()));
@@ -77,57 +139,15 @@ public class GuiSettings implements Serializable {
 		props.put(PREFIX + "multipleInstancesAllowed", Boolean.toString(multipleInstancesAllowed));
 		props.put(PREFIX + "fullscreen", Boolean.toString(fullscreen));
 		props.put(PREFIX + "workspace", workspace);
+		props.put(PREFIX + "wmsQuery", wmsQuery);
 	}
 
-	
-	
-	public String getWorkspace() {
-		return workspace;
+	public void setWmsQuery(String wmsQuery) {
+		this.wmsQuery = wmsQuery;
 	}
 
 	public void setWorkspace(String workspace) {
 		this.workspace = workspace;
 	}
 
-	public Point getAppLocation() {
-		return appLocation;
-	}
-
-	public void setAppLocation(Point appLocation) {
-		this.appLocation = appLocation;
-	}
-
-	public Dimension getAppDimensions() {
-		return appDimensions;
-	}
-
-	public void setAppDimensions(Dimension appDimensions) {
-		this.appDimensions = appDimensions;
-	}
-
-	public boolean isMaximized() {
-		return maximized;
-	}
-
-	public void setMaximized(boolean maximized) {
-		this.maximized = maximized;
-	}
-	
-	public boolean isMultipleInstancesAllowed() {
-		return multipleInstancesAllowed;
-	}
-	
-	public void setMultipleInstancesAllowed(boolean multipleInstancesAllowed) {
-		this.multipleInstancesAllowed = multipleInstancesAllowed;
-	}
-
-
-	public boolean isFullscreen(){
-		return fullscreen;
-	}
-	
-	public void setFullscreen(boolean fullscreen){
-		this.fullscreen = fullscreen;
-	}
-	
 }

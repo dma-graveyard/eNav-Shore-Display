@@ -52,7 +52,6 @@ import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.nmea.NmeaTcpSensor;
 import dk.frv.enav.esd.services.shore.ShoreServices;
 import dk.frv.enav.esd.settings.Settings;
-import dk.frv.enav.esd.test.TestHandler;
 import dk.frv.enav.esd.util.OneInstanceGuard;
 import dk.frv.enav.ins.gps.GnssTime;
 import dk.frv.enav.ins.gps.GpsHandler;
@@ -82,7 +81,6 @@ public class ESD {
 	private static NmeaSensor aisSensor;
 	private static NmeaSensor gpsSensor;
 	private static GpsHandler gpsHandler;
-	private static TestHandler testHandler;
 	private static ShoreServices shoreServices;
 
 	private static ExceptionHandler exceptionHandler = new ExceptionHandler();
@@ -337,10 +335,6 @@ public class ESD {
 		// Start position handler and add to bean context
 		gpsHandler = new GpsHandler();
 		beanHandler.add(gpsHandler);
-
-		// Create a test handler for use in testing ais handler data
-		testHandler = new TestHandler();
-		beanHandler.add(testHandler);
 
 		// Create shore services
 		shoreServices = new ShoreServices();

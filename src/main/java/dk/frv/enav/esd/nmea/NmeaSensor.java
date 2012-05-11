@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Danish Maritime Safety Administration. All rights reserved.
+ * Copyright 2012 Danish Maritime Authority. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 
  * The views and conclusions contained in the software and documentation are those
  * of the authors and should not be interpreted as representing official policies,
- * either expressed or implied, of Danish Maritime Safety Administration.
+ * either expressed or implied, of Danish Maritime Authority.
  * 
  */
 package dk.frv.enav.esd.nmea;
@@ -80,14 +80,14 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 	};
 
 	private boolean replay = false;
-	
+
 	private Date replayStartDate = null;
 	private Date dataStart = null;
 	private Date dataEnd = null;
 	private Date replayStart = null;
 	private Date replayEnd = null;
 	private Date replayTime = new Date(0);
-	
+
 	protected SendThreadPool sendThreadPool = new SendThreadPool();
 	private int replaySpeedup = 1;
 	protected Set<SensorType> sensorTypes = new HashSet<SensorType>();
@@ -95,14 +95,13 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 	private long simulatedOwnShip;
 	private Set<IGpsListener> gpsListeners = new HashSet<IGpsListener>();
 	private Set<IVesselAisListener> vesselAisListeners = new HashSet<IVesselAisListener>();
-	private Set<IGnssTimeListener> gnssTimeListeners = new HashSet<IGnssTimeListener>(); 
+	private Set<IGnssTimeListener> gnssTimeListeners = new HashSet<IGnssTimeListener>();
 	private Vdm vdm = new Vdm();
-	
-	
+
 	public NmeaSensor() {
-		
+
 	}
-	
+
 	/**
 	 * Main method to read NMEA messages from stream
 	 * 
@@ -112,42 +111,46 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 	protected void readLoop(InputStream stream) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 		String msg;
-		
+
 		while ((msg = reader.readLine()) != null) {
 			if (replay) {
 				handleReplay(msg);
 			}
-			
+
 			handleSentence(msg);
-		}		
-		
+		}
+
 	}
-	
+
 	/**
-	 * Method to send addressed or broadcast AIS messages (ABM or BBM). 
+	 * Method to send addressed or broadcast AIS messages (ABM or BBM).
+	 * 
 	 * @param sendRequest
-	 * @param resultListener A class to handle the result when it is ready. 
+	 * @param resultListener
+	 *            A class to handle the result when it is ready.
 	 */
-	public abstract void send(SendRequest sendRequest,  ISendResultListener resultListener) throws SendException;
-	
+	public abstract void send(SendRequest sendRequest, ISendResultListener resultListener) throws SendException;
+
 	/**
 	 * The method to do the actual sending
+	 * 
 	 * @param sendRequest
 	 * @param resultListener
 	 * @param out
-	 * @throws SendException 
+	 * @throws SendException
 	 */
-	protected void doSend(SendRequest sendRequest, ISendResultListener resultListener, OutputStream out) throws SendException {
+	protected void doSend(SendRequest sendRequest, ISendResultListener resultListener, OutputStream out)
+			throws SendException {
 		if (out == null) {
 			throw new SendException("Not connected");
 		}
-		
+
 		// Get sentences
 		String[] sentences = sendRequest.createSentences();
-		
+
 		// Create and start thread
 		SendThread sendThread = sendThreadPool.createSendThread(sendRequest, resultListener);
-		
+
 		// Write to out
 		String str = StringUtils.join(sentences, "\r\n") + "\r\n";
 		LOG.debug("Sending:\n" + str);
@@ -156,11 +159,11 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 		} catch (IOException e) {
 			throw new SendException("Could not send AIS message: " + e.getMessage());
 		}
-		
+
 		// Start send thread
 		sendThread.start();
 	}
-	
+
 	protected void handleAbk(String msg) {
 		Abk abk = new Abk();
 		try {
@@ -170,7 +173,7 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 			LOG.error("Failed to parse ABK: " + msg + ": " + e.getMessage());
 		}
 	}
-	
+
 	protected void handleReplay(String msg) {
 		// Check if proprietary sentence
 		if (!Sentence.hasProprietarySentence(msg)) {
@@ -185,21 +188,21 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 		if (sourceTag == null || sourceTag.getTimestamp() == null) {
 			return;
 		}
-		
+
 		Date timestamp = sourceTag.getTimestamp();
 		// TODO if timestamp before some starttime, then just return
-		
+
 		// Set replay time to current timestamp
 		setReplayTime(timestamp);
-		
+
 		if (dataStart == null && getReplayStartDate() != null) {
 			if (timestamp.before(getReplayStartDate())) {
 				return;
 			}
 		}
-		
+
 		Date now = new Date();
-			
+
 		dataEnd = timestamp;
 		if (dataStart == null) {
 			dataStart = timestamp;
@@ -207,25 +210,25 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 		if (replayStart == null) {
 			replayStart = now;
 		}
-		
+
 		long elapsedData = timestamp.getTime() - dataStart.getTime();
 		long elapsedReal = (now.getTime() - replayStart.getTime()) * replaySpeedup;
 		long diff = elapsedData - elapsedReal;
 		if (diff > 500) {
-			EeINS.sleep(diff / replaySpeedup);			
+			EeINS.sleep(diff / replaySpeedup);
 		}
-		
+
 		replayEnd = now;
-		
+
 	}
-	
+
 	protected void handleProprietary(String msg) {
 		if (msg.indexOf("$PSTT,10A") >= 0) {
 			handlePstt(msg);
 		}
-		
+
 	}
-	
+
 	protected void handleSentence(String msg) {
 		if (!isSimulateGps() && gpsListeners.size() > 0 && msg.indexOf("$GPRMC") >= 0) {
 			handleGpRmc(msg);
@@ -252,7 +255,7 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 					vdm = new Vdm();
 					return;
 				}
-				
+
 				boolean ownMessage = false;
 				// Check if simulated own ship
 				if (isSimulateGps()) {
@@ -260,22 +263,22 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 				} else {
 					ownMessage = vdm.isOwnMessage();
 				}
-				
+
 				// Distribute GPS from own mesasge
 				if (ownMessage) {
 					handleGpsFromOwnMessage(aisMessage);
 				}
-				
+
 				// Distribute message
 				synchronized (vesselAisListeners) {
 					for (IVesselAisListener vesselAisListener : vesselAisListeners) {
-						if (ownMessage) {							
+						if (ownMessage) {
 							vesselAisListener.receiveOwnMessage(aisMessage);
 						} else {
 							vesselAisListener.receive(aisMessage);
 						}
 					}
-				}				
+				}
 
 				vdm = new Vdm();
 				return;
@@ -315,7 +318,7 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 		if (!foundPos) {
 			return;
 		}
-		
+
 		gpsMessage.validateFields();
 
 		if (replay) {
@@ -326,7 +329,7 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 				}
 			}
 		}
-		
+
 		synchronized (gpsListeners) {
 			for (IGpsListener gpsListener : gpsListeners) {
 				gpsListener.receive(gpsMessage);
@@ -343,18 +346,18 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 			return;
 		}
 		// Only AIS own messages will be used for positioning
-//		synchronized (gpsListeners) {
-//			for (IGpsListener gpsListener : gpsListeners) {
-//				gpsListener.receive(sentence.getGpsMessage());
-//			}
-//		}
+		// synchronized (gpsListeners) {
+		// for (IGpsListener gpsListener : gpsListeners) {
+		// gpsListener.receive(sentence.getGpsMessage());
+		// }
+		// }
 		synchronized (gnssTimeListeners) {
 			for (IGnssTimeListener gnssTimeListener : gnssTimeListeners) {
 				gnssTimeListener.receive(sentence.getGnssTimeMessage());
 			}
 		}
 	}
-	
+
 	private void handlePstt(String msg) {
 		PsttSentence psttSentence = new PsttSentence();
 		try {
@@ -370,13 +373,12 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 		}
 	}
 
-
 	public void addGpsListener(IGpsListener gpsListener) {
 		synchronized (gpsListeners) {
 			gpsListeners.add(gpsListener);
 		}
 	}
-	
+
 	public void removeGpsListener(IGpsListener gpsListener) {
 		synchronized (gpsListeners) {
 			gpsListeners.remove(gpsListener);
@@ -388,19 +390,19 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 			vesselAisListeners.add(vesselAisListener);
 		}
 	}
-	
+
 	public void removeAisListener(IVesselAisListener vesselAisListener) {
 		synchronized (vesselAisListeners) {
 			vesselAisListeners.remove(vesselAisListener);
 		}
 	}
-	
+
 	public void addGnssTimeListener(IGnssTimeListener gnssTimeListener) {
 		synchronized (gnssTimeListeners) {
 			gnssTimeListeners.add(gnssTimeListener);
 		}
 	}
-	
+
 	public void removeGnssTimeListener(IGnssTimeListener gnssTimeListener) {
 		synchronized (gnssTimeListeners) {
 			gnssTimeListeners.remove(gnssTimeListener);
@@ -426,31 +428,31 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 	public void addSensorType(SensorType type) {
 		sensorTypes.add(type);
 	}
-	
+
 	public boolean isSensorType(SensorType type) {
 		return sensorTypes.contains(type);
 	}
-	
+
 	public void start() {
 		(new Thread(this)).start();
 	}
-	
+
 	public boolean isReplay() {
 		return replay;
 	}
-	
+
 	public void setReplay(boolean replay) {
 		this.replay = replay;
 	}
-	
+
 	public int getReplaySpeedup() {
 		return replaySpeedup;
 	}
-	
+
 	public void setReplaySpeedup(int replaySpeedup) {
 		this.replaySpeedup = replaySpeedup;
 	}
-	
+
 	public Date getReplayStart() {
 		return replayStart;
 	}
@@ -458,31 +460,31 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 	public Date getReplayEnd() {
 		return replayEnd;
 	}
-	
+
 	public Date getDataStart() {
 		return dataStart;
 	}
-	
+
 	public Date getDataEnd() {
 		return dataEnd;
 	}
-	
+
 	public Date getReplayTime() {
 		synchronized (replayTime) {
 			return replayTime;
-		}		
+		}
 	}
-	
+
 	public void setReplayTime(Date replayTime) {
 		synchronized (replayTime) {
 			this.replayTime = replayTime;
 		}
 	}
-	
+
 	public Date getReplayStartDate() {
 		return replayStartDate;
 	}
-	
+
 	public void setReplayStartDate(Date replayStartDate) {
 		this.replayStartDate = replayStartDate;
 	}

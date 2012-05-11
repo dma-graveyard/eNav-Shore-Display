@@ -49,53 +49,16 @@ public class MsiTableModel extends AbstractTableModel {
 
 	private MsiHandler msiHandler;
 	private List<MsiHandler.MsiMessageExtended> messages;
+	private boolean filtered = false;
 
+	/**
+	 * Constructor for creating the msi table model
+	 * @param msiHandler
+	 */
 	public MsiTableModel(MsiHandler msiHandler) {
 		super();
 		this.msiHandler = msiHandler;
 		updateMessages();
-	}
-
-	public void updateMessages() {
-		// Is filtered or not?
-		if (false) {
-			messages = msiHandler.getFilteredMessageList();
-		} 
-		else {
-			messages = msiHandler.getMessageList();
-		}
-	}
-
-	/**
-	 * Return messages
-	 * @return
-	 */
-	public List<MsiHandler.MsiMessageExtended> getMessages() {
-		return messages;
-	}
-
-	/**
-	 * Return the column names
-	 */
-	@Override
-	public String getColumnName(int column) {
-		return COLUMN_NAMES[column];
-	}
-
-	/**
-	 * Get the column count
-	 */
-	@Override
-	public int getColumnCount() {
-		return COLUMN_NAMES.length;
-	}
-
-	/**
-	 * Get the row count
-	 */
-	@Override
-	public int getRowCount() {
-		return messages.size();
 	}
 
 	/**
@@ -111,7 +74,40 @@ public class MsiTableModel extends AbstractTableModel {
 	}
 
 	/**
-	 * Get the value at a specific row and colum index 
+	 * Get the column count
+	 */
+	@Override
+	public int getColumnCount() {
+		return COLUMN_NAMES.length;
+	}
+
+	/**
+	 * Return the column names
+	 */
+	@Override
+	public String getColumnName(int column) {
+		return COLUMN_NAMES[column];
+	}
+
+	/**
+	 * Return messages
+	 * 
+	 * @return
+	 */
+	public List<MsiHandler.MsiMessageExtended> getMessages() {
+		return messages;
+	}
+
+	/**
+	 * Get the row count
+	 */
+	@Override
+	public int getRowCount() {
+		return messages.size();
+	}
+
+	/**
+	 * Get the value at a specific row and colum index
 	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
@@ -152,6 +148,18 @@ public class MsiTableModel extends AbstractTableModel {
 		default:
 			return "";
 
+		}
+	}
+
+	/**
+	 * Update messages
+	 */
+	public void updateMessages() {
+		// Is filtered or not?
+		if (filtered) {
+			messages = msiHandler.getFilteredMessageList();
+		} else {
+			messages = msiHandler.getMessageList();
 		}
 	}
 

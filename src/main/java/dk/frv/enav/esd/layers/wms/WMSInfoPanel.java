@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Danish Maritime Authority. All rights reserved.
+ * Copyright 2012 Danish Maritime Authority. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -11,7 +11,7 @@
  * this list of conditions and the following disclaimer in the documentation and/or
  * other materials provided with the distribution.
  * 
- * THIS SOFTWARE IS PROVIDED BY Danish Maritime Authority ``AS IS'' 
+ * THIS SOFTWARE IS PROVIDED BY Danish Maritime Safety Administration ``AS IS'' 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
  * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> OR CONTRIBUTORS BE LIABLE FOR
@@ -29,12 +29,6 @@
  */
 package dk.frv.enav.esd.layers.wms;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import dk.frv.enav.esd.gui.InfoPanel;
@@ -47,10 +41,16 @@ public class WMSInfoPanel extends InfoPanel {
 	private static final long serialVersionUID = 1L;
 	static ImageIcon loadingImg = new ImageIcon("images/loading.gif");
 	
+	/**
+	 * Constructor for creating an WMSInfoPanel that uses the loadingIMG
+	 */
 	public WMSInfoPanel() {
 		super(loadingImg);
 	}
-	
+
+	/**
+	 * Show the image
+	 */
 	public void displayLoadingImage(){
 		showImage();
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Danish Maritime Authority. All rights reserved.
+ * Copyright 2012 Danish Maritime Authority. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -11,7 +11,7 @@
  * this list of conditions and the following disclaimer in the documentation and/or
  * other materials provided with the distribution.
  * 
- * THIS SOFTWARE IS PROVIDED BY Danish Maritime Authority ``AS IS'' 
+ * THIS SOFTWARE IS PROVIDED BY Danish Maritime Safety Administration ``AS IS'' 
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
  * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> OR CONTRIBUTORS BE LIABLE FOR
@@ -67,6 +67,10 @@ public class MsiDirectionalIcon extends OMGraphicList implements ProjectionListe
 	private GeoLocation msiLocation;
 	private MsiMessageExtended message;
 	
+	/**
+	 * Constructor used in creating the directional icons in MSI
+	 * @param mapBean
+	 */
 	MsiDirectionalIcon(MapBean mapBean) {
 		super();
 		setVague(true);
@@ -74,6 +78,10 @@ public class MsiDirectionalIcon extends OMGraphicList implements ProjectionListe
 		mapBean.addProjectionListener(this);
 	}
 	
+	/**
+	 * Function to add a specific message to the map
+	 * @param message
+	 */
 	public void setMarker(MsiMessageExtended message) {
 		this.message = message;
 		this.msiLocation = message.msiMessage.getLocation().getCenter();
@@ -120,6 +128,12 @@ public class MsiDirectionalIcon extends OMGraphicList implements ProjectionListe
 		add(directionRaster);
 	}
 	
+	/**
+	 * Function to check if a direction and frame intersects
+	 * @param direction
+	 * @param frame
+	 * @return
+	 */
 	public boolean intersects(Line2D direction, Line2D frame) {
 		double d = (frame.getY2() - frame.getY1()) * (direction.getX2() - direction.getX1()) - 
 				   (frame.getX2() - frame.getX1()) * (direction.getY2() - direction.getY1());
@@ -159,6 +173,10 @@ public class MsiDirectionalIcon extends OMGraphicList implements ProjectionListe
 		super.render(image);
 	}
 	
+	/**
+	 * Getter for msimessage
+	 * @return
+	 */
 	public MsiMessageExtended getMessage() {
 		return message;
 	}

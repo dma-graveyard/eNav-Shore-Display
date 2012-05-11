@@ -1,3 +1,32 @@
+/*
+ * Copyright 2012 Danish Maritime Authority. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *   1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ *   2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation and/or
+ * other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY Danish Maritime Safety Administration ``AS IS'' 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of Danish Maritime Authority.
+ * 
+ */
 package dk.frv.enav.esd.layers.wms;
 
 import com.bbn.openmap.layer.OMGraphicHandlerLayer;
@@ -7,6 +36,11 @@ import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.gui.ChartPanel;
 import dk.frv.enav.esd.gui.JMapFrame;
 
+/**
+ * Layer handling all WMS data and displaying of it
+ * @author David A. Camre (davidcamre@gmail.com)
+ *
+ */
 public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 	private static final long serialVersionUID = 1L;
 	private OMGraphicList list = new OMGraphicList();
@@ -22,6 +56,47 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 	private Double lowerRightLat = 0.0;
 	private int height = -1;
 	private int width = -1;
+
+	/**
+	 * Constructor that starts the WMS layer in a seperate thread
+	 */
+	public WMSLayer() {
+		wmsService = new WMSService();
+		(new Thread(this)).start();
+
+	}
+
+	/**
+	 * Draw the WMS onto the map
+	 * @param list of elements to be drawn
+	 */
+	public void drawWMS(OMGraphicList list) {
+		this.list.clear();
+		this.list.add(list);
+		// wmsInfoPanel.setVisible(false);
+		doPrepare();
+	}
+
+	@Override
+	public void findAndInit(Object obj) {
+		if (obj instanceof ChartPanel) {
+			chartPanel = (ChartPanel) obj;
+			// chartPanel.getMapHandler().addPropertyChangeListener("WMS", pcl)
+		}
+		if (obj instanceof JMapFrame) {
+			jMapFrame = (JMapFrame) obj;
+			wmsInfoPanel = new WMSInfoPanel();
+			jMapFrame.getLoadingPanel().add(wmsInfoPanel);
+			wmsInfoPanel.setPos( 20, 30);
+		}
+
+	}
+
+	@Override
+	public synchronized OMGraphicList prepare() {
+		list.project(getProjection());
+		return list;
+	}
 
 	@Override
 	public void run() {
@@ -81,42 +156,11 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 		}
 	}
 
-	public WMSLayer() {
-		wmsService = new WMSService();
-		(new Thread(this)).start();
-
-	}
-
+	/**
+	 * Stop the thread
+	 */
 	public void stop() {
 		shouldRun = false;
-	}
-
-	public void drawWMS(OMGraphicList list) {
-		this.list.clear();
-		this.list.add(list);
-		// wmsInfoPanel.setVisible(false);
-		doPrepare();
-	}
-
-	@Override
-	public synchronized OMGraphicList prepare() {
-		list.project(getProjection());
-		return list;
-	}
-
-	@Override
-	public void findAndInit(Object obj) {
-		if (obj instanceof ChartPanel) {
-			chartPanel = (ChartPanel) obj;
-			// chartPanel.getMapHandler().addPropertyChangeListener("WMS", pcl)
-		}
-		if (obj instanceof JMapFrame) {
-			jMapFrame = (JMapFrame) obj;
-			wmsInfoPanel = new WMSInfoPanel();
-			jMapFrame.getLoadingPanel().add(wmsInfoPanel);
-			wmsInfoPanel.setPos( 20, 30);
-		}
-
 	}
 
 }
