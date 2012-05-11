@@ -29,6 +29,10 @@
  */
 package dk.frv.enav.esd.layers.wms;
 
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+
 import javax.swing.ImageIcon;
 
 import com.bbn.openmap.image.ImageServerConstants;
@@ -51,8 +55,11 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 	private int wmsHeight;
 	private Double wmsullon;
 	private Double wmsullat;
-	private Double deltaX = 0.0013;
-	private Double deltaY = 0.00058;
+//	private Double deltaX = 0.0013;
+//	private Double deltaY = 0.00058;
+	private Double deltaX = 0.00;
+	private Double deltaY = 0.00;
+	private boolean wmsImage;
 	
 	/**
 	 * Constructor for the WMS Service - loads the WMS server from the settings file
@@ -126,10 +133,17 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 			ImageIcon wmsImg = new ImageIcon(url);
 			
 			if (wmsImg.getIconHeight() == -1 || wmsImg.getIconWidth() ==-1){
-				System.out.println("no WMS");
-				wmsList.add(new CenterRaster(this.wmsullat, this.wmsullon, this.wmsWidth, this.wmsHeight, new ImageIcon("images/noWMSAvailable.jpg")));
+//				System.out.println("no WMS");
+				Image noImage = (new ImageIcon("images/noWMSAvailable.png")).getImage();
+				BufferedImage bi = new BufferedImage(noImage.getWidth(null), noImage.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+				Graphics g = bi.createGraphics();
+				g.drawImage(noImage, 0, 0, wmsWidth, wmsHeight, null, null);  
+				ImageIcon noImageIcon = new ImageIcon(bi);  	
+				wmsList.add(new CenterRaster(this.wmsullat, this.wmsullon, this.wmsWidth, this.wmsHeight, noImageIcon));
+				wmsImage = false;
 			}else{
-				wmsList.add(new CenterRaster(this.wmsullat, this.wmsullon, this.wmsWidth, this.wmsHeight, wmsImg));	
+				wmsList.add(new CenterRaster(this.wmsullat, this.wmsullon, this.wmsWidth, this.wmsHeight, wmsImg));
+				wmsImage = true;
 			}
 			
 			
@@ -150,6 +164,10 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 	public String createQueryString(Projection arg0) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public boolean isWmsImage() {
+		return wmsImage;
 	}
 
 	@Override
