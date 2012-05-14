@@ -82,6 +82,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private boolean fullscreen = false;
 	private int mouseMode = 2;
 	private boolean wmsLayerEnabled = true;
+	private boolean msiLayerEnabled = true;
 
 	private BeanContextServicesSupport beanHandler;
 	private List<JMapFrame> mapWindows;
@@ -125,6 +126,12 @@ public class MainFrame extends JFrame implements WindowListener {
 		}else{
 			window.getChartPanel().getBgLayer().setVisible(false);
 		}
+		
+		if (!msiLayerEnabled){
+			window.getChartPanel().getMsiLayer().setVisible(false);
+		
+		}
+		
 		return window;
 	}
 
@@ -147,7 +154,8 @@ public class MainFrame extends JFrame implements WindowListener {
 		window.toFront();
 		topMenu.addMap(window, locked, alwaysInFront);
 		window.getChartPanel().getWmsLayer().setVisible(isWmsLayerEnabled());
-
+		window.getChartPanel().getMsiLayer().setVisible(isMsiLayerEnabled());
+		
 		return window;
 	}
 
@@ -523,20 +531,35 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	/**
 	 * Get if the WMS status is enabled
-	 * @return
+	 * @return boolean detailing if the layer is enabled
 	 */
 	public boolean isWmsLayerEnabled() {
 		return wmsLayerEnabled;
 	}
 
 	/**
-	 * set the wms layers enabled/disabled
+	 * set the WMS layers enabled/disabled
 	 * @param wmsLayerEnabled
 	 */
 	public void setWmsLayerEnabled(boolean wmsLayerEnabled) {
 		this.wmsLayerEnabled = wmsLayerEnabled;
 	}
 
+	/**
+	 * Get if the MSI status is enabled
+	 * @return boolean detailing if the layer is enabled
+	 */
+	public boolean isMsiLayerEnabled() {
+		return msiLayerEnabled;
+	}
+
+	/**
+	 * set the MSI layers enabled/disabled
+	 * @param wmsLayerEnabled
+	 */
+	public void setMSILayerEnabled(boolean msiLayerEnabled) {
+		this.msiLayerEnabled = msiLayerEnabled;
+	}
 	
 	
 }
