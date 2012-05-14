@@ -159,22 +159,27 @@ public class ToolBar extends JInternalFrame {
 		wms.setName("wms");
 		wms.addMouseListener(new MouseAdapter() {  
 		    public void mouseReleased(MouseEvent e) {
-				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
-			    	if(mainFrame.getMapWindows().get(i).getChartPanel().getWmsLayer().isVisible()){
+				
+					if (mainFrame.isWmsLayerEnabled()){
+						for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
+//						System.out.println("Disabling WMS Layer");
+						mainFrame.setWmsLayerEnabled(false);
 			    		mainFrame.getMapWindows().get(i).getChartPanel().getWmsLayer().setVisible(false);
 			    		mainFrame.getMapWindows().get(i).getChartPanel().getBgLayer().setVisible(true);
-			    		
+						}
 			    		wms.setBorder(toolPaddingBorder);
 			    		wms.setOpaque(false);
-			    		
 			    	}else{
+			    		for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
+//			    		System.out.println("Enabling WMS Layer");
+			    		mainFrame.setWmsLayerEnabled(true);
 			    		mainFrame.getMapWindows().get(i).getChartPanel().getWmsLayer().setVisible(true);
 			    		mainFrame.getMapWindows().get(i).getChartPanel().getBgLayer().setVisible(false);
-			    		
+			    		}	
 			            wms.setBackground(new Color(55, 55, 55));
 			            wms.setBorder(BorderFactory.createCompoundBorder(toolPaddingBorder, toolInnerEtchedBorder));
 			            wms.setOpaque(true);
-			    	}
+			    	
 				}
 		    }  
 		});
