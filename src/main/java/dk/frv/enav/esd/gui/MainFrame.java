@@ -93,6 +93,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private ToolBar toolbar = new ToolBar(this);
 	private NotificationArea notificationArea = new NotificationArea(this);
 	private NotificationCenter notificationCenter = new NotificationCenter();
+	private JSettingsWindow settingsWindow = new JSettingsWindow();
 
 	private StatusArea statusArea = new StatusArea(this);
 
@@ -286,19 +287,18 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		// Initiate the permanent window elements
 		desktop.getManager().setStatusArea(statusArea);
-
 		desktop.getManager().setNotificationArea(notificationArea);
-
 		desktop.getManager().setToolbar(toolbar);
-
 		desktop.getManager().setNotCenter(notificationCenter);
 
 		desktop.add(statusArea, true);
 		desktop.add(notificationCenter, true);
 		desktop.add(toolbar, true);
 		desktop.add(notificationArea, true);
+		desktop.add(settingsWindow, true);
 
 		beanHandler.add(notificationArea);
+		beanHandler.add(settingsWindow);
 		// dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
 		// Add self to bean handler
