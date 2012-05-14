@@ -250,6 +250,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		    }
 		    
         });
+        minimize.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 3));
         mapToolsPanel.add(minimize);
         
         final JLabel maximize = new JLabel(new ImageIcon("images/window/maximize.png"));
@@ -272,6 +273,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		    }
 		    
         });
+        maximize.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3));
         mapToolsPanel.add(maximize);
         
         JLabel close = new JLabel(new ImageIcon("images/window/close.png"));
@@ -287,6 +289,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		    }
 		    
         });
+        close.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 2));
         mapToolsPanel.add(close);
         mapPanel.add(mapToolsPanel);
         
