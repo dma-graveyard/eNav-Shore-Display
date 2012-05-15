@@ -29,7 +29,11 @@
  */
 package dk.frv.enav.esd.layers.ais;
 
+import java.awt.Color;
+
 import javax.swing.ImageIcon;
+
+import com.bbn.openmap.omGraphics.OMCircle;
 
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.ins.common.graphics.CenterRaster;
@@ -48,6 +52,7 @@ public class VesselLayer extends CenterRaster {
 	private double lon;
 	private double trueHeading;
 	private String shipType;
+	private OMCircle highlight;
 
 	/**
 	 * Initialize a vessel with default icon

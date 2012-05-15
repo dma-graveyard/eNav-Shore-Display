@@ -35,7 +35,9 @@ import java.util.List;
 
 import com.bbn.openmap.event.MapMouseListener;
 import com.bbn.openmap.layer.OMGraphicHandlerLayer;
+import com.bbn.openmap.omGraphics.OMGraphic;
 import com.bbn.openmap.omGraphics.OMGraphicList;
+import com.bbn.openmap.omGraphics.OMList;
 
 import dk.frv.ais.message.AisMessage;
 import dk.frv.enav.esd.ESD;
@@ -54,6 +56,7 @@ import dk.frv.enav.ins.layers.ais.AisTargetInfoPanel;
 /**
  * The class AisLayer is the layer containing all AIS targets. The class handles
  * the drawing of vessels on the chartPanel.
+ * 
  * @author Claes N. Ladefoged, claesnl@gmail.com
  */
 public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVesselAisListener, MapMouseListener {
@@ -70,6 +73,9 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private MainFrame mainFrame;
 	volatile boolean shouldRun = true;
 	private float mapScale = 0;
+
+	OMGraphic highlighted;
+	long highlightedMMSI;
 
 	/**
 	 * Keeps the AisLayer thread alive
@@ -197,7 +203,37 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 
 	@Override
 	public boolean mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
+		OMGraphic newClosest = null;
+		OMList<OMGraphic> allClosest = list.findAll(e.getX(), e.getY(), 3.0f);
+		for (OMGraphic omGraphic : allClosest) {
+			if (omGraphic instanceof VesselLayer) {
+				newClosest = omGraphic;
+				break;
+			}
+		}
+
+		if (allClosest.size() == 0) {
+			// Nothing close to clicked area
+			if(highlightedMMSI != 0) {
+				drawnVessels.get(highlightedMMSI).showHighlight(false);
+				highlighted = null;
+			}
+			return false;
+		}
+
+		if (newClosest != highlighted) {
+			VesselLayer vessel = (VesselLayer) newClosest;
+			if(highlightedMMSI != 0) {
+				drawnVessels.get(highlightedMMSI).showHighlight(false);
+			}
+			drawnVessels.get(vessel.getMMSI()).showHighlight(true);
+			highlightedMMSI = vessel.getMMSI();
+			highlighted = newClosest;
+		} else {
+			drawnVessels.get(highlightedMMSI).showHighlight(false);
+			highlightedMMSI = 0;
+			highlighted = null;
+		}
 		return false;
 	}
 
