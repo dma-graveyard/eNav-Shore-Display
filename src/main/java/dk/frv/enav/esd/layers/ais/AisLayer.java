@@ -47,6 +47,7 @@ import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.gui.ChartPanel;
+import dk.frv.enav.esd.gui.StatusArea;
 import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.ins.ais.VesselPositionData;
 import dk.frv.enav.ins.ais.VesselTarget;
@@ -66,6 +67,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private List<AisMessageExtended> shipList;
 	private ChartPanel chartPanel;
 	private AisTargetInfoPanel aisTargetInfoPanel = new AisTargetInfoPanel();
+	private StatusArea statusArea;
 
 	private HashMap<Long, Vessel> drawnVessels = new HashMap<Long, Vessel>();
 	private Vessel vesselComponent;
@@ -134,7 +136,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					if (trueHeading == 511) {
 						trueHeading = location.getCog();
 					}
-
+					
 					if (!drawnVessels.containsKey(vessel.MMSI)) {
 						vesselComponent = new Vessel(vessel.MMSI);
 						list.add(vesselComponent);
@@ -170,6 +172,9 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		if (obj instanceof MainFrame) {
 			mainFrame = (MainFrame) obj;
 			mainFrame.getGlassPanel().add(aisTargetInfoPanel);
+		}
+		if (obj instanceof StatusArea) {
+			statusArea = (StatusArea) obj;
 		}
 
 	}
@@ -217,6 +222,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			if(highlightedMMSI != 0) {
 				drawnVessels.get(highlightedMMSI).showHighlight(false);
 				highlighted = null;
+				statusArea.removeHighlight();
 			}
 			return false;
 		}
@@ -226,13 +232,16 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			if(highlightedMMSI != 0) {
 				drawnVessels.get(highlightedMMSI).showHighlight(false);
 			}
-			drawnVessels.get(vessel.getMMSI()).showHighlight(true);
+			Vessel ves = drawnVessels.get(vessel.getMMSI());
+			ves.showHighlight(true);
 			highlightedMMSI = vessel.getMMSI();
 			highlighted = newClosest;
+			statusArea.receiveHighlight(ves.getMMSI(), ves.getName());
 		} else {
 			drawnVessels.get(highlightedMMSI).showHighlight(false);
 			highlightedMMSI = 0;
 			highlighted = null;
+			statusArea.removeHighlight();
 		}
 		return false;
 	}

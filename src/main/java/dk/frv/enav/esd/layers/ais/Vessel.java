@@ -58,6 +58,7 @@ public class Vessel extends OMGraphicList {
 	private Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 11);;
 	private OMText callSign = null;
 	private OMText nameMMSI = null;
+	private String name;
 	private long MMSI;
 	private double lat;
 	private double lon;
@@ -135,7 +136,7 @@ public class Vessel extends OMGraphicList {
 
 		heading.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, Math.toRadians(trueHeading));
 
-		String name = "ID:" + this.MMSI;
+		name = "ID:" + this.MMSI;
 		if (staticData != null) {
 			vessel.setImageIcon(staticData.getShipType().toString());
 			callSign.setData("Call Sign: " + staticData.getCallsign());
@@ -250,6 +251,14 @@ public class Vessel extends OMGraphicList {
 	 */
 	public void showHighlight(boolean b){
 		highlight.setVisible(b);
+	}
+	
+	public long getMMSI(){
+		return this.MMSI;
+	}
+	
+	public String getName(){
+		return this.name;
 	}
 
 }
