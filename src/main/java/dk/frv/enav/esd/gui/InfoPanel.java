@@ -80,7 +80,7 @@ public abstract class InfoPanel extends JPanel {
 	 */
 	public InfoPanel(ImageIcon image) {
 		super();
-		imageLabel =  new JLabel(new ImageIcon("images/loading.gif"));
+		imageLabel =  new JLabel(image);
 		FlowLayout flowLayout = new FlowLayout();
 		setLayout(flowLayout);
 		flowLayout.setVgap(0);
@@ -109,7 +109,6 @@ public abstract class InfoPanel extends JPanel {
 	 */
 	public void setPos(int x, int y) {
 		Rectangle rect = getBounds();
-		System.out.println("Setting at " + x + ", " + y);
 		setBounds(x, y, (int) rect.getWidth(), (int) rect.getHeight());
 	}
 

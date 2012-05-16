@@ -154,7 +154,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		mapWindows.add(window);
 		window.toFront();
 		topMenu.addMap(window, locked, alwaysInFront);
-		window.getChartPanel().getWmsLayer().setVisible(isWmsLayerEnabled());
+//		window.getChartPanel().getWmsLayer().setVisible(isWmsLayerEnabled());
 		window.getChartPanel().getMsiLayer().setVisible(isMsiLayerEnabled());
 		
 		return window;

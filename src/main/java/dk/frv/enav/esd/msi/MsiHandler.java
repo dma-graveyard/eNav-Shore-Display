@@ -45,7 +45,6 @@ import dk.frv.enav.common.xml.msi.MsiMessage;
 import dk.frv.enav.common.xml.msi.response.MsiResponse;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.layers.msi.MsiLayer;
-import dk.frv.enav.esd.msi.MsiHandler.MsiMessageExtended;
 import dk.frv.enav.esd.services.shore.ShoreServiceException;
 import dk.frv.enav.esd.services.shore.ShoreServices;
 import dk.frv.enav.ins.gps.GpsData;

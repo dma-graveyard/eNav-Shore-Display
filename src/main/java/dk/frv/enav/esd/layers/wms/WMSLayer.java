@@ -160,7 +160,6 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 					
 					drawWMS(wmsService.getWmsList());
 					wmsInfoPanel.setVisible(false);
-					jMapFrame.getLoadingPanel().setVisible(false);
 				}
 			}
 		}

@@ -40,9 +40,10 @@ import com.bbn.openmap.omGraphics.OMLine;
 import com.bbn.openmap.omGraphics.OMText;
 import com.bbn.openmap.proj.Length;
 import com.bbn.openmap.proj.coords.LatLonPoint;
-import dk.frv.ais.message.AisMessage;
 
+import dk.frv.ais.message.AisMessage;
 import dk.frv.enav.ins.ais.VesselStaticData;
+import dk.frv.enav.ins.common.text.Formatter;
 
 /**
  * Vessel class that maintains all the components in a vessel
@@ -55,9 +56,12 @@ public class Vessel extends OMGraphicList {
 	private VesselLayer vessel;
 	private OMCircle vesCirc;
 	private HeadingLayer heading;
+	private String vesselHeading = "N/A";
 	private Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 11);;
 	private OMText callSign = null;
+	private String vesselCallSign = "N/A";
 	private OMText nameMMSI = null;
+	private String vesselName = "N/A";
 	private long MMSI;
 	private double lat;
 	private double lon;
@@ -69,6 +73,10 @@ public class Vessel extends OMGraphicList {
 	private LatLonPoint endPos = null;
 	public static final float STROKE_WIDTH = 1.5f;
 	private Color shipColor = new Color(78, 78, 78);
+	private String vesselDest = "N/A";
+	private String vesselEta = "N/A";
+	private String vesselShiptype = "N/A";
+			
 
 	/**
 	 * Vessel initialization with icon, circle, heading, speedvector, callsign
@@ -125,27 +133,34 @@ public class Vessel extends OMGraphicList {
 	 */
 	public void updateLayers(double trueHeading, double lat, double lon, VesselStaticData staticData, double sog,
 			double cogR, float mapScale) {
+		
 		vessel.setLocation(lat, lon);
 		vessel.setHeading(trueHeading);
 
 		heading.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, Math.toRadians(trueHeading));
-
-		String name = "ID:" + this.MMSI;
+		vesselHeading = Integer.toString((int) Math.round(trueHeading))+"°";
+			
+		vesselName = "ID:" + this.MMSI;
 		if (staticData != null) {
 			vessel.setImageIcon(staticData.getShipType().toString());
 			callSign.setData("Call Sign: " + staticData.getCallsign());
-			name = AisMessage.trimText(staticData.getName());
+			vesselCallSign = staticData.getCallsign();
+			vesselName = AisMessage.trimText(staticData.getName());
+			vesselDest = staticData.getDestination();
+			vesselEta = Long.toString(staticData.getEta());
+			vesselShiptype = staticData.getShipType().toString();
+			
 		}
-		nameMMSI.setData(name);
-
+		nameMMSI.setData(vesselName);
+		
 		if (this.lat != lat || this.lon != lon || this.sog != sog || this.cogR != cogR
-				|| this.trueHeading != trueHeading) {
+				|| this.trueHeading != trueHeading) {			
 			this.lat = lat;
 			this.lon = lon;
 			this.sog = sog;
 			this.cogR = cogR;
 			this.trueHeading = trueHeading;
-
+			
 			vesCirc.setLatLon(lat, lon);
 
 			callSign.setLat(lat);
@@ -173,13 +188,17 @@ public class Vessel extends OMGraphicList {
 			} else {
 				nameMMSI.setY(20);
 			}
+			
+			
 		}
-
+		
+		// Scale for text-labels
 		boolean b1 = mapScale < 750000;
 		showHeading(b1);
 		showSpeedVector(b1);
 		showCallSign(b1);
 		showName(b1);
+		// Scale for ship icons 
 		boolean b2 = mapScale < 1500000;
 		showVesselIcon(b2);
 		showVesselCirc(!b2);
@@ -231,6 +250,49 @@ public class Vessel extends OMGraphicList {
 	 */
 	public void showName(boolean b) {
 		nameMMSI.setVisible(b);
+	}
+	
+	public long getMMSI(){
+		return this.MMSI;
+	}
+	
+	public String getName(){
+		if (vesselName.startsWith("ID"))
+			return "N/A";
+		else 
+			return vesselName;
+	}
+
+	public String getHeading() {
+		return vesselHeading;
+	}
+
+	public String getCallSign() {
+		return vesselCallSign;
+	}
+
+	public String getLat() {
+		return Formatter.latToPrintable(lat);
+	}
+
+	public String getLon() {
+		return Formatter.lonToPrintable(lon);
+	}
+
+	public String getSog() {
+		return Integer.toString((int) Math.round(sog))+" kn";
+	}
+	
+	public String getEta() {
+		return vesselEta;
+	}
+
+	public String getDest() {
+		return vesselDest;
+	}
+
+	public String getShipType() {
+		return vesselShiptype;
 	}
 
 }
