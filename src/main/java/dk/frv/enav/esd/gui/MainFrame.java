@@ -290,6 +290,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		desktop.getManager().setNotificationArea(notificationArea);
 		desktop.getManager().setToolbar(toolbar);
 		desktop.getManager().setNotCenter(notificationCenter);
+		desktop.getManager().setSettings(settingsWindow);
 
 		desktop.add(statusArea, true);
 		desktop.add(notificationCenter, true);
@@ -560,6 +561,10 @@ public class MainFrame extends JFrame implements WindowListener {
 	 */
 	public void setMSILayerEnabled(boolean msiLayerEnabled) {
 		this.msiLayerEnabled = msiLayerEnabled;
+	}
+
+	public JSettingsWindow getSettingsWindow() {
+		return settingsWindow;
 	}
 	
 	

@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -18,6 +20,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
@@ -35,8 +38,9 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
+import dk.frv.enav.ins.EeINS;
 
-public class JSettingsWindow extends ComponentFrame implements MouseListener{
+public class JSettingsWindow extends ComponentFrame implements MouseListener {
 	
 	/**
 	 * 
@@ -92,7 +96,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener{
 	
 		setResizable(false);
 		setTitle("Preferences");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 661, 481);
 		backgroundPane = new JPanel();
 		backgroundPane.setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -315,29 +319,33 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener{
 		});
 		
 		
-		ok.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				ok.setBackground(new Color(45, 45, 45));
-				System.out.println("OK PRESSED");
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				ok.setBackground(new Color(65, 65, 65));
-			}
-
-		});
+		ok.addMouseListener(this);
+		cancel.addMouseListener(this);
 		
-		cancel.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				cancel.setBackground(new Color(45, 45, 45));
-				System.out.println("Cancel pressed");
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				cancel.setBackground(new Color(65, 65, 65));
-			}
-
-		});
+//		ok.addMouseListener(new MouseAdapter() {
+//			public void mousePressed(MouseEvent e) {
+//				ok.setBackground(new Color(45, 45, 45));
+//				
+//				System.out.println("OK PRESSED");
+//			}
+//
+//			public void mouseReleased(MouseEvent e) {
+//				ok.setBackground(new Color(65, 65, 65));
+//			}
+//
+//		});
+//		
+//		cancel.addMouseListener(new MouseAdapter() {
+//			public void mousePressed(MouseEvent e) {
+//				cancel.setBackground(new Color(45, 45, 45));
+//				System.out.println("Cancel pressed");
+//			}
+//
+//			public void mouseReleased(MouseEvent e) {
+//				cancel.setBackground(new Color(65, 65, 65));
+//			}
+//
+//		});
 		
 	}
 	
@@ -488,12 +496,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener{
         close.addMouseListener(new MouseAdapter() {  
         	
 		    public void mouseReleased(MouseEvent e) { 
-		    	
-		    	try {
-		    		settingsWindow.setClosed(true);
-				} catch (PropertyVetoException e1) {
-					e1.printStackTrace();
-				}
+		    	settingsWindow.setVisible(false);
 		    }
 		    
         });
@@ -508,27 +511,18 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener{
 	    masterPanel.add(backgroundPane, BorderLayout.SOUTH);
 	    	    
 	    this.setContentPane(masterPanel);
-	    repaintMapWindow();
 	}
-	
-	/**
-	 * Function for repainting the mapframe after e.g. resize
-	 */
-	public void repaintMapWindow() {
-				
-//		width = settingsWindow.getSize().width;
-//		height = settingsWindow.getSize().height;
-//		
-//		this.setSize(width, height);
-//		this.revalidate();
-//		this.repaint();
-
-	}
-
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		
+		if (arg0.getSource() == ok){
+			this.setVisible(false);
+		}
+
+		if (arg0.getSource() == cancel){
+			this.setVisible(false);
+		}
 		
 	}
 
@@ -567,4 +561,12 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener{
 			initGUI();
 		}
 	}
+	
+	/**
+	 * Change the visiblity
+	 */
+	public void toggleVisibility() {
+		setVisible(!this.isVisible());
+	}
+
 }	
