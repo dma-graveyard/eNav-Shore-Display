@@ -63,35 +63,20 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	private JTable table;
 	private MsiHandler msiHandler;
 	
-	//private JTextPane area = new JTextPane();
-	//private StringBuilder doc = new StringBuilder();
+	private JTextPane area = new JTextPane();
+	private StringBuilder doc = new StringBuilder();
+	private JScrollPane jScrollPane = new JScrollPane();
 	
 	private MsiTableModel msiTableModel;
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					NotificationCenter frame = new NotificationCenter();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.
 	 */
 	public NotificationCenter() {
 		setResizable(false);
-		setTitle("Preferences");
+		setTitle("Notification Center");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 661, 481);
+		setBounds(100, 100, 653, 458);
 		backgroundPane = new JPanel();
 		backgroundPane.setBorder(new LineBorder(new Color(0, 0, 0)));
 		backgroundPane.setBackground(new Color(83, 83, 83));
@@ -178,18 +163,13 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		contentPane.setLayout(null);
 		
 		JPanel messageContent = new JPanel();
-		messageContent.setBounds(10, 140, 495, 270);
+		messageContent.setBounds(10, 140, 470, 230);
 		messageContent.setBackground(Color.LIGHT_GRAY);
 		messageContent.setLayout(null);
-		contentPane.add(messageContent);
-		//area.setEditable(false);
-		//area.setContentType("text/html");
-		//area.setPreferredSize(new Dimension(485, 130));
-		//area.setText("Test");
-		//messageContent.add(area);
+		contentPane.add(messageContent);		
 		
 		table = new JTable();
-		table.setBounds(10,10,495,120);
+		table.setBounds(10,10,470,120);
 		table.setBackground(Color.GRAY);
 		table.setShowVerticalLines(false);
 		table.setShowGrid(false);
@@ -247,7 +227,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 				setModel(msiTableModel);
 			}
 		});
-		//table.getSelectionModel().addListSelectionListener(new MSIRowListener());
+		table.getSelectionModel().addListSelectionListener(new MSIRowListener());
 		
 		lblRead.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -287,9 +267,13 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 			public void mouseReleased(MouseEvent e) {
 				lblClose.setBackground(topButtonColor);
 			}
+			
+			public void mouseClicked(MouseEvent e){
+				toggleVisibility();
+			}
 		});
 	}
-	/*
+	
 	private class MSIRowListener implements ListSelectionListener {
 		public void valueChanged(ListSelectionEvent event) {
 			if (event.getValueIsAdjusting()) {
@@ -304,7 +288,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 			area.setText(doc.toString());
 		}
 	}
-	*/
+	
 	@Override
 	public void findAndInit(Object obj) {
 		if (obj instanceof MsiHandler) {
