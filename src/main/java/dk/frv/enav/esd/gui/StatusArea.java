@@ -295,8 +295,10 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 	 * @param name The name (if set) of the vessel, else N/A.
 	 */
 	public void receiveHighlight(HashMap<String, String> hashMap, long MMSI) {
+		System.out.println("Got it!");
 		if(MMSI != this.highlightedMMSI)
 			return;
+		System.out.println("Painting!");
 		for (Iterator<Entry<String, String>> i = hashMap.entrySet().iterator(); i.hasNext();) {
 			Entry<String, String> ii = i.next();
 			if(highlightItems.containsKey(ii.getKey())){
@@ -309,6 +311,7 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 	}
 	
 	public void removeHighlight(){
+		highlightedMMSI = -1;
 		highlightItems.clear();
 		repaintToolbar();
 	}
