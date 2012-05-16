@@ -1,28 +1,11 @@
 package dk.frv.enav.esd.gui;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.FlowLayout;
-import javax.swing.BoxLayout;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JTabbedPane;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.JLabel;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -39,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -51,9 +35,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
-import dk.frv.enav.esd.msi.MsiHandler;
-
-import javax.swing.SwingConstants;
 
 public class JSettingsWindow extends ComponentFrame implements MouseListener{
 	
@@ -90,12 +71,10 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener{
 	private JLabel cancel;
 
 	MouseMotionListener[] actions;
-	private int id;
 	private JLabel moveHandler;
 	private JPanel masterPanel;
 	private JPanel mapPanel;
 	private static int moveHandlerHeight = 18;
-	private boolean maximized = false;
 	public int width;
 	public int height;
 	JInternalFrame settingsWindow = null;
@@ -114,7 +93,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener{
 		setResizable(false);
 		setTitle("Preferences");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 615, 481);
+		setBounds(100, 100, 661, 481);
 		backgroundPane = new JPanel();
 		backgroundPane.setBorder(new LineBorder(new Color(0, 0, 0)));
 		backgroundPane.setBackground(new Color(83, 83, 83));
@@ -136,7 +115,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener{
 		breadCrumps = new JLabel("Preferences > Map Settings");
 		styleText(breadCrumps);
 		
-		breadCrumps.setBounds(10, 0, 603, 14);
+		breadCrumps.setBounds(10, 3, 603, 14);
 		breadCrumps.setHorizontalAlignment(SwingConstants.LEFT);
 		topPanel.add(breadCrumps);
 		
@@ -239,7 +218,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener{
 		
 		addMouseListeners();
 		
-//		initGUI();
+
 	}
 	
 	
@@ -486,6 +465,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener{
 		ToolbarMoveMouseListener mml = new ToolbarMoveMouseListener(this, mainFrame);
 		mapPanel.addMouseListener(mml);
 		mapPanel.addMouseMotionListener(mml);
+		
 		// Placeholder - for now
 		mapPanel.add(new JLabel());
 		
@@ -494,50 +474,15 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener{
         moveHandler.setFont(new Font("Arial", Font.BOLD, 9));
         moveHandler.setForeground(new Color(200, 200, 200));
         moveHandler.addMouseListener(this);
+        moveHandler.addMouseListener(mml);
+        moveHandler.addMouseMotionListener(mml);
 		actions = moveHandler.getListeners(MouseMotionListener.class);
-		
-		mapPanel.add(moveHandler);
+        mapPanel.add(moveHandler);
         
         // The tools (minimize, maximize and close)
         JPanel mapToolsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         mapToolsPanel.setOpaque(false);
         mapToolsPanel.setPreferredSize(new Dimension(60, 50));
-        
-        JLabel minimize = new JLabel(new ImageIcon("images/window/minimize.png"));
-        minimize.addMouseListener(new MouseAdapter() {  
-        	
-		    public void mouseReleased(MouseEvent e) { 
-		    	try {
-		    		settingsWindow.setIcon(true);
-				} catch (PropertyVetoException e1) {
-					e1.printStackTrace();
-				}
-		    }
-		    
-        });
-        mapToolsPanel.add(minimize);
-        
-        final JLabel maximize = new JLabel(new ImageIcon("images/window/maximize.png"));
-        maximize.addMouseListener(new MouseAdapter() {  
-        	
-		    public void mouseReleased(MouseEvent e) { 
-		    	try {
-		    		if(maximized) {
-		    			settingsWindow.setMaximum(false);
-		    			maximized = false;
-		    			maximize.setIcon(new ImageIcon("images/window/maximize.png"));
-		    		} else {
-		    			settingsWindow.setMaximum(true);
-		    			maximized = true;
-		    			maximize.setIcon(new ImageIcon("images/window/restore.png"));
-		    		}
-				} catch (PropertyVetoException e1) {
-					e1.printStackTrace();
-				}
-		    }
-		    
-        });
-        mapToolsPanel.add(maximize);
         
         JLabel close = new JLabel(new ImageIcon("images/window/close.png"));
         close.addMouseListener(new MouseAdapter() {  
@@ -571,12 +516,12 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener{
 	 */
 	public void repaintMapWindow() {
 				
-		width = settingsWindow.getSize().width;
-		height = settingsWindow.getSize().height;
-		
-		this.setSize(width, height);
-		this.revalidate();
-		this.repaint();
+//		width = settingsWindow.getSize().width;
+//		height = settingsWindow.getSize().height;
+//		
+//		this.setSize(width, height);
+//		this.revalidate();
+//		this.repaint();
 
 	}
 
