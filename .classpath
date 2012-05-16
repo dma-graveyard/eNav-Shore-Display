@@ -24,5 +24,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="extlib/aislib-1.4.jar"/>
 	<classpathentry kind="lib" path="extlib/enavshore-common.jar"/>
+	<classpathentry kind="lib" path="extlib/jgoodies-forms-1.5.1.jar"/>
+	<classpathentry kind="lib" path="extlib/forms-1.3.0.jar"/>
+	<classpathentry kind="lib" path="extlib/miglayout15-swing.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
