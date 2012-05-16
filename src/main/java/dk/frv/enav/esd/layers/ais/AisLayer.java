@@ -87,6 +87,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		while (shouldRun) {
 			ESD.sleep(1000);
 			drawVessels();
+			repaintStatusArea(true);
 		}
 	}
 
@@ -122,6 +123,12 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 				mapScale = chartPanel.getMap().getScale();
 				mapClearTargets();
 			}
+			
+			if ((this.highlightedMMSI != 0 && this.highlightedMMSI != statusArea.getHighlightedVesselMMSI()) || statusArea.getHighlightedVesselMMSI() == -1){
+				drawnVessels.get(highlightedMMSI).showHighlight(false);
+				highlighted = null;
+				this.highlightedMMSI = 0;
+			}
 
 			shipList = aisHandler.getShipList();
 			for (int i = 0; i < shipList.size(); i++) {
@@ -136,7 +143,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					if (trueHeading == 511) {
 						trueHeading = location.getCog();
 					}
-					
+
 					if (!drawnVessels.containsKey(vessel.MMSI)) {
 						vesselComponent = new Vessel(vessel.MMSI);
 						list.add(vesselComponent);
@@ -148,6 +155,28 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 				}
 			}
 			doPrepare();
+		}
+	}
+	
+	private void repaintStatusArea(boolean shouldRepaint){
+		if(shouldRepaint){
+			if(this.highlightedMMSI == 0)
+				return;
+			HashMap<String, String> info = new HashMap<String, String>();
+			Vessel vessel = this.drawnVessels.get(this.highlightedMMSI);
+			info.put("MMSI", Long.toString(vessel.getMMSI()));
+			info.put("Name", vessel.getName());
+			info.put("Heading", vessel.getHeading());
+			info.put("Call sign", vessel.getCallSign());
+			info.put("Latitude", vessel.getLat());
+			info.put("Longitude", vessel.getLon());
+			info.put("Sog", vessel.getSog());
+			info.put("Eta", vessel.getEta());
+			info.put("Destination", vessel.getDest());
+			info.put("Ship type", vessel.getShipType());
+			statusArea.receiveHighlight(info,vessel.getMMSI());
+		} else {
+			statusArea.removeHighlight();
 		}
 	}
 
@@ -218,31 +247,35 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		}
 
 		if (allClosest.size() == 0) {
-			// Nothing close to clicked area
-			if(highlightedMMSI != 0) {
+			if (highlightedMMSI != 0) {
 				drawnVessels.get(highlightedMMSI).showHighlight(false);
-				highlighted = null;
-				statusArea.removeHighlight();
 			}
+			highlighted = null;
+			repaintStatusArea(false);
+			statusArea.setHighlightedVesselMMSI(-1);
+			doPrepare();
 			return false;
 		}
 
 		if (newClosest != highlighted) {
 			VesselLayer vessel = (VesselLayer) newClosest;
-			if(highlightedMMSI != 0) {
+			if (highlightedMMSI != 0) {
 				drawnVessels.get(highlightedMMSI).showHighlight(false);
 			}
 			Vessel ves = drawnVessels.get(vessel.getMMSI());
 			ves.showHighlight(true);
 			highlightedMMSI = vessel.getMMSI();
 			highlighted = newClosest;
-			statusArea.receiveHighlight(ves.getMMSI(), ves.getName());
+			statusArea.setHighlightedVesselMMSI(vessel.getMMSI());
+			repaintStatusArea(true);
 		} else {
 			drawnVessels.get(highlightedMMSI).showHighlight(false);
 			highlightedMMSI = 0;
 			highlighted = null;
-			statusArea.removeHighlight();
+			statusArea.setHighlightedVesselMMSI(-1);
+			repaintStatusArea(false);
 		}
+		doPrepare();
 		return false;
 	}
 

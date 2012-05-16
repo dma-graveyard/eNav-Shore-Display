@@ -380,11 +380,12 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		// Add layer handler to map handler
 		mapHandler.add(layerHandler);
 
-		// Add AIS Layer
+		// Add WMS Layer
 		wmsLayer = new WMSLayer();
 		wmsLayer.setVisible(true);
 		mapHandler.add(wmsLayer);
 
+		// Add AIS Layer
 		aisLayer = new AisLayer();
 		aisLayer.setVisible(true);
 		mapHandler.add(aisLayer);

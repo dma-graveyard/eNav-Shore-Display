@@ -76,6 +76,7 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 	private HashMap<String, JLabel> highlightItems = new HashMap<String, JLabel>();
 	public int width;
 	public int height;
+	private long highlightedMMSI;
 
 	/**
 	 * Constructor for setting up the status area
@@ -84,7 +85,7 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 	 *            reference to the mainframe
 	 */
 	public StatusArea(MainFrame mainFrame) {
-
+		
 		// Setup location
 		this.setLocation((10 + moveHandlerHeight), (80 + mainFrame.getToolbar().getHeight() + mainFrame
 				.getNotificationArea().getHeight()));
@@ -279,31 +280,37 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 		// TODO Auto-generated method stub
 	}
 	
+	public void setHighlightedVesselMMSI(long MMSI){
+		this.highlightedMMSI = MMSI;
+	}
+	
+	public long getHighlightedVesselMMSI(){
+		return this.highlightedMMSI;
+	}
+	
 	/**
 	 * Update status area with highlighted vessel info
+	 * @param hashMap 
 	 * @param MMSI The MMSI of the vessel
 	 * @param name The name (if set) of the vessel, else N/A.
 	 */
-	public void receiveHighlight(long MMSI, String name) {
-		if(highlightItems.containsKey("MMSI")){
-			highlightItems.get("MMSI").setText(" MMSI  " + MMSI);
-		} else {
-			highlightItems.put("MMSI", new JLabel(" MMSI  " + MMSI));
-		}
-		
-		if(highlightItems.containsKey("Name")){
-			highlightItems.get("Name").setText(" Name  " + name);
-		} else {
-			highlightItems.put("Name", new JLabel(" Name  " + name));
+	public void receiveHighlight(HashMap<String, String> hashMap, long MMSI) {
+		if(MMSI != this.highlightedMMSI)
+			return;
+		for (Iterator<Entry<String, String>> i = hashMap.entrySet().iterator(); i.hasNext();) {
+			Entry<String, String> ii = i.next();
+			if(highlightItems.containsKey(ii.getKey())){
+				highlightItems.get(ii.getKey()).setText(" "+ii.getKey()+"  " + ii.getValue());
+			} else {
+				highlightItems.put(ii.getKey(), new JLabel(" "+ii.getKey()+"  " + ii.getValue()));
+			}
 		}
 		repaintToolbar();
-		System.out.println("Size of toolbar after addedH: "+highlightItems.size());
 	}
 	
 	public void removeHighlight(){
 		highlightItems.clear();
 		repaintToolbar();
-		System.out.println("Size of toolbar after removedH: "+highlightItems.size());
 	}
 
 }
