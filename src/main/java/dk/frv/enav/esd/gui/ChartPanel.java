@@ -537,4 +537,14 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 	}
 
+	/**
+	 * Get the msi layer
+	 * @return get the chartpanels msi layer
+	 */
+	public MsiLayer getMsiLayer() {
+		return msiLayer;
+	}
+
+
+	
 }

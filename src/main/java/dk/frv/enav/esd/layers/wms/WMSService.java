@@ -107,7 +107,7 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 				
 			
 		
-//		System.out.println(queryString);
+		System.out.println(queryString);
 		
 		return queryString;
 	}
