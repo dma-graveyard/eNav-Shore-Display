@@ -77,6 +77,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	private JPanel glassPanel;
 	private JPanel loadingPanel;
 	private JPanel highlightPanel;
+	private JPanel aisPanel;
 	private JLabel moveHandler;
 	private JPanel mapPanel;
 	private JPanel masterPanel;
@@ -187,6 +188,10 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		return highlightPanel;
 	}
 	
+	public JPanel getAisPanel(){
+		return aisPanel;
+	}
+	
 	/**
 	 * Function for initializing the glasspane - david help
 	 */
@@ -200,6 +205,12 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		highlightPanel = (JPanel) getGlassPane();
 		highlightPanel.setLayout(null);
 		highlightPanel.setVisible(false);
+	}
+	
+	private void initAisPane() {
+		aisPanel = (JPanel) getGlassPane();
+		aisPanel.setLayout(null);
+		aisPanel.setVisible(false);
 	}
 
 	/**

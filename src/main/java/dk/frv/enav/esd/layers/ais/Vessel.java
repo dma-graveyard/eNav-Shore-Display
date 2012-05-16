@@ -68,7 +68,6 @@ public class Vessel extends OMGraphicList {
 	private double cogR;
 	private double trueHeading;
 	private OMLine speedVector;
-	private HighlightLayer highlight;
 	private LatLonPoint startPos = null;
 	private LatLonPoint endPos = null;
 	public static final float STROKE_WIDTH = 1.5f;
@@ -110,9 +109,6 @@ public class Vessel extends OMGraphicList {
 
 		// MSI / Name layer
 		nameMMSI = new OMText(0, 0, 0, 0, Long.toString(MMSI), font, OMText.JUSTIFY_CENTER);
-		
-		// Highlighting layer
-		highlight = new HighlightLayer(MMSI);
 
 		this.add(vessel);
 		this.add(vesCirc);
@@ -120,7 +116,6 @@ public class Vessel extends OMGraphicList {
 		this.add(speedVector);
 		this.add(callSign);
 		this.add(nameMMSI);
-		this.add(highlight);
 	}
 
 	/**
@@ -142,7 +137,7 @@ public class Vessel extends OMGraphicList {
 		vessel.setHeading(trueHeading);
 
 		heading.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, Math.toRadians(trueHeading));
-		vesselHeading = Double.toString(trueHeading);
+		vesselHeading = Double.toString(Math.round(trueHeading));
 			
 		vesselName = "ID:" + this.MMSI;
 		if (staticData != null) {
@@ -156,8 +151,6 @@ public class Vessel extends OMGraphicList {
 			
 		}
 		nameMMSI.setData(vesselName);
-
-		highlight.setLocation(lat, lon);
 		
 		if (this.lat != lat || this.lon != lon || this.sog != sog || this.cogR != cogR
 				|| this.trueHeading != trueHeading) {			
@@ -258,14 +251,6 @@ public class Vessel extends OMGraphicList {
 		nameMMSI.setVisible(b);
 	}
 	
-	/**
-	 * Highlight the vessel
-	 * @param b boolean stating if the vessel should be highlighted
-	 */
-	public void showHighlight(boolean b){
-		highlight.setVisible(b);
-	}
-	
 	public long getMMSI(){
 		return this.MMSI;
 	}
@@ -291,7 +276,7 @@ public class Vessel extends OMGraphicList {
 	}
 
 	public String getSog() {
-		return Double.toString(sog);
+		return Double.toString(Math.round(sog));
 	}
 	
 	public String getEta() {
