@@ -87,7 +87,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener{
 		super("Settings Window", true, true, true, true);
 		setSize(800, 600);
 		setLocation(10, 10);
-		setVisible(true);
+//		setVisible(true);
 		
 	
 		setResizable(false);
