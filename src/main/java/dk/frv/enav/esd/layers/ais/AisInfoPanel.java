@@ -24,7 +24,7 @@ public class AisInfoPanel extends InfoPanel {
 	 */
 	public void showAisInfo(Vessel vessel) {
 		String aisText = "<HTML>";
-		if(!vessel.getName().startsWith("ID"))
+		if(vessel.getName() != "N/A")
 			aisText += vessel.getName() + " ("+vessel.getMMSI() + ")";
 		else
 			aisText += vessel.getMMSI();

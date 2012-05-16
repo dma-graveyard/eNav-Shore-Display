@@ -176,14 +176,14 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			Vessel vessel = this.drawnVessels.get(this.highlightedMMSI);
 			info.put("MMSI", Long.toString(vessel.getMMSI()));
 			info.put("Name", vessel.getName());
-			info.put("Heading", vessel.getHeading());
+			info.put("COG", vessel.getHeading());
 			info.put("Call sign", vessel.getCallSign());
-			info.put("Latitude", vessel.getLat());
-			info.put("Longitude", vessel.getLon());
-			info.put("Sog", vessel.getSog());
-			info.put("Eta", vessel.getEta());
-			info.put("Destination", vessel.getDest());
-			info.put("Ship type", vessel.getShipType());
+			info.put("LAT", vessel.getLat());
+			info.put("LON", vessel.getLon());
+			info.put("SOG", vessel.getSog());
+			info.put("ETA", vessel.getEta());
+			info.put("DST", vessel.getDest());
+			info.put("Type", vessel.getShipType());
 			statusArea.receiveHighlight(info, vessel.getMMSI());
 		} else {
 			statusArea.removeHighlight();

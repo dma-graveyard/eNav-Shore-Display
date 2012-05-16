@@ -43,6 +43,7 @@ import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.ais.message.AisMessage;
 import dk.frv.enav.ins.ais.VesselStaticData;
+import dk.frv.enav.ins.common.text.Formatter;
 
 /**
  * Vessel class that maintains all the components in a vessel
@@ -55,12 +56,12 @@ public class Vessel extends OMGraphicList {
 	private VesselLayer vessel;
 	private OMCircle vesCirc;
 	private HeadingLayer heading;
-	private String vesselHeading;
+	private String vesselHeading = "N/A";
 	private Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 11);;
 	private OMText callSign = null;
-	private String vesselCallSign;
+	private String vesselCallSign = "N/A";
 	private OMText nameMMSI = null;
-	private String vesselName;
+	private String vesselName = "N/A";
 	private long MMSI;
 	private double lat;
 	private double lon;
@@ -72,9 +73,9 @@ public class Vessel extends OMGraphicList {
 	private LatLonPoint endPos = null;
 	public static final float STROKE_WIDTH = 1.5f;
 	private Color shipColor = new Color(78, 78, 78);
-	private String vesselDest;
-	private String vesselEta;
-	private String vesselShiptype;
+	private String vesselDest = "N/A";
+	private String vesselEta = "N/A";
+	private String vesselShiptype = "N/A";
 			
 
 	/**
@@ -137,7 +138,7 @@ public class Vessel extends OMGraphicList {
 		vessel.setHeading(trueHeading);
 
 		heading.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, Math.toRadians(trueHeading));
-		vesselHeading = Double.toString(Math.round(trueHeading));
+		vesselHeading = Integer.toString((int) Math.round(trueHeading))+"°";
 			
 		vesselName = "ID:" + this.MMSI;
 		if (staticData != null) {
@@ -256,7 +257,10 @@ public class Vessel extends OMGraphicList {
 	}
 	
 	public String getName(){
-		return this.vesselName;
+		if (vesselName.startsWith("ID"))
+			return "N/A";
+		else 
+			return vesselName;
 	}
 
 	public String getHeading() {
@@ -268,15 +272,15 @@ public class Vessel extends OMGraphicList {
 	}
 
 	public String getLat() {
-		return Double.toString(lat);
+		return Formatter.latToPrintable(lat);
 	}
 
 	public String getLon() {
-		return Double.toString(lon);
+		return Formatter.lonToPrintable(lon);
 	}
 
 	public String getSog() {
-		return Double.toString(Math.round(sog));
+		return Integer.toString((int) Math.round(sog))+" kn";
 	}
 	
 	public String getEta() {
