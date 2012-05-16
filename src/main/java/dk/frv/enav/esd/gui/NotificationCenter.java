@@ -22,7 +22,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -64,8 +63,8 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	private JTable table;
 	private MsiHandler msiHandler;
 	
-	private JTextPane area = new JTextPane();
-	private StringBuilder doc = new StringBuilder();
+	//private JTextPane area = new JTextPane();
+	//private StringBuilder doc = new StringBuilder();
 	
 	private MsiTableModel msiTableModel;
 	
@@ -183,10 +182,10 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		messageContent.setBackground(Color.LIGHT_GRAY);
 		messageContent.setLayout(null);
 		contentPane.add(messageContent);
-		area.setEditable(false);
-		area.setContentType("text/html");
-		area.setPreferredSize(new Dimension(485, 130));
-		area.setText("Test");
+		//area.setEditable(false);
+		//area.setContentType("text/html");
+		//area.setPreferredSize(new Dimension(485, 130));
+		//area.setText("Test");
 		//messageContent.add(area);
 		
 		table = new JTable();
@@ -248,7 +247,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 				setModel(msiTableModel);
 			}
 		});
-		table.getSelectionModel().addListSelectionListener(new MSIRowListener());
+		//table.getSelectionModel().addListSelectionListener(new MSIRowListener());
 		
 		lblRead.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -290,13 +289,8 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 			}
 		});
 	}
-	
+	/*
 	private class MSIRowListener implements ListSelectionListener {
-		/**
-		 * Event called on value change
-		 * 
-		 * @param event
-		 */
 		public void valueChanged(ListSelectionEvent event) {
 			if (event.getValueIsAdjusting()) {
 				return;
@@ -310,7 +304,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 			area.setText(doc.toString());
 		}
 	}
-	
+	*/
 	@Override
 	public void findAndInit(Object obj) {
 		if (obj instanceof MsiHandler) {
