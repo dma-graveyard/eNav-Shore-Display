@@ -10,10 +10,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListSelectionModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
@@ -61,6 +63,11 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	private Color leftButtonColorClicked = new Color(45, 45, 45);
 	private JTable table;
 	private MsiHandler msiHandler;
+	
+	private JTextPane area = new JTextPane();
+	private StringBuilder doc = new StringBuilder();
+	
+	private MsiTableModel msiTableModel;
 	
 	/**
 	 * Launch the application.
@@ -176,7 +183,11 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		messageContent.setBackground(Color.LIGHT_GRAY);
 		messageContent.setLayout(null);
 		contentPane.add(messageContent);
-		
+		area.setEditable(false);
+		area.setContentType("text/html");
+		area.setPreferredSize(new Dimension(485, 130));
+		area.setText("Test");
+		//messageContent.add(area);
 		
 		table = new JTable();
 		table.setBounds(10,10,495,120);
@@ -233,10 +244,11 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 			}
 			
 			public void mouseClicked(MouseEvent e) {				
-				MsiTableModel msiTableModel = new MsiTableModel(msiHandler);
+				msiTableModel = new MsiTableModel(msiHandler);
 				setModel(msiTableModel);
 			}
 		});
+		table.getSelectionModel().addListSelectionListener(new MSIRowListener());
 		
 		lblRead.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -277,7 +289,26 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 				lblClose.setBackground(topButtonColor);
 			}
 		});
-		
+	}
+	
+	private class MSIRowListener implements ListSelectionListener {
+		/**
+		 * Event called on value change
+		 * 
+		 * @param event
+		 */
+		public void valueChanged(ListSelectionEvent event) {
+			if (event.getValueIsAdjusting()) {
+				return;
+			}
+			DefaultListSelectionModel values = (DefaultListSelectionModel) event.getSource();
+			doc.delete(0, doc.length());
+			for (int i = 0; i < msiTableModel.getColumnCount(); i++) {
+				doc.append("<b>" + msiTableModel.getColumnName(i) + ":</b> "
+						+ msiTableModel.getValueAt(values.getAnchorSelectionIndex(), i) + "<br /><br />");
+			}
+			area.setText(doc.toString());
+		}
 	}
 	
 	@Override
