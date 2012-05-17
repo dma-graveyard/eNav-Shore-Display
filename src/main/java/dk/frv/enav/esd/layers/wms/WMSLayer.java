@@ -142,8 +142,8 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 					width = chartPanel.getMap().getWidth();
 					height = chartPanel.getMap().getHeight();
 					
-					System.out.println(height);
-					System.out.println(width);
+					//System.out.println(height);
+					//System.out.println(width);
 
 					// System.out.println(chartPanel.getMap().getProjection().forward(chartPanel.getMap().getProjection().getLowerRight()));
 					// System.out.println(upperLeftLon);

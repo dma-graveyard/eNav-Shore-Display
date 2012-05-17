@@ -33,13 +33,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -109,7 +105,7 @@ public abstract class InfoPanel extends JPanel {
 	 */
 	public void setPos(int x, int y) {
 		Rectangle rect = getBounds();
-		System.out.println("Setting at " + x + ", " + y);
+		//System.out.println("Setting at " + x + ", " + y);
 		setBounds(x, y, (int) rect.getWidth(), (int) rect.getHeight());
 	}
 

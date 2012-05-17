@@ -85,6 +85,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	public int height;
 	private static int chartPanelOffset = 12;
 	JInternalFrame mapFrame = null;
+	private int minimumFrameSize = 200;
 
 	/**
 	 * Constructor for setting up the map frame
@@ -200,6 +201,15 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		// Listen for resize
 		mapFrame.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent e) {
+								
+				// Lets make sure the frame doesnt get too small
+				if(mapFrame.getSize().width < minimumFrameSize) {
+					mapFrame.setSize(new Dimension(minimumFrameSize, mapFrame.getSize().height));
+				}
+				if(mapFrame.getSize().height < minimumFrameSize) {
+					mapFrame.setSize(new Dimension(mapFrame.getSize().width, minimumFrameSize));
+				}
+				
 				repaintMapWindow();
 			}
 		});
