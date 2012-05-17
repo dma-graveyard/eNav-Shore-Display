@@ -41,10 +41,12 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
@@ -65,12 +67,12 @@ public class ToolBar extends JInternalFrame {
 	private static int toolItemSize = 35;
 	private static int toolItemColumns = 2;
 	private static int buttonPanelOffset = 4;
-	private ArrayList<JLabel> toolItems = new ArrayList<JLabel>();
+	private ArrayList<ToolItemGroup> toolItemGroups = new ArrayList<ToolItemGroup>();
 	public int width;
 	public int height;
 	private static int iconWidth = 16;
 	private static int iconHeight = 16;
-	private Border toolPaddingBorder = BorderFactory.createMatteBorder(0, 0, 3, 3, new Color(83, 83, 83));
+	private Border toolPaddingBorder = BorderFactory.createMatteBorder(3, 3, 3, 3, new Color(83, 83, 83));
 	private Border toolInnerEtchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(37, 37, 37), new Color(52, 52, 52));
 	
 	/**
@@ -103,17 +105,18 @@ public class ToolBar extends JInternalFrame {
 		
 		// Create the grid for the toolitems
         buttonPanel = new JPanel();
-		buttonPanel.setLayout(new GridLayout(0,2));
-		buttonPanel.setBorder(BorderFactory.createEmptyBorder(3,3,0,0));
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
 		buttonPanel.setBackground(new Color(83, 83, 83));
-		
-		
-		
+	
 		// Setup toolitems (add here for more toolitems)
+		// Tool group: Map tools
+		final ToolItemGroup mapToolItems = new ToolItemGroup();
+	
+		// Tool: Select
 		final JLabel select = new JLabel(toolbarIcon("images/toolbar/select.png"));
 		select.addMouseListener(new MouseAdapter() {  
 		    public void mouseReleased(MouseEvent e) {  
-		    	setActiveToolItem(select);
+		    	setActiveToolItem(select, mapToolItems);
 		    	
 				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
 					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(2);
@@ -121,14 +124,13 @@ public class ToolBar extends JInternalFrame {
 				mainFrame.setMouseMode(2);
 		    }  
 		});
-		select.setBorder(toolPaddingBorder);
-		toolItems.add(select);
+		mapToolItems.addToolItem(select);
 		
 		// Tool: Drag
 		final JLabel drag = new JLabel(toolbarIcon("images/toolbar/drag.png"));
 		drag.addMouseListener(new MouseAdapter() {  
 		    public void mouseReleased(MouseEvent e) {  
-		    	setActiveToolItem(drag);
+		    	setActiveToolItem(drag, mapToolItems);
 		    	
 				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
 					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(1);
@@ -136,14 +138,13 @@ public class ToolBar extends JInternalFrame {
 				mainFrame.setMouseMode(1);
 		    }  
 		});
-		drag.setBorder(toolPaddingBorder);
-		toolItems.add(drag);
+		mapToolItems.addToolItem(drag);
 		
 		// Tool: Zoom
 		final JLabel zoom = new JLabel(toolbarIcon("images/toolbar/zoom.png"));
 		zoom.addMouseListener(new MouseAdapter() {  
 		    public void mouseReleased(MouseEvent e) {  
-		    	setActiveToolItem(zoom);
+		    	setActiveToolItem(zoom, mapToolItems);
 		    	
 				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
 					mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(0);
@@ -151,8 +152,20 @@ public class ToolBar extends JInternalFrame {
 				mainFrame.setMouseMode(0);
 		    }  
 		});  
-		zoom.setBorder(toolPaddingBorder);
-		toolItems.add(zoom);
+		mapToolItems.addToolItem(zoom);
+		
+		// Set that the map tools only can have 1 active tool item at a time
+		mapToolItems.setSingleEnable(true);
+		
+		// Set default active tool item for this group
+		setActiveToolItem(select, mapToolItems);
+		
+		toolItemGroups.add(mapToolItems);
+		
+		
+
+		// Tool group: Layer tools
+		final ToolItemGroup layerToolItems = new ToolItemGroup();
 		
 		// Tool: WMS layer
 		final JLabel wms = new JLabel(toolbarIcon("images/toolbar/wms_small.png"));
@@ -164,26 +177,26 @@ public class ToolBar extends JInternalFrame {
 			    		mainFrame.getMapWindows().get(i).getChartPanel().getWmsLayer().setVisible(false);
 			    		mainFrame.getMapWindows().get(i).getChartPanel().getBgLayer().setVisible(true);
 			    		
-			    		wms.setBorder(toolPaddingBorder);
-			    		wms.setOpaque(false);
+			    		setInactiveToolItem(wms);
 			    		
 			    	}else{
 			    		mainFrame.getMapWindows().get(i).getChartPanel().getWmsLayer().setVisible(true);
 			    		mainFrame.getMapWindows().get(i).getChartPanel().getBgLayer().setVisible(false);
 			    		
-			            wms.setBackground(new Color(55, 55, 55));
-			            wms.setBorder(BorderFactory.createCompoundBorder(toolPaddingBorder, toolInnerEtchedBorder));
-			            wms.setOpaque(true);
+			    		setActiveToolItem(wms, layerToolItems);
 			    	}
 				}
 		    }  
 		});
-		wms.setBorder(toolPaddingBorder);
-		toolItems.add(wms);
-        wms.setBackground(new Color(55, 55, 55));
-        wms.setBorder(BorderFactory.createCompoundBorder(toolPaddingBorder, toolInnerEtchedBorder));
-        wms.setOpaque(true);
+		layerToolItems.addToolItem(wms);
+        
+		// Set that the layer tools can have more than 1 active tool item at a time
+        layerToolItems.setSingleEnable(false);
 		
+        // Set default active tool(s) for this group
+        setActiveToolItem(wms, layerToolItems);
+        
+		toolItemGroups.add(layerToolItems);
 
         
 	    // Create the masterpanel for aligning
@@ -195,18 +208,6 @@ public class ToolBar extends JInternalFrame {
 	    
 	    // And finally refresh the toolbar
 	    repaintToolbar();
-	    
-		// Set default active tool item
-	    int mouseMode = mainFrame.getMouseMode();
-	    if (mouseMode == 0){
-	    	setActiveToolItem(zoom);
-	    }
-	    if (mouseMode == 1){
-	    	setActiveToolItem(drag);
-	    }
-	    if (mouseMode == 2){
-	    	setActiveToolItem(select);	
-	    }
 		
 	}
 	
@@ -215,21 +216,26 @@ public class ToolBar extends JInternalFrame {
 	 * Function for setting the active tool item in the toolbar
 	 * @param tool reference to the active tool
 	 */
-	public void setActiveToolItem(JLabel tool) {
-		// Inactive all tools
-		for(int i=0;i<toolItems.size();i++) {
+	public void setActiveToolItem(JLabel toolItem, ToolItemGroup toolItems) {
+		
+		if(toolItems.isSingleEnable()) {
+			ArrayList<JLabel> items = toolItems.getToolItems();
 			
-			if (toolItems.get(i).getName() != "wms"){
-			
-			toolItems.get(i).setBorder(toolPaddingBorder);
-			toolItems.get(i).setOpaque(false);
+			for(int i=0;i<items.size();i++) {
+				items.get(i).setBorder(toolPaddingBorder);
+				items.get(i).setOpaque(false);
 			}
 		}
 		
 		// Set active tool
-        tool.setBackground(new Color(55, 55, 55));
-        tool.setBorder(BorderFactory.createCompoundBorder(toolPaddingBorder, toolInnerEtchedBorder));
-        tool.setOpaque(true);
+        toolItem.setBackground(new Color(55, 55, 55));
+        toolItem.setBorder(BorderFactory.createCompoundBorder(toolPaddingBorder, toolInnerEtchedBorder));
+        toolItem.setOpaque(true);
+	}
+	
+	public void setInactiveToolItem(JLabel toolItem) {
+		toolItem.setBorder(toolPaddingBorder);
+		toolItem.setOpaque(false);
 	}
 	
 	/**
@@ -278,20 +284,51 @@ public class ToolBar extends JInternalFrame {
 	 */
 	public void repaintToolbar() {
 		
-		// Lets start by adding all the toolitems
-		for(int i=0;i<toolItems.size();i++) {
-			buttonPanel.add(toolItems.get(i));
+		buttonPanel.removeAll();
+		buttonPanel.updateUI();
+		
+		width = toolItemSize * toolItemColumns;
+		height = 0;
+		
+		for(int i=0;i<toolItemGroups.size();i++) {
+			
+			// Add the tool item group
+			JPanel group = new JPanel();
+	        group.setLayout(new GridLayout(0,2));
+	        group.setOpaque(false);
+	        
+	        double temp = (double) toolItemGroups.get(i).getToolItems().size() / (double) toolItemColumns;
+	        int innerHeight = (int) (Math.ceil(temp) * (toolItemSize-3));
+	        
+	        height = height + (int) (Math.ceil(temp) * (toolItemSize-1));
+	        
+	        group.setSize(width, innerHeight);
+	        group.setPreferredSize(new Dimension(width, innerHeight));
+			
+	        // Populate it with tool items
+			ArrayList<JLabel> items = toolItemGroups.get(i).getToolItems();
+			for(int t=0;t<items.size();t++) {
+				JLabel item = items.get(t);
+				group.add(item);
+			}
+			
+			buttonPanel.add(group);
+			
+	        // Add a separator
+			if(i < toolItemGroups.size()-1) {
+				JSeparator sep = new JSeparator();
+				sep.setForeground(new Color(65, 65, 65));
+				buttonPanel.add(sep);
+				
+				height = height + 6;
+			}
 		}
 		
-		// Then calculate the size of the toolbar according to the number of toolitems
-		double temp = (double) toolItems.size() / (double) toolItemColumns;
-		width = toolItemSize * toolItemColumns;
-		int innerHeight = (int) (Math.ceil(temp) * toolItemSize);
-		height = innerHeight;
+		int innerHeight = height;
 		
 		if(!locked)
-			height = innerHeight + moveHandlerHeight;
-				
+			height = height + moveHandlerHeight;
+		
 		// And finally set the size and repaint it
 		buttonPanel.setSize(width, innerHeight - buttonPanelOffset);
 		buttonPanel.setPreferredSize(new Dimension(width, innerHeight - buttonPanelOffset));
