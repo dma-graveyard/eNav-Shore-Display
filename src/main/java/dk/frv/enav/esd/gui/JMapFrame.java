@@ -56,7 +56,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-
 import javax.swing.border.EtchedBorder;
 
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
