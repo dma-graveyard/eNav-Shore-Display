@@ -157,7 +157,7 @@ public class MapSettingsPanel extends JPanel{
 		latitudeSpinner.setValue(latitude.doubleValue());
 		longitudeSpinner.setValue(longitude.doubleValue());
 		wmsTextField.setText(guiSettings.getWmsQuery());
-		wmsCheckBox.setSelected(guiSettings.isUseWMS());
+		wmsCheckBox.setSelected(guiSettings.useWMS());
 		
 	}
 	

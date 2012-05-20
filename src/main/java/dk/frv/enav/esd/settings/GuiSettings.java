@@ -153,7 +153,7 @@ public class GuiSettings implements Serializable {
 		this.workspace = workspace;
 	}
 
-	public boolean isUseWMS() {
+	public boolean useWMS() {
 		return useWMS;
 	}
 

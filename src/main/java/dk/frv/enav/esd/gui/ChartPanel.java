@@ -382,11 +382,6 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 		// Add WMS Layer
 		wmsLayer = new WMSLayer();
-		if (ESD.getSettings().getGuiSettings().isUseWMS()){
-			wmsLayer.setVisible(true);	
-		}else{
-			wmsLayer.setVisible(false);
-		}
 		
 		mapHandler.add(wmsLayer);
 

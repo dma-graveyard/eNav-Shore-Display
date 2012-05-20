@@ -81,7 +81,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private JMenuWorkspaceBar topMenu;
 	private boolean fullscreen = false;
 	private int mouseMode = 2;
-	private boolean wmsLayerEnabled = true;
+	private boolean wmsLayerEnabled;
 	private boolean msiLayerEnabled = true;
 
 	private BeanContextServicesSupport beanHandler;
@@ -102,6 +102,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	 */
 	public MainFrame() {
 		super();
+		System.out.println("before init gui");
 		initGUI();
 
 	}
@@ -137,7 +138,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	/**
-	 * Add a new mapWindow with specific paramters, usually called when loading
+	 * Add a new mapWindow with specific parameters, usually called when loading
 	 * a workspace
 	 * 
 	 * @param workspace
@@ -156,6 +157,13 @@ public class MainFrame extends JFrame implements WindowListener {
 		topMenu.addMap(window, locked, alwaysInFront);
 //		window.getChartPanel().getWmsLayer().setVisible(isWmsLayerEnabled());
 		window.getChartPanel().getMsiLayer().setVisible(isMsiLayerEnabled());
+		
+		if (!wmsLayerEnabled){
+			window.getChartPanel().getWmsLayer().setVisible(false);
+			window.getChartPanel().getBgLayer().setVisible(true);
+		}else{
+			window.getChartPanel().getBgLayer().setVisible(false);
+		}
 		
 		return window;
 	}
@@ -245,8 +253,14 @@ public class MainFrame extends JFrame implements WindowListener {
 		// Get settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
 
+		System.out.println("Setting wmslayer enabled to:" + guiSettings.useWMS());
+		wmsLayerEnabled = guiSettings.useWMS();
+		
 		Workspace workspace = ESD.getSettings().getWorkspace();
 
+		
+		
+		
 		setTitle(TITLE);
 
 		// Set location and size
@@ -261,6 +275,8 @@ public class MainFrame extends JFrame implements WindowListener {
 			setSize(guiSettings.getAppDimensions());
 		}
 
+		
+		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setIconImage(getAppIcon());
 		addWindowListener(this);

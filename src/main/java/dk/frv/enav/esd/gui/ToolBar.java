@@ -48,6 +48,7 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
+import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 
 /**
@@ -185,11 +186,17 @@ public class ToolBar extends JInternalFrame {
 				}
 			}
 		});
-		wms.setBorder(toolPaddingBorder);
+		
+		if (ESD.getSettings().getGuiSettings().useWMS()){
+			wms.setBorder(toolPaddingBorder);
+			wms.setBackground(new Color(55, 55, 55));
+			wms.setBorder(BorderFactory.createCompoundBorder(toolPaddingBorder, toolInnerEtchedBorder));
+			wms.setOpaque(true);			
+		}else{
+			wms.setBorder(toolPaddingBorder);
+			wms.setOpaque(false);
+		}
 
-		wms.setBackground(new Color(55, 55, 55));
-		wms.setBorder(BorderFactory.createCompoundBorder(toolPaddingBorder, toolInnerEtchedBorder));
-		wms.setOpaque(true);
 		toolItems.add(wms);
 
 		 // Tool: MSI layer
