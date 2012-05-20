@@ -382,7 +382,12 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 		// Add WMS Layer
 		wmsLayer = new WMSLayer();
-		wmsLayer.setVisible(true);
+		if (ESD.getSettings().getGuiSettings().isUseWMS()){
+			wmsLayer.setVisible(true);	
+		}else{
+			wmsLayer.setVisible(false);
+		}
+		
 		mapHandler.add(wmsLayer);
 
 		// Add AIS Layer
@@ -407,10 +412,6 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		bgLayer.setVisible(true);
 		mapHandler.add(bgLayer);
 
-		if (encLayer != null) {
-			mapHandler.add(encLayer);
-		}
-
 		// Add map to map handler
 		mapHandler.add(map);
 
@@ -418,6 +419,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		msiLayer.doUpdate();
 
 		if (wmsLayer.isVisible()) {
+			System.out.println("wms is visible");
 			bgLayer.setVisible(false);
 		}
 

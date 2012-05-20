@@ -28,6 +28,7 @@ public class MapSettingsPanel extends JPanel{
 	JSpinner latitudeSpinner;
 	JSpinner longitudeSpinner;
 	JTextField wmsTextField;
+	JCheckBox wmsCheckBox;
 
 	public MapSettingsPanel(Settings settings){
 		super();
@@ -116,12 +117,12 @@ public class MapSettingsPanel extends JPanel{
 		add(wmsSettingsPanel);
 		wmsSettingsPanel.setLayout(null);
 		
-		JCheckBox chckbxNewCheckBox = new JCheckBox("Maps start with WMS enabled");
-		chckbxNewCheckBox.setFont(GuiStyler.defaultFont);
-		chckbxNewCheckBox.setBackground(GuiStyler.backgroundColor);
-		chckbxNewCheckBox.setForeground(GuiStyler.textColor);
-		chckbxNewCheckBox.setBounds(6, 24, 377, 23);
-		wmsSettingsPanel.add(chckbxNewCheckBox);
+		wmsCheckBox = new JCheckBox("Maps start with WMS enabled");
+		wmsCheckBox.setFont(GuiStyler.defaultFont);
+		wmsCheckBox.setBackground(GuiStyler.backgroundColor);
+		wmsCheckBox.setForeground(GuiStyler.textColor);
+		wmsCheckBox.setBounds(6, 24, 377, 23);
+		wmsSettingsPanel.add(wmsCheckBox);
 		
 		wmsTextField = new JTextField();
 		GuiStyler.styleTextFields(wmsTextField);
@@ -156,7 +157,7 @@ public class MapSettingsPanel extends JPanel{
 		latitudeSpinner.setValue(latitude.doubleValue());
 		longitudeSpinner.setValue(longitude.doubleValue());
 		wmsTextField.setText(guiSettings.getWmsQuery());
-		
+		wmsCheckBox.setSelected(guiSettings.isUseWMS());
 		
 	}
 	
@@ -169,6 +170,7 @@ public class MapSettingsPanel extends JPanel{
 		LatLonPoint center = new LatLonPoint.Double((Double) latitudeSpinner.getValue(), (Double) longitudeSpinner.getValue());
 		mapSettings.setCenter(center);
 		
+		guiSettings.setUseWMS(wmsCheckBox.isSelected());
 		guiSettings.setWmsQuery(wmsTextField.getText());
 	}
 }

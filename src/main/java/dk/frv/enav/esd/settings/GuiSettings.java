@@ -51,6 +51,7 @@ public class GuiSettings implements Serializable {
 	private boolean multipleInstancesAllowed = false;
 	private String workspace = "";
 	private String wmsQuery = "";
+	private boolean useWMS = false;
 
 	/**
 	 * Constructor
@@ -103,6 +104,7 @@ public class GuiSettings implements Serializable {
 		fullscreen = PropUtils.booleanFromProperties(props, PREFIX + "fullscreen", fullscreen);
 		workspace = props.getProperty(PREFIX + "workspace");
 		wmsQuery = props.getProperty(PREFIX + "wmsQuery");
+		useWMS = PropUtils.booleanFromProperties(props, PREFIX + "useWMS", useWMS);
 	}
 
 	public void setAppDimensions(Dimension appDimensions) {
@@ -140,6 +142,7 @@ public class GuiSettings implements Serializable {
 		props.put(PREFIX + "fullscreen", Boolean.toString(fullscreen));
 		props.put(PREFIX + "workspace", workspace);
 		props.put(PREFIX + "wmsQuery", wmsQuery);
+		props.put(PREFIX + "useWMS", Boolean.toString(useWMS));
 	}
 
 	public void setWmsQuery(String wmsQuery) {
@@ -149,5 +152,14 @@ public class GuiSettings implements Serializable {
 	public void setWorkspace(String workspace) {
 		this.workspace = workspace;
 	}
+
+	public boolean isUseWMS() {
+		return useWMS;
+	}
+
+	public void setUseWMS(boolean useWMS) {
+		this.useWMS = useWMS;
+	}
+	
 
 }
