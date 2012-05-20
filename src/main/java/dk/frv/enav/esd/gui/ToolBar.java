@@ -50,7 +50,11 @@ import javax.swing.JSeparator;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
+import com.bbn.openmap.MouseDelegator;
+
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
+import dk.frv.enav.esd.gui.route.RouteManagerDialog;
+import dk.frv.enav.esd.event.NavigationMouseMode;
 
 /**
  * Class for setting up the toolbar of the application
@@ -74,6 +78,7 @@ public class ToolBar extends JInternalFrame {
 	private static int iconHeight = 16;
 	private Border toolPaddingBorder = BorderFactory.createMatteBorder(3, 3, 3, 3, new Color(83, 83, 83));
 	private Border toolInnerEtchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(37, 37, 37), new Color(52, 52, 52));
+	private MouseDelegator mouseDelegator;
 	
 	/**
 	 * Constructor for setting up the toolbar
@@ -197,7 +202,54 @@ public class ToolBar extends JInternalFrame {
         setActiveToolItem(wms, layerToolItems);
         
 		toolItemGroups.add(layerToolItems);
+		
+		
+		
+		
+		// Tool group: Route tools
+		final ToolItemGroup routeToolItems = new ToolItemGroup();
+		
+		// Tool: Routes
+		final JLabel routes = new JLabel(toolbarIcon("images/toolbar/routes.png"));
+		routes.setName("routes");
+		routes.addMouseListener(new MouseAdapter() {  
+			public void mousePressed(MouseEvent e) {
+				setActiveToolItem(routes, routeToolItems);
+			}
+			
+		    public void mouseReleased(MouseEvent e) {  
+		    	setInactiveToolItem(routes);
+		    	System.out.println("Routes clicked");
 
+				RouteManagerDialog routeManagerDialog = new RouteManagerDialog(mainFrame);
+				routeManagerDialog.setVisible(true);
+		    } 
+		});
+		routeToolItems.addToolItem(routes);
+		
+		// Tool: New route
+		final JLabel newRoute = new JLabel(toolbarIcon("images/toolbar/routes_new.png"));
+		newRoute.addMouseListener(new MouseAdapter() {  
+		    public void mouseReleased(MouseEvent e) {  
+		    	
+				if (mouseDelegator.getActiveMouseModeID() == NavigationMouseMode.modeID) {
+					mainFrame.getChartPanel().editMode(true);
+				} else {
+					mainFrame.getChartPanel().editMode(false);
+				}
+		    	
+		    	setActiveToolItem(newRoute, routeToolItems);
+		    	System.out.println("New route clicked");
+		    }  
+		});  
+		routeToolItems.addToolItem(newRoute);
+        
+		// Set that the layer tools can have more than 1 active tool item at a time
+		routeToolItems.setSingleEnable(false);
+		
+		toolItemGroups.add(routeToolItems);
+		
+		
         
 	    // Create the masterpanel for aligning
 	    masterPanel = new JPanel(new BorderLayout());
@@ -320,7 +372,7 @@ public class ToolBar extends JInternalFrame {
 				sep.setForeground(new Color(65, 65, 65));
 				buttonPanel.add(sep);
 				
-				height = height + 6;
+				height = height + 7;
 			}
 		}
 		

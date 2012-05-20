@@ -47,7 +47,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.log4j.Logger;
 
-import dk.frv.enav.ins.common.util.Compressor;
+import dk.frv.enav.esd.common.util.Compressor;
 
 
 /**

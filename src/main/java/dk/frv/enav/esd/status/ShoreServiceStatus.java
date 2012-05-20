@@ -32,7 +32,7 @@ package dk.frv.enav.esd.status;
 import java.util.Date;
 
 import dk.frv.enav.esd.services.shore.ShoreServiceException;
-import dk.frv.enav.ins.common.text.Formatter;
+import dk.frv.enav.esd.common.text.Formatter;
 
 
 /**

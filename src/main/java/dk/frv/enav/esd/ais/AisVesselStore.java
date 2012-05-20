@@ -29,7 +29,7 @@
  */
 package dk.frv.enav.esd.ais;
 
-import dk.frv.enav.ins.ais.VesselTarget;
+import dk.frv.enav.esd.ais.VesselTarget;
 
 /**
  * Classed used to store Vessels 

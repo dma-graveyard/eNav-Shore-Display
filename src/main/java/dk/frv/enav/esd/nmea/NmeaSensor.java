@@ -59,14 +59,14 @@ import dk.frv.ais.sentence.Abk;
 import dk.frv.ais.sentence.Sentence;
 import dk.frv.ais.sentence.SentenceException;
 import dk.frv.ais.sentence.Vdm;
-import dk.frv.enav.ins.EeINS;
-import dk.frv.enav.ins.gps.GnssTimeMessage;
-import dk.frv.enav.ins.gps.IGnssTimeListener;
-import dk.frv.enav.ins.nmea.GpRmcSentence;
-import dk.frv.enav.ins.nmea.GpsMessage;
-import dk.frv.enav.ins.nmea.IGpsListener;
-import dk.frv.enav.ins.nmea.PsttSentence;
-import dk.frv.enav.ins.nmea.SensorType;
+import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.gps.GnssTimeMessage;
+import dk.frv.enav.esd.gps.IGnssTimeListener;
+import dk.frv.enav.esd.nmea.GpRmcSentence;
+import dk.frv.enav.esd.nmea.GpsMessage;
+import dk.frv.enav.esd.nmea.IGpsListener;
+import dk.frv.enav.esd.nmea.PsttSentence;
+import dk.frv.enav.esd.nmea.SensorType;
 
 /**
  * Abstract class for reading and handling NMEA messages
@@ -215,7 +215,7 @@ public abstract class NmeaSensor extends MapHandlerChild implements Runnable {
 		long elapsedReal = (now.getTime() - replayStart.getTime()) * replaySpeedup;
 		long diff = elapsedData - elapsedReal;
 		if (diff > 500) {
-			EeINS.sleep(diff / replaySpeedup);
+			ESD.sleep(diff / replaySpeedup);
 		}
 
 		replayEnd = now;

@@ -56,16 +56,16 @@ import dk.frv.ais.message.binary.AisApplicationMessage;
 import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.settings.Settings;
-import dk.frv.enav.ins.EeINS;
-import dk.frv.enav.ins.ais.AisAdressedRouteSuggestion;
-import dk.frv.enav.ins.ais.IAisRouteSuggestionListener;
-import dk.frv.enav.ins.ais.VesselPositionData;
-import dk.frv.enav.ins.ais.VesselStaticData;
-import dk.frv.enav.ins.ais.VesselTarget;
-import dk.frv.enav.ins.common.util.Converter;
-import dk.frv.enav.ins.gps.GpsData;
-import dk.frv.enav.ins.gps.GpsHandler;
-import dk.frv.enav.ins.nmea.SensorType;
+import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
+import dk.frv.enav.esd.ais.IAisRouteSuggestionListener;
+import dk.frv.enav.esd.ais.VesselPositionData;
+import dk.frv.enav.esd.ais.VesselStaticData;
+import dk.frv.enav.esd.ais.VesselTarget;
+import dk.frv.enav.esd.common.util.Converter;
+import dk.frv.enav.esd.gps.GpsData;
+import dk.frv.enav.esd.gps.GpsHandler;
+import dk.frv.enav.esd.nmea.SensorType;
 
 /**
  * AisHandler for Vessels
@@ -99,7 +99,7 @@ public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 			aisRange = settings.getSensorSettings().getAisSensorRange();
 		}
 		sartMmsiPrefix = settings.getAisSettings().getSartPrefix();
-		EeINS.startThread(this, "AisHandler");
+		ESD.startThread(this, "AisHandler");
 	}
 
 	/**

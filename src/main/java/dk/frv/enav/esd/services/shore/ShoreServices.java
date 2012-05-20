@@ -29,17 +29,36 @@
  */
 package dk.frv.enav.esd.services.shore;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.bbn.openmap.MapHandlerChild;
 
+import dk.frv.ais.geo.GeoLocation;
+import dk.frv.enav.common.xml.PositionReport;
+import dk.frv.enav.common.xml.ShoreServiceRequest;
 import dk.frv.enav.common.xml.ShoreServiceResponse;
+import dk.frv.enav.common.xml.metoc.MetocForecast;
+import dk.frv.enav.common.xml.metoc.request.MetocForecastRequest;
+import dk.frv.enav.common.xml.metoc.response.MetocForecastResponse;
 import dk.frv.enav.common.xml.msi.request.MsiPollRequest;
 import dk.frv.enav.common.xml.msi.response.MsiResponse;
+import dk.frv.enav.common.xml.risk.request.RiskRequest;
+import dk.frv.enav.common.xml.risk.response.RiskList;
+import dk.frv.enav.common.xml.risk.response.RiskResponse;
 import dk.frv.enav.esd.ais.AisHandler;
+import dk.frv.enav.esd.gps.GpsHandler;
 import dk.frv.enav.esd.status.ComponentStatus;
 import dk.frv.enav.esd.status.IStatusComponent;
 import dk.frv.enav.esd.status.ShoreServiceStatus;
+import dk.frv.enav.esd.gps.GpsData;
+import dk.frv.enav.esd.route.ActiveRoute;
+import dk.frv.enav.esd.route.Route;
+import dk.frv.enav.esd.services.shore.Metoc;
+import dk.frv.enav.esd.services.shore.ShoreServiceErrorCode;
+import dk.frv.enav.esd.services.shore.ShoreServiceException;
+import dk.frv.enav.esd.ais.VesselPositionData;
 
 
 /**
@@ -50,7 +69,7 @@ public class ShoreServices extends MapHandlerChild implements IStatusComponent {
 	private static final Logger LOG = Logger.getLogger(ShoreServices.class);
 
 	private AisHandler aisHandler;
-//	private GpsHandler gpsHandler;
+	private GpsHandler gpsHandler;
 //	private EnavSettings enavSettings;
 	private ShoreServiceStatus status = new ShoreServiceStatus();
 	
@@ -126,6 +145,73 @@ public class ShoreServices extends MapHandlerChild implements IStatusComponent {
 		}
 		
 		return res;
+	}
+	
+	public MetocForecast routeMetoc(Route route) throws ShoreServiceException {
+		// Get current position if active route
+		GeoLocation pos = null;
+		if (route instanceof ActiveRoute) {
+			GpsData gpsData = gpsHandler.getCurrentData();
+			if (gpsData.isBadPosition()) {
+				throw new ShoreServiceException(ShoreServiceErrorCode.NO_VALID_GPS_DATA);
+			}
+			pos = gpsData.getPosition();
+		}
+		// Create request
+		MetocForecastRequest request = Metoc.generateMetocRequest(route, pos);
+		
+		// Add request parameters
+		addRequestParameters(request);
+		
+		// Make request
+		MetocForecastResponse res = (MetocForecastResponse)makeRequest("/api/xml/routeMetoc", "dk.frv.enav.common.xml.metoc.request", "dk.frv.enav.common.xml.metoc.response", request);
+		
+		return res.getMetocForecast();
+	}
+	
+	public List<RiskList> getRiskIndexes(double southWestLat, double northEastLat, double southWestLon, double northEastLon) throws ShoreServiceException {
+		// Create request
+		RiskRequest req= new RiskRequest();
+		req.setLatMin(southWestLat);
+		req.setLonMin(southWestLon);
+		req.setLatMax(northEastLat);
+		req.setLonMax(northEastLon);
+		//req.setMmsiList(list);
+		// Add request parameters
+		addRequestParameters(req);
+		
+		RiskResponse resp = (RiskResponse) makeRequest("/api/xml/risk", "dk.frv.enav.common.xml.risk.request", "dk.frv.enav.common.xml.risk.response", req); 
+		
+		return resp.getList();
+	}
+	
+	private void addRequestParameters(ShoreServiceRequest request) throws ShoreServiceException {		
+		if (aisHandler != null && aisHandler.getOwnShip() != null) {
+		    request.setMmsi(aisHandler.getOwnShip().getMmsi());
+		    if (aisHandler.getOwnShip().getPositionData() != null) {
+		    	PositionReport posReport = convertPositionReport(aisHandler.getOwnShip().getPositionData());
+		    	if (posReport != null) {
+		    		request.setPositionReport(posReport);
+		    	}
+		    }		    
+		}
+	
+	}
+	
+	public static PositionReport convertPositionReport(VesselPositionData position){
+		PositionReport enavshorePos = new PositionReport();
+		
+		if (position == null || position.getPos() == null) {
+			return null;
+		}
+		
+		enavshorePos.setCog(floatToDouble(position.getCog()));
+		enavshorePos.setHeading(floatToDouble(position.getTrueHeading()));
+		enavshorePos.setLatitude(position.getPos().getLatitude());
+		enavshorePos.setLongitude(position.getPos().getLongitude());
+		enavshorePos.setRot(floatToDouble(position.getRot()));
+		enavshorePos.setSog(floatToDouble(position.getSog()));
+		return enavshorePos;
 	}
 		
 	@Override

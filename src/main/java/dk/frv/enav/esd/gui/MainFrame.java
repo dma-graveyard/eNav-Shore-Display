@@ -47,6 +47,7 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.apache.log4j.Logger;
@@ -54,6 +55,8 @@ import org.apache.log4j.Logger;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.settings.GuiSettings;
 import dk.frv.enav.esd.settings.Workspace;
+import dk.frv.enav.ins.gui.ChartPanel;
+import dk.frv.enav.ins.gui.SensorPanel;
 
 /**
  * The main frame containing map and panels
@@ -81,6 +84,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private JMenuWorkspaceBar topMenu;
 	private boolean fullscreen = false;
 	private int mouseMode = 2;
+	private JPanel glassPanel;
 
 	private BeanContextServicesSupport beanHandler;
 	private List<JMapFrame> mapWindows;
@@ -91,6 +95,8 @@ public class MainFrame extends JFrame implements WindowListener {
 	private ToolBar toolbar = new ToolBar(this);
 	private NotificationArea notificationArea = new NotificationArea(this);
 	private NotificationCenter notificationCenter = new NotificationCenter();
+	private ChartPanel chartPanel;
+	private SensorPanel sensorPanel;
 
 	private StatusArea statusArea = new StatusArea(this);
 
@@ -160,6 +166,10 @@ public class MainFrame extends JFrame implements WindowListener {
 	 */
 	public List<JMapFrame> getMapWindows() {
 		return mapWindows;
+	}
+	
+	public JPanel getGlassPanel() {
+		return glassPanel;
 	}
 
 	/**
@@ -245,9 +255,13 @@ public class MainFrame extends JFrame implements WindowListener {
 			setSize(guiSettings.getAppDimensions());
 		}
 
+		sensorPanel = new SensorPanel();
+		chartPanel = new ChartPanel(sensorPanel);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setIconImage(getAppIcon());
 		addWindowListener(this);
+		
+		chartPanel.initChart();
 
 		desktop = new JMainDesktopPane(this);
 		scrollPane = new JScrollPane();
@@ -471,6 +485,10 @@ public class MainFrame extends JFrame implements WindowListener {
 			this.setUndecorated(false);
 			setVisible(true);
 		}
+	}
+	
+	public ChartPanel getChartPanel() {
+		return chartPanel;
 	}
 
 	/**

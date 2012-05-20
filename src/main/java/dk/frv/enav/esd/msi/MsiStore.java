@@ -51,10 +51,10 @@ import org.apache.log4j.Logger;
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.common.xml.msi.MsiMessage;
 import dk.frv.enav.common.xml.msi.MsiPoint;
-import dk.frv.enav.ins.common.Heading;
-import dk.frv.enav.ins.common.util.Calculator;
-import dk.frv.enav.ins.gps.GnssTime;
-import dk.frv.enav.ins.route.ActiveRoute;
+import dk.frv.enav.esd.common.Heading;
+import dk.frv.enav.esd.common.util.Calculator;
+import dk.frv.enav.esd.gps.GnssTime;
+import dk.frv.enav.esd.route.ActiveRoute;
 
 /**
  * Serializable class to store MSI information

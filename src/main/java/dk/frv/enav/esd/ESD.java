@@ -53,10 +53,12 @@ import dk.frv.enav.esd.nmea.NmeaTcpSensor;
 import dk.frv.enav.esd.services.shore.ShoreServices;
 import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.esd.util.OneInstanceGuard;
-import dk.frv.enav.ins.gps.GnssTime;
-import dk.frv.enav.ins.gps.GpsHandler;
-import dk.frv.enav.ins.nmea.SensorType;
-import dk.frv.enav.ins.settings.SensorSettings;
+import dk.frv.enav.esd.gps.GnssTime;
+import dk.frv.enav.esd.gps.GpsHandler;
+import dk.frv.enav.esd.nmea.SensorType;
+import dk.frv.enav.esd.settings.SensorSettings;
+import dk.frv.enav.esd.route.RouteManager;
+import dk.frv.enav.esd.risk.RiskHandler;
 
 /**
  * Main class with main method.
@@ -82,6 +84,8 @@ public class ESD {
 	private static NmeaSensor gpsSensor;
 	private static GpsHandler gpsHandler;
 	private static ShoreServices shoreServices;
+	private static RouteManager routeManager;
+	private static RiskHandler riskHandler;
 
 	private static ExceptionHandler exceptionHandler = new ExceptionHandler();
 
@@ -255,6 +259,14 @@ public class ESD {
 	public static ShoreServices getShoreServices() {
 		return shoreServices;
 	}
+	
+	public static RouteManager getRouteManager() {
+		return routeManager;
+	}
+	
+	public static RiskHandler getRiskHandler() {
+		return riskHandler;
+	}
 
 	/**
 	 *  Returns the version
@@ -372,6 +384,9 @@ public class ESD {
 		// aisHandler.loadView();
 		beanHandler.add(aisHandler);
 
+        // Load routeManager and register as GPS data listener
+        routeManager = RouteManager.loadRouteManager();
+        beanHandler.add(routeManager);
 
 		// RoundRobinAisTcpReader reader = new RoundRobinAisTcpReader();
 		// reader.setCommaseparatedHostPort("192.168.10.250:4001");
@@ -454,6 +469,10 @@ public class ESD {
 			beanHandler.add(gpsSensor);
 		}
 
+	}
+	
+	public static void startRiskHandler(){
+		riskHandler = new RiskHandler();
 	}
 
 	/**

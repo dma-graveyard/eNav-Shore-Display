@@ -43,8 +43,10 @@ import org.apache.log4j.Logger;
 import com.bbn.openmap.util.PropUtils;
 
 import dk.frv.enav.esd.gui.JMapFrame;
-import dk.frv.enav.ins.settings.AisSettings;
-import dk.frv.enav.ins.settings.SensorSettings;
+import dk.frv.enav.esd.settings.AisSettings;
+import dk.frv.enav.esd.settings.EnavSettings;
+import dk.frv.enav.esd.settings.NavSettings;
+import dk.frv.enav.esd.settings.SensorSettings;
 
 /**
  * Settings class
@@ -63,9 +65,9 @@ public class Settings implements Serializable {
 	
 	private MapSettings mapSettings = new MapSettings();
 	private SensorSettings sensorSettings = new SensorSettings();
-//	private NavSettings navSettings = new NavSettings();
+	private NavSettings navSettings = new NavSettings();
 	private AisSettings aisSettings = new AisSettings();
-//	private EnavSettings enavSettings = new EnavSettings();
+	private EnavSettings enavSettings = new EnavSettings();
 	private Workspace workspace = new Workspace();
 	
 	
@@ -212,5 +214,13 @@ public class Settings implements Serializable {
 
 	public Workspace getWorkspace(){
 		return workspace;
+	}
+	
+	public NavSettings getNavSettings() {
+		return navSettings;
+	}
+	
+	public EnavSettings getEnavSettings() {
+		return enavSettings;
 	}
 }

@@ -58,21 +58,22 @@ import dk.frv.ais.message.AisMessage5;
 import dk.frv.ais.message.AisPositionMessage;
 import dk.frv.ais.message.binary.AisApplicationMessage;
 import dk.frv.ais.message.binary.BroadcastIntendedRoute;
-import dk.frv.enav.ins.EeINS;
-import dk.frv.enav.ins.ais.AisIntendedRoute;
-import dk.frv.enav.ins.ais.AisTarget;
-import dk.frv.enav.ins.ais.AtoNTarget;
-import dk.frv.enav.ins.ais.IAisTargetListener;
-import dk.frv.enav.ins.ais.SarTarget;
-import dk.frv.enav.ins.ais.VesselPositionData;
-import dk.frv.enav.ins.ais.VesselStaticData;
-import dk.frv.enav.ins.ais.VesselTarget;
-import dk.frv.enav.ins.ais.VesselTargetSettings;
-import dk.frv.enav.ins.gps.GnssTime;
-import dk.frv.enav.ins.services.ais.AisServices;
-import dk.frv.enav.ins.status.AisStatus;
-import dk.frv.enav.ins.status.ComponentStatus;
-import dk.frv.enav.ins.status.IStatusComponent;
+import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.ais.AisIntendedRoute;
+import dk.frv.enav.esd.ais.AisTarget;
+import dk.frv.enav.esd.ais.AtoNTarget;
+import dk.frv.enav.esd.ais.IAisTargetListener;
+import dk.frv.enav.esd.ais.SarTarget;
+import dk.frv.enav.esd.ais.VesselPositionData;
+import dk.frv.enav.esd.ais.VesselStaticData;
+import dk.frv.enav.esd.ais.VesselTarget;
+import dk.frv.enav.esd.ais.VesselTargetSettings;
+import dk.frv.enav.esd.gps.GnssTime;
+import dk.frv.enav.esd.services.ais.AisServices;
+import dk.frv.enav.esd.status.AisStatus;
+import dk.frv.enav.esd.status.ComponentStatus;
+import dk.frv.enav.esd.status.IStatusComponent;
+import dk.frv.enav.esd.ais.IAisRouteSuggestionListener;
 
 /**
  * Class for handling incoming AIS messages on a vessel and maintainer of AIS
@@ -117,11 +118,13 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	protected Map<Long, VesselTarget> vesselTargets = new HashMap<Long, VesselTarget>();
 	protected Map<Long, SarTarget> sarTargets = new HashMap<Long, SarTarget>();
 	protected List<IAisTargetListener> listeners = new ArrayList<IAisTargetListener>();
+	private List<IAisRouteSuggestionListener> suggestionListeners = new ArrayList<IAisRouteSuggestionListener>();
 	protected AisServices aisServices = null;
 	protected AisStatus aisStatus = new AisStatus();
 	protected String sartMmsiPrefix = "970";
 	protected boolean showIntendedRouteDefault = false;
 	protected boolean strictAisMode = true;
+	private VesselTarget ownShip = new VesselTarget();	
 
 	/**
 	 * Empty constructor not used
@@ -262,6 +265,8 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 			sarTargets = aisStore.getSarTargets();
 		}
 
+		ownShip = aisStore.getOwnShip();
+		
 		LOG.info("AIS handler loaded total targets: "
 				+ (vesselTargets.size() + atonTargets.size() + sarTargets
 						.size()));
@@ -372,6 +377,11 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	public synchronized void removeListener(IAisTargetListener targetListener) {
 		listeners.remove(targetListener);
 	}
+	
+	public synchronized VesselTarget getOwnShip() {		
+		if (ownShip == null) return null;
+		return new VesselTarget(ownShip);
+	}
 
 	/**
 	 * Run method used when creating the Thread
@@ -380,11 +390,11 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	public void run() {
 		
 		// Publish loaded targets
-		EeINS.sleep(2000);
+		ESD.sleep(2000);
 		publishAll();
 
 		while (true) {
-			EeINS.sleep(10000);
+			ESD.sleep(10000);
 			// Update status on targets
 			updateStatus();
 
@@ -481,6 +491,10 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 			staticData.update(msg24);
 		}
 
+	}
+	
+	public void addRouteSuggestionListener(IAisRouteSuggestionListener routeSuggestionListener) {
+		suggestionListeners.add(routeSuggestionListener);
 	}
 
 	/**

@@ -32,9 +32,9 @@ package dk.frv.enav.esd.ais;
 import java.io.Serializable;
 import java.util.Map;
 
-import dk.frv.enav.ins.ais.AtoNTarget;
-import dk.frv.enav.ins.ais.SarTarget;
-import dk.frv.enav.ins.ais.VesselTarget;
+import dk.frv.enav.esd.ais.AtoNTarget;
+import dk.frv.enav.esd.ais.SarTarget;
+import dk.frv.enav.esd.ais.VesselTarget;
 
 /**
  * Container class for storing AIS view as serialized object
@@ -46,6 +46,7 @@ public class AisStore implements Serializable {
 	private Map<Long, AtoNTarget> atonTargets;
 	private Map<Long, VesselTarget> vesselTargets;
 	private Map<Long, SarTarget> sarTargets;	
+	private VesselTarget ownShip; 
 
 	/**
 	 * Constructor
@@ -68,6 +69,10 @@ public class AisStore implements Serializable {
 	 */
 	public Map<Long, SarTarget> getSarTargets() {
 		return sarTargets;
+	}
+	
+	public VesselTarget getOwnShip() {
+		return ownShip;
 	}
 
 	/**

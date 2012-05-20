@@ -46,10 +46,10 @@ import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.gui.ChartPanel;
 import dk.frv.enav.esd.nmea.IVesselAisListener;
-import dk.frv.enav.ins.ais.VesselPositionData;
-import dk.frv.enav.ins.ais.VesselTarget;
-import dk.frv.enav.ins.gui.MainFrame;
-import dk.frv.enav.ins.layers.ais.AisTargetInfoPanel;
+import dk.frv.enav.esd.ais.VesselPositionData;
+import dk.frv.enav.esd.ais.VesselTarget;
+import dk.frv.enav.esd.gui.MainFrame;
+import dk.frv.enav.esd.layers.ais.AisTargetInfoPanel;
 
 /**
  * The class AisLayer is the layer containing all AIS targets. The class handles
@@ -161,10 +161,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		if (obj instanceof ChartPanel) {
 			chartPanel = (ChartPanel) obj;
 		}
-		if (obj instanceof MainFrame) {
-			mainFrame = (MainFrame) obj;
-			mainFrame.getGlassPanel().add(aisTargetInfoPanel);
-		}
+		//if (obj instanceof MainFrame) {
+		//	mainFrame = (MainFrame) obj;
+		//	mainFrame.getGlassPanel().add(aisTargetInfoPanel);
+		//}
 
 	}
 

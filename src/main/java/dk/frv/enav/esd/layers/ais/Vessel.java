@@ -42,7 +42,7 @@ import com.bbn.openmap.proj.Length;
 import com.bbn.openmap.proj.coords.LatLonPoint;
 import dk.frv.ais.message.AisMessage;
 
-import dk.frv.enav.ins.ais.VesselStaticData;
+import dk.frv.enav.esd.ais.VesselStaticData;
 
 /**
  * Vessel class that maintains all the components in a vessel

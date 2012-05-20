@@ -51,7 +51,7 @@ import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.gui.JMapFrame;
 import dk.frv.enav.esd.msi.MsiHandler;
-import dk.frv.enav.ins.gps.GnssTime;
+import dk.frv.enav.esd.gps.GnssTime;
 
 /**
  * Layer handling all msi messages
