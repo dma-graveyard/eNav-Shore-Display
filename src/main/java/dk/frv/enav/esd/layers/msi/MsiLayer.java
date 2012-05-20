@@ -186,7 +186,7 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 			}
 		}
 		
-		if (newClosest != closest) {
+		if (newClosest != closest && this.isVisible()) {
 			Point containerPoint = SwingUtilities.convertPoint(mapBean, e.getPoint(), jMapFrame);
 			if (newClosest instanceof MsiSymbolGraphic) {
 				closest = newClosest;
