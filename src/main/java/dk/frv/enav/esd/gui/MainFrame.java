@@ -123,9 +123,12 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		topMenu.addMap(window, false, false);
 		if (!wmsLayerEnabled){
+			System.out.println("wmslayer is not enabled");
 			window.getChartPanel().getWmsLayer().setVisible(false);
 			window.getChartPanel().getBgLayer().setVisible(true);
 		}else{
+			System.out.println("wmslayer is enabled");
+			window.getChartPanel().getWmsLayer().setVisible(true);
 			window.getChartPanel().getBgLayer().setVisible(false);
 		}
 		
