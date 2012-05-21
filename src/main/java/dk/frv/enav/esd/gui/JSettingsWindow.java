@@ -135,23 +135,23 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		menuPanel.add(labelContainer);
 
 		String padding = "   ";
-		mapSettings = new JLabel(padding + "Map Settings");
-		GuiStyler.styleTabButton(mapSettings);
+		mapSettings = new JLabel("Map Settings", new ImageIcon("images/settings/map.png"), JLabel.LEFT);
+		GuiStyler.styleActiveTabButton(mapSettings);
 		labelContainer.add(mapSettings);
 
 		// underMenu = new JLabel(padding + "submenu");
 		// styleUnderMenu(underMenu);
 		// labelContainer.add(underMenu);
 
-		connections = new JLabel(padding + "Connections");
+		connections = new JLabel("Connections", new ImageIcon("images/settings/connections.png"), JLabel.LEFT);
 		GuiStyler.styleTabButton(connections);
 		labelContainer.add(connections);
 
-		windowSettings = new JLabel(padding + "Window Settings");
+		windowSettings = new JLabel("Window Settings", new ImageIcon("images/settings/window.png"), JLabel.LEFT);
 		GuiStyler.styleTabButton(windowSettings);
 		labelContainer.add(windowSettings);
 
-		msiLayer = new JLabel(padding + "MSI Layer");
+		msiLayer = new JLabel("MSI Layer", new ImageIcon("images/settings/msi.png"), JLabel.LEFT);
 		GuiStyler.styleTabButton(msiLayer);
 		labelContainer.add(msiLayer);
 
@@ -162,14 +162,16 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		contentPane.setBackground(GuiStyler.backgroundColor);
 		contentPane.setLayout(null);
 
-		ok = new JLabel("  OK");
-		ok.setBounds(400, 390, 30, 20);
+		//ok = new GradientLabel("OK", new ImageIcon("images/toolbar/select.png"), new Color(83, 83, 83), new Color(105, 105, 105));
+		ok = new JLabel("OK", new ImageIcon("images/buttons/ok.png"), JLabel.CENTER);
+		ok.setBounds(335, 390, 75, 20);
 		GuiStyler.styleButton(ok);
 		contentPane.add(ok);
 
-		cancel = new JLabel("  CANCEL");
+		//cancel = new GradientLabel("CANCEL", new Color(83, 83, 83), new Color(105, 105, 105));
+		cancel = new JLabel("CANCEL", new ImageIcon("images/buttons/cancel.png"), JLabel.CENTER);
 		GuiStyler.styleButton(cancel);
-		cancel.setBounds(437, 390, 55, 20);
+		cancel.setBounds(417, 390, 75, 20);
 		contentPane.add(cancel);
 
 		// Content panels
@@ -216,7 +218,8 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 			}
 
 			public void mouseReleased(MouseEvent e) {
-				mapSettings.setBackground(new Color(65, 65, 65));
+				resetTabs();
+				mapSettings.setBackground(new Color(55, 55, 55));
 				breadCrumps.setText("Preferences > Map Settings");
 			}
 
@@ -230,7 +233,8 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 			}
 
 			public void mouseReleased(MouseEvent e) {
-				connections.setBackground(new Color(65, 65, 65));
+				resetTabs();
+				connections.setBackground(new Color(55, 55, 55));
 				breadCrumps.setText("Preferences > Connection Settings");
 			}
 
@@ -244,7 +248,8 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 			}
 
 			public void mouseReleased(MouseEvent e) {
-				windowSettings.setBackground(new Color(65, 65, 65));
+				resetTabs();
+				windowSettings.setBackground(new Color(55, 55, 55));
 				breadCrumps.setText("Preferences > Window Settings");
 			}
 
@@ -258,7 +263,8 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 			}
 
 			public void mouseReleased(MouseEvent e) {
-				msiLayer.setBackground(new Color(65, 65, 65));
+				resetTabs();
+				msiLayer.setBackground(new Color(55, 55, 55));
 				breadCrumps.setText("Preferences > MSI Layer Settings");
 			}
 
@@ -292,6 +298,13 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		//
 		// });
 
+	}
+	
+	public void resetTabs() {
+		mapSettings.setBackground(new Color(65, 65, 65));
+		connections.setBackground(new Color(65, 65, 65));
+		windowSettings.setBackground(new Color(65, 65, 65));
+		msiLayer.setBackground(new Color(65, 65, 65));
 	}
 
 	public JPanel createConnectionsPanel() {
@@ -359,6 +372,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 			}
 
 		});
+		close.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 2));
 		mapToolsPanel.add(close);
 		mapPanel.add(mapToolsPanel);
 
