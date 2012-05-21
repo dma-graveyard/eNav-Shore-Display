@@ -1,5 +1,6 @@
 package dk.frv.enav.esd.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -12,8 +13,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import java.awt.FlowLayout;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListSelectionModel;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,6 +27,7 @@ import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
@@ -30,6 +35,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
+import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 import dk.frv.enav.esd.msi.IMsiUpdateListener;
 import dk.frv.enav.esd.msi.MsiHandler;
 
@@ -44,6 +50,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	Border notificationsIndicatorImportant = BorderFactory.createMatteBorder(0, 0, 0, 10, new Color(206, 120, 120));
 	Border paddingLeftPressed = BorderFactory.createMatteBorder(0, 8, 0, 0, new Color(45, 45, 45));
 	Border notificationPaddingPressed = BorderFactory.createCompoundBorder(paddingBottom, paddingLeftPressed);
+	private MainFrame mainFrame;
 
 	private JTable table;
 	private MsiHandler msiHandler;
@@ -57,18 +64,83 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	private Color backgroundColor = new Color(83, 83, 83);
 	private JTextPane area = new JTextPane();
 	private StringBuilder doc = new StringBuilder();
+	
+	private JLabel moveHandler;
+	private JPanel masterPanel;
+	private static int moveHandlerHeight = 18;
+	private JPanel mapPanel;
 
 	public NotificationCenter() {
-		setResizable(false);
+		//super("NOTCENTER", false, true, false, false);
+		
+		// Strip off window looks
+		setRootPaneCheckingEnabled(false);
+		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).setNorthPane(null);
+		this.setBorder(null);
+		
+		/*
+	    // Create the top movehandler (for dragging)
+        moveHandler = new JLabel("Toolbar", JLabel.CENTER);
+        moveHandler.setForeground(new Color(200, 200, 200));
+        moveHandler.setOpaque(true);
+        moveHandler.setBackground(Color.DARK_GRAY);
+        moveHandler.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(30, 30, 30)));
+        moveHandler.setFont(new Font("Arial", Font.BOLD, 9));
+        moveHandler.setPreferredSize(new Dimension(900, moveHandlerHeight));
+        */
+        
+     // Map tools
+     		mapPanel = new JPanel(new GridLayout(1, 3));
+     		mapPanel.setPreferredSize(new Dimension(500, moveHandlerHeight));
+     		mapPanel.setOpaque(true);
+     		mapPanel.setBackground(Color.DARK_GRAY);
+     		mapPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(30, 30, 30)));
+
+     		//ToolbarMoveMouseListener mml = new ToolbarMoveMouseListener(this, mainFrame);
+     		//mapPanel.addMouseListener(mml);
+     		//mapPanel.addMouseMotionListener(mml);
+
+     		// Placeholder - for now
+     		mapPanel.add(new JLabel());
+
+     		// Movehandler/Title dragable)
+     		moveHandler = new JLabel("Preferences", JLabel.CENTER);
+     		moveHandler.setFont(new Font("Arial", Font.BOLD, 9));
+     		moveHandler.setForeground(new Color(200, 200, 200));
+     		//actions = moveHandler.getListeners(MouseMotionListener.class);
+     		mapPanel.add(moveHandler);
+
+     		// The tools (minimize, maximize and close)
+     		JPanel mapToolsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+     		mapToolsPanel.setOpaque(false);
+     		mapToolsPanel.setPreferredSize(new Dimension(60, 50));
+
+     		JLabel close = new JLabel(new ImageIcon("images/window/close.png"));
+     		close.addMouseListener(new MouseAdapter() {
+
+     			public void mouseReleased(MouseEvent e) {
+     				toggleVisibility();
+     			}
+
+     		});
+     		close.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 2));
+     		mapToolsPanel.add(close);
+     		mapPanel.add(mapToolsPanel);
+		
+        JPanel buttonPanel = new JPanel();
+        
+        setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 900, 600);
-		getContentPane().setBackground(backgroundColor);
+		buttonPanel.setPreferredSize(new Dimension(900,600-moveHandlerHeight));
+		buttonPanel.setSize(new Dimension(900,600-moveHandlerHeight));
+		buttonPanel.setBackground(backgroundColor);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 135, 365, 400 };
 		gridBagLayout.rowHeights = new int[] { 100, 540 };
 		gridBagLayout.columnWeights = new double[] { 1.0, 1.0, 1.0 };
 		gridBagLayout.rowWeights = new double[] { 1.0 };
-		getContentPane().setLayout(gridBagLayout);
+		buttonPanel.setLayout(gridBagLayout);
 		
 		JPanel pane = new JPanel();
 		pane.setLayout(new GridLayout(0, 1));
@@ -79,7 +151,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		gbc_pane.gridx = 0;
 		gbc_pane.gridy = 0;
 		gbc_pane.gridheight = 2;
-		getContentPane().add(pane, gbc_pane);
+		buttonPanel.add(pane, gbc_pane);
 
 		JPanel labelContainer = new JPanel();
 		labelContainer.setLocation(0, 0);
@@ -105,7 +177,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		gbc_scrollPane_2.gridx = 1;
 		gbc_scrollPane_2.gridy = 0;
 		gbc_scrollPane_2.gridheight = 2;
-		getContentPane().add(scrollPane_2, gbc_scrollPane_2);
+		buttonPanel.add(scrollPane_2, gbc_scrollPane_2);
 
 		String[] columnNames = { "ID", "Title" };
 		Object[][] data = new Object[50][2];
@@ -184,7 +256,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		pane_3.add(but);
 		pane_3.add(but2);
 		pane_3.add(but3);
-		getContentPane().add(pane_3, gbc_scrollPane_3);
+		buttonPanel.add(pane_3, gbc_scrollPane_3);
 		
 		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
 		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
@@ -192,7 +264,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		gbc_scrollPane_1.gridy = 1;
 		scrollPane_1 = new JScrollPane();
 		scrollPane_1.setVisible(false);
-		getContentPane().add(scrollPane_1, gbc_scrollPane_1);
+		buttonPanel.add(scrollPane_1, gbc_scrollPane_1);
 		
 		area.setEditable(false);
 		area.setContentType("text/html");
@@ -205,6 +277,14 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		scrollPane_1.setViewportView(area);
 
 		addMouseListeners();
+		
+		
+	    masterPanel = new JPanel(new BorderLayout());
+	    masterPanel.add(mapPanel, BorderLayout.NORTH);
+	    masterPanel.add(buttonPanel, BorderLayout.SOUTH);
+	    masterPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
+	    this.getContentPane().add(masterPanel);
+		
 	}
 
 	public void setModel(TableModel model) {
@@ -281,6 +361,14 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		if (obj instanceof MsiHandler) {
 			msiHandler = (MsiHandler) obj;
 			msiHandler.addListener(this);
+		}
+		if (obj instanceof MainFrame) {
+			System.out.println("jajJ");
+			mainFrame = (MainFrame) obj;
+			
+	        ToolbarMoveMouseListener mml = new ToolbarMoveMouseListener(this, mainFrame);
+	        mapPanel.addMouseListener(mml);
+	        mapPanel.addMouseMotionListener(mml);
 		}
 	}
 
