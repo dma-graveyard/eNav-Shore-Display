@@ -65,7 +65,7 @@ import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
  * @author Steffen D. Sommer (steffendsommer@gmail.com), David A. Camre (davidcamre@gmail.com)
  */
 public class JMapFrame extends JInternalFrame implements MouseListener  {
-	
+
 	private static final long serialVersionUID = 1L;
 	private ChartPanel chartPanel;
 	boolean locked = false;
@@ -93,12 +93,12 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	 * @param mainFrame	reference to the mainframe
 	 */
 	public JMapFrame(int id, MainFrame mainFrame) {
-		
+
 		super("New Window " + id, true, true, true, true);
 
 		this.mainFrame = mainFrame;
 		this.id = id;
-		
+
 		chartPanel = new ChartPanel(mainFrame, this);
 		this.setContentPane(chartPanel);
 		this.setVisible(true);
@@ -108,9 +108,9 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		initHighlightPane();
 		chartPanel.initChart();
 		initGUI();
-		
+
 	}
-	
+
 	/**
 	 * Overloaded constructor for setting up the map frame
 	 * @param id		id number for this map frame
@@ -119,7 +119,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	 * @param scale		map zoom level
 	 */
 	public JMapFrame(int id, MainFrame mainFrame, Point2D center, float scale) {
-		
+
 		super("New Window " + id, true, true, true, true);
 
 		this.mainFrame = mainFrame;
@@ -133,22 +133,22 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		initHighlightPane();
 		chartPanel.initChart(center, scale);
 		initGUI();
-		
+
 	}
-	
+
 	/**
 	 * Function for setting the map frame always on top
 	 */
 	public void alwaysFront() {
-		
+
 		if (alwaysInFront) {
 			alwaysInFront = false;
 		} else {
 			alwaysInFront = true;
 		}
-		
+
 		mainFrame.getDesktop().getManager().addToFront(id, this);
-		
+
 	}
 
 	/**
@@ -158,7 +158,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	public ChartPanel getChartPanel() {
 		return chartPanel;
 	}
-	
+
 	/**
 	 * Function for getting the glassPanel of the map frame
 	 * @return glassPanel the glassPanel of the map frame
@@ -174,7 +174,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	public int getId() {
 		return id;
 	}
-	
+
 	/**
 	 * Function for getting the loadingPanel of the map frame
 	 * @return loadingPanel the loadingPanel of the map frame
@@ -182,15 +182,15 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	public JPanel getLoadingPanel() {
 		return loadingPanel;
 	}
-	
+
 	public JPanel getHighlightPanel(){
 		return highlightPanel;
 	}
-	
+
 	public JPanel getAisPanel(){
 		return aisPanel;
 	}
-	
+
 	/**
 	 * Function for initializing the glasspane - david help
 	 */
@@ -199,14 +199,14 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		glassPanel.setLayout(null);
 		glassPanel.setVisible(false);
 	}
-	
+
 	private void initHighlightPane() {
 		highlightPanel = (JPanel) getGlassPane();
 		highlightPanel.setLayout(null);
 		highlightPanel.setVisible(false);
 	}
-	
-	private void initAisPane() {
+
+	public void initAisPane() {
 		aisPanel = (JPanel) getGlassPane();
 		aisPanel.setLayout(null);
 		aisPanel.setVisible(false);
@@ -217,35 +217,35 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	 */
 	public void initGUI(){
 		makeKeyBindings();
-		
+
 		mapFrame = this;
-		
+
 		// Listen for resize
 		mapFrame.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent e) {
 				repaintMapWindow();
 			}
 		});
-		
+
 		// Strip off
 		setRootPaneCheckingEnabled(false);
 		((javax.swing.plaf.basic.BasicInternalFrameUI)this.getUI()).setNorthPane(null);
 		this.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
-		
+
 		// Map tools
 		mapPanel = new JPanel(new GridLayout(1,3));
 		mapPanel.setPreferredSize(new Dimension(500, moveHandlerHeight));
 		mapPanel.setOpaque(true);
 		mapPanel.setBackground(Color.DARK_GRAY);
 		mapPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(30, 30, 30)));
-		
+
 		ToolbarMoveMouseListener mml = new ToolbarMoveMouseListener(this, mainFrame);
 		mapPanel.addMouseListener(mml);
 		mapPanel.addMouseMotionListener(mml);
-		
+
 		// Placeholder - for now
 		mapPanel.add(new JLabel());
-		
+
         // Movehandler/Title dragable)
         moveHandler = new JLabel("New Window "+id, JLabel.CENTER);
         moveHandler.setFont(new Font("Arial", Font.BOLD, 9));
@@ -256,7 +256,8 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		actions = moveHandler.getListeners(MouseMotionListener.class);
         mapPanel.add(moveHandler);
         
-        // The tools (minimize, maximize and close)
+        
+     // The tools (minimize, maximize and close)
         JPanel mapToolsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         mapToolsPanel.setOpaque(false);
         mapToolsPanel.setPreferredSize(new Dimension(60, 50));
@@ -271,8 +272,9 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 					e1.printStackTrace();
 				}
 		    }
-		    
+
         });
+        minimize.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 3));
         mapToolsPanel.add(minimize);
         
         final JLabel maximize = new JLabel(new ImageIcon("images/window/maximize.png"));
@@ -293,25 +295,28 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 					e1.printStackTrace();
 				}
 		    }
-		    
+
         });
+        maximize.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3));
         mapToolsPanel.add(maximize);
         
         JLabel close = new JLabel(new ImageIcon("images/window/close.png"));
         close.addMouseListener(new MouseAdapter() {  
         	
 		    public void mouseReleased(MouseEvent e) { 
-		    	
+
 		    	try {
 		    		mapFrame.setClosed(true);
 				} catch (PropertyVetoException e1) {
 					e1.printStackTrace();
 				}
 		    }
-		    
+
         });
+        close.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 2));
         mapToolsPanel.add(close);
         mapPanel.add(mapToolsPanel);
+        
         
         // Create the masterpanel for aligning
 	    masterPanel = new JPanel(new BorderLayout());
@@ -352,29 +357,29 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	 * Function for locking/unlocking the map frame
 	 */
 	public void lockUnlockWindow(){
-		
+
 		if(locked) {
-			
+
 			masterPanel.add(mapPanel, BorderLayout.NORTH);
 			locked = false;
 			mapFrame.setResizable(true);
-			
+
 		} else {
-			
+
 			masterPanel.remove(mapPanel);
 			locked = true;
 			mapFrame.setResizable(false);
-			
+
 		}
-		
+
 		repaintMapWindow();
 	}
-	
+
 	/**
 	 * Function for setting the key bindings for the map frame
 	 */
 	private void makeKeyBindings() {
-		
+
 		JPanel content = (JPanel) getContentPane();
 		InputMap inputMap = content.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 
@@ -454,7 +459,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	public void mouseEntered(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 	}
-	
+
 	@Override
 	public void mouseExited(MouseEvent arg0) {
 		// TODO Auto-generated method stub
@@ -477,32 +482,32 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	 * Function for renaming the map frame
 	 */
 	public void rename(){
-		
+
 		String title =
 	        JOptionPane.showInputDialog(this, "Enter a new title:", this.getTitle());
-		
+
 		if (title != null){
-			
+
 			this.setTitle(title);
 			mainFrame.renameMapWindow(this);
 			moveHandler.setText(title);
 
 		}
-		
+
 	}
 
 	/**
 	 * Function for repainting the mapframe after e.g. resize
 	 */
 	public void repaintMapWindow() {
-				
+
 		width = mapFrame.getSize().width;
 		int innerHeight = mapFrame.getSize().height - moveHandlerHeight - chartPanelOffset;
 		height = mapFrame.getSize().height;
-				
+
 		if(locked)
 			innerHeight = mapFrame.getSize().height - 4; // 4 for border
-		
+
 		// And finally set the size and repaint it
 		chartPanel.setSize(width, innerHeight);
 		chartPanel.setPreferredSize(new Dimension(width, innerHeight));
