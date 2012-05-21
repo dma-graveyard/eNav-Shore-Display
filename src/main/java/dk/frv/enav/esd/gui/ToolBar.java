@@ -231,13 +231,13 @@ public class ToolBar extends JInternalFrame {
 		final JLabel newRoute = new JLabel(toolbarIcon("images/toolbar/routes_new.png"));
 		newRoute.addMouseListener(new MouseAdapter() {  
 		    public void mouseReleased(MouseEvent e) {  
-		    	
+		    	/*
 				if (mouseDelegator.getActiveMouseModeID() == NavigationMouseMode.modeID) {
 					mainFrame.getChartPanel().editMode(true);
 				} else {
 					mainFrame.getChartPanel().editMode(false);
 				}
-		    	
+		    	*/
 		    	setActiveToolItem(newRoute, routeToolItems);
 		    	System.out.println("New route clicked");
 		    }  

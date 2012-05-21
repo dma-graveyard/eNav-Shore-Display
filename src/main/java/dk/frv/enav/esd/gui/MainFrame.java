@@ -256,12 +256,12 @@ public class MainFrame extends JFrame implements WindowListener {
 		}
 
 		sensorPanel = new SensorPanel();
-		chartPanel = new ChartPanel(sensorPanel);
+		//chartPanel = new ChartPanel(sensorPanel);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setIconImage(getAppIcon());
 		addWindowListener(this);
 		
-		chartPanel.initChart();
+		//chartPanel.initChart();
 
 		desktop = new JMainDesktopPane(this);
 		scrollPane = new JScrollPane();
