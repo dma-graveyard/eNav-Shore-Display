@@ -62,9 +62,12 @@ import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.layers.ais.AisLayer;
 import dk.frv.enav.esd.layers.msi.MsiLayer;
+import dk.frv.enav.esd.layers.route.RouteLayer;
 import dk.frv.enav.esd.layers.wms.WMSLayer;
 import dk.frv.enav.esd.msi.MsiHandler;
 import dk.frv.enav.esd.settings.MapSettings;
+import dk.frv.enav.esd.route.RoutesUpdateEvent;
+import dk.frv.enav.ins.route.RouteManager;
 
 /**
  * The panel with chart. Initializes all layers to be shown on the map.
@@ -91,6 +94,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	private AisLayer aisLayer;
 	private MsiLayer msiLayer;
 	private WMSLayer wmsLayer;
+	private RouteLayer routeLayer;
 	private MainFrame mainFrame;
 	private Color background = new Color(168, 228, 255);
 	// private Point2D center;
@@ -197,7 +201,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 	@Override
 	public void findAndInit(Object obj) {
-
+		
 	}
 
 	/**
@@ -394,6 +398,11 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		msiLayer = new MsiLayer();
 		msiLayer.setVisible(true);
 		mapHandler.add(msiLayer);
+		
+		// Add Route Layer
+		routeLayer = new RouteLayer();
+		routeLayer.setVisible(true);
+		mapHandler.add(routeLayer);
 
 		// Create MSI handler
 		msiHandler = ESD.getMsiHandler();
@@ -416,6 +425,9 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 
 		// Force a MSI layer update
 		msiLayer.doUpdate();
+		
+		// Force a route layer update
+		routeLayer.routesChanged(RoutesUpdateEvent.ROUTE_ADDED);
 
 		if (wmsLayer.isVisible()) {
 			bgLayer.setVisible(false);

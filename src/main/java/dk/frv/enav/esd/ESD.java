@@ -50,6 +50,7 @@ import dk.frv.enav.esd.gui.MainFrame;
 import dk.frv.enav.esd.msi.MsiHandler;
 import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.nmea.NmeaTcpSensor;
+import dk.frv.enav.esd.route.RouteManager;
 import dk.frv.enav.esd.services.shore.ShoreServices;
 import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.esd.util.OneInstanceGuard;
@@ -82,6 +83,7 @@ public class ESD {
 	private static NmeaSensor gpsSensor;
 	private static GpsHandler gpsHandler;
 	private static ShoreServices shoreServices;
+	private static RouteManager routeManager;
 
 	private static ExceptionHandler exceptionHandler = new ExceptionHandler();
 
@@ -114,7 +116,7 @@ public class ESD {
 
 		// GuiSettings
 		// Handler settings
-		// routeManager.saveToFile();
+		 routeManager.saveToFile();
 		// msiHandler.saveToFile();
 		// aisHandler.saveView();
 
@@ -214,6 +216,10 @@ public class ESD {
 	 */
 	public static MainFrame getMainFrame() {
 		return mainFrame;
+	}
+	
+	public static RouteManager getRouteManager() {
+		return routeManager;
 	}
 
 	/**
@@ -373,6 +379,9 @@ public class ESD {
 		beanHandler.add(aisHandler);
 
 
+        // Load routeManager and register as GPS data listener
+        routeManager = RouteManager.loadRouteManager();
+        beanHandler.add(routeManager);
 		// RoundRobinAisTcpReader reader = new RoundRobinAisTcpReader();
 		// reader.setCommaseparatedHostPort("192.168.10.250:4001");
 

@@ -54,6 +54,7 @@ import org.apache.log4j.Logger;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.settings.GuiSettings;
 import dk.frv.enav.esd.settings.Workspace;
+import dk.frv.enav.esd.gui.route.RouteManagerDialog;
 
 /**
  * The main frame containing map and panels
@@ -94,6 +95,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private NotificationArea notificationArea = new NotificationArea(this);
 	private NotificationCenter notificationCenter = new NotificationCenter();
 	private JSettingsWindow settingsWindow = new JSettingsWindow();
+	private RouteManagerDialog routeManagerDialog;
 
 	private StatusArea statusArea = new StatusArea(this);
 
@@ -167,6 +169,11 @@ public class MainFrame extends JFrame implements WindowListener {
 	 */
 	public JMainDesktopPane getDesktop() {
 		return desktop;
+	}
+	
+	
+	public RouteManagerDialog getRouteManagerDialog() {
+		return routeManagerDialog;
 	}
 
 	/**
@@ -307,6 +314,10 @@ public class MainFrame extends JFrame implements WindowListener {
 		beanHandler.add(this);
 		beanHandler.add(notificationCenter);
 
+		routeManagerDialog = new RouteManagerDialog(this);
+		desktop.add(routeManagerDialog, true);
+		routeManagerDialog.setVisible(true);
+		
 		setWorkSpace(workspace);
 
 	}

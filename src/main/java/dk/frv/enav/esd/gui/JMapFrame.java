@@ -60,12 +60,13 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EtchedBorder;
 
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
+import dk.frv.enav.ins.route.RouteManager;
 
 /**
  * Class for setting up a map frame
  * @author Steffen D. Sommer (steffendsommer@gmail.com), David A. Camre (davidcamre@gmail.com)
  */
-public class JMapFrame extends JInternalFrame implements MouseListener  {
+public class JMapFrame extends ComponentFrame implements MouseListener  {
 
 	private static final long serialVersionUID = 1L;
 	private ChartPanel chartPanel;
@@ -516,6 +517,18 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		this.revalidate();
 		this.repaint();
 
+	}
+	
+	@Override
+	public void findAndInit(Object obj) {
+		System.out.println(obj.getClass());
+		if (obj instanceof RouteManager) {
+			System.out.println("find route manager");
+//			routeManager = (RouteManager)obj;
+//			routeManager.addListener(this);
+		}
+
+		
 	}
 
 }

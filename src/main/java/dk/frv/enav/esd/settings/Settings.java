@@ -63,9 +63,9 @@ public class Settings implements Serializable {
 	
 	private MapSettings mapSettings = new MapSettings();
 	private SensorSettings sensorSettings = new SensorSettings();
-//	private NavSettings navSettings = new NavSettings();
+	private NavSettings navSettings = new NavSettings();
 	private AisSettings aisSettings = new AisSettings();
-//	private EnavSettings enavSettings = new EnavSettings();
+	private EnavSettings enavSettings = new EnavSettings();
 	private Workspace workspace = new Workspace();
 	
 	
@@ -88,10 +88,10 @@ public class Settings implements Serializable {
 			return;
 		}
 		aisSettings.readProperties(props);
-//		enavSettings.readProperties(props);
+		enavSettings.readProperties(props);
 		guiSettings.readProperties(props);
 		mapSettings.readProperties(props);
-//		navSettings.readProperties(props);
+		navSettings.readProperties(props);
 		sensorSettings.readProperties(props);
 		
 		
@@ -136,11 +136,11 @@ public class Settings implements Serializable {
 	public void saveToFile() {
 		Properties props = new Properties();
 //		aisSettings.setProperties(props);
-//		enavSettings.setProperties(props);
+		enavSettings.setProperties(props);
 		guiSettings.setProperties(props);
 		mapSettings.setProperties(props);
 
-//		navSettings.setProperties(props);
+		navSettings.setProperties(props);
 //		sensorSettings.setProperties(props);
 		
 		try {
@@ -212,5 +212,13 @@ public class Settings implements Serializable {
 
 	public Workspace getWorkspace(){
 		return workspace;
+	}
+	
+	public EnavSettings getEnavSettings() {
+		return enavSettings;
+	}
+	
+	public NavSettings getNavSettings() {
+		return navSettings;
 	}
 }
