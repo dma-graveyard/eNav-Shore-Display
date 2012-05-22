@@ -1,0 +1,98 @@
+package dk.frv.enav.esd.gui.settingtabs;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.MatteBorder;
+
+public class GuiStyler {
+	
+	public static Font defaultFont = new Font("Arial", Font.PLAIN, 11);
+	public static Color textColor = new Color(237, 237, 237);
+	public static Color backgroundColor = new Color(83, 83, 83);
+	public static Border border = new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70));
+	//Border paddingLeft = BorderFactory.createMatteBorder(0, 8, 0, 0, new Color(65, 65, 65));
+	
+	public static void styleTabButton(JLabel label){
+		label.setPreferredSize(new Dimension(125, 25));
+//		generalSettings.setSize(new Dimension(76, 30));
+		label.setFont(defaultFont);
+		label.setForeground(textColor);
+		label.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 5));
+		label.setBackground(new Color(65, 65, 65));
+		label.setOpaque(true);
+	}
+	
+	public static void styleActiveTabButton(JLabel label){
+		label.setPreferredSize(new Dimension(125, 25));
+//		generalSettings.setSize(new Dimension(76, 30));
+		label.setFont(defaultFont);
+		label.setForeground(textColor);
+		label.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 5));
+		label.setBackground(new Color(55, 55, 55));
+		label.setOpaque(true);
+	}
+	
+	public static void styleButton(final JLabel label){
+		label.setPreferredSize(new Dimension(125, 25));
+//		generalSettings.setSize(new Dimension(76, 30));
+		label.setFont(defaultFont);
+		label.setForeground(textColor);
+		//label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+		label.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(45, 45, 45)));
+		label.setBackground(new Color(60, 60, 60));
+		label.setOpaque(true);
+		//label.setVerticalTextPosition(JLabel.BOTTOM);
+		label.setHorizontalTextPosition(JLabel.RIGHT);
+		
+		label.addMouseListener(new MouseAdapter() {  
+		    public void mousePressed(MouseEvent e) {
+		    	label.setBackground(new Color(45, 45, 45));
+		    }
+			
+		    public void mouseReleased(MouseEvent e) {
+		    	label.setBackground(new Color(60, 60, 60));
+		    }
+		});
+	}
+	
+	public static void styleUnderMenu(JLabel label){
+		label.setPreferredSize(new Dimension(125, 25));
+		label.setFont(defaultFont);
+		label.setForeground(textColor);
+		label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+		label.setBackground(Color.gray);
+		label.setOpaque(true);
+	}
+	
+	public static void styleText(JLabel label){
+		label.setFont(defaultFont);
+		label.setForeground(textColor);
+	}
+	
+	public static void styleSpinner(JSpinner spinner){
+		spinner.setBorder(GuiStyler.border);
+		
+		JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor)spinner.getEditor();
+        editor.getTextField().setBackground(GuiStyler.backgroundColor);
+        editor.getTextField().setForeground(GuiStyler.textColor);
+        editor.getTextField().setFont(GuiStyler.defaultFont);
+        editor.getTextField().setCaretColor(GuiStyler.textColor);
+	}
+	
+	public static void styleTextFields(JTextField jtextField){
+		jtextField.setBackground(GuiStyler.backgroundColor);
+		jtextField.setForeground(GuiStyler.textColor);
+		jtextField.setFont(GuiStyler.defaultFont);
+		jtextField.setCaretColor(GuiStyler.textColor);
+	}
+}
