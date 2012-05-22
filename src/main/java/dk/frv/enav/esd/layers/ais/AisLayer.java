@@ -168,11 +168,6 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			}
 			doPrepare();
 			// move ship highlight icon
-<<<<<<< HEAD
-			//ESD.sleep(500);
-=======
-			// ESD.sleep(500);
->>>>>>> 9d5657980eff1b0ab1b5d7c5b5124f6efa147096
 			if (highlighted != null) {
 				Point2D newXY = chartPanel.getMap().getProjection().forward(highlightedVessel.getLat(), highlightedVessel.getLon());
 				if (xy != newXY) {

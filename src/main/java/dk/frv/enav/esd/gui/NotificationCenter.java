@@ -277,7 +277,6 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		masterPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(
 				45, 45, 45)));
 		this.getContentPane().add(masterPanel);
-		this.setVisible(true);
 	}
 
 	public void setModel(TableModel model) {
