@@ -32,8 +32,12 @@ package dk.frv.enav.esd.gui.msi;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
+import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.common.xml.msi.MsiLocation;
 import dk.frv.enav.esd.msi.MsiHandler;
 import dk.frv.enav.ins.common.text.Formatter;
@@ -59,6 +63,10 @@ public class MsiTableModel extends AbstractTableModel {
 		super();
 		this.msiHandler = msiHandler;
 		updateMessages();
+	}
+	
+	public GeoLocation getMessageLatLon(int rowIndex){
+		return messages.get(rowIndex).msiMessage.getLocation().getCenter();
 	}
 
 	/**

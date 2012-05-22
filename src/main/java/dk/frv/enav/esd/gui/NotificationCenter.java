@@ -14,6 +14,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import java.awt.FlowLayout;
+import java.util.List;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListSelectionModel;
@@ -21,6 +23,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
@@ -30,12 +33,16 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
+import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
+import dk.frv.enav.esd.gui.msi.MsiTableModel;
 import dk.frv.enav.esd.msi.IMsiUpdateListener;
 import dk.frv.enav.esd.msi.MsiHandler;
 
@@ -54,7 +61,8 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 
 	private JTable table;
 	private MsiHandler msiHandler;
-
+	private MsiTableModel msiTableModel;
+	
 	private JPanel pane_3;
 	private JScrollPane scrollPane_1;
 	private JLabel MSI;
@@ -64,7 +72,10 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	private Color backgroundColor = new Color(83, 83, 83);
 	private JTextPane area = new JTextPane();
 	private StringBuilder doc = new StringBuilder();
-
+	private JLabel but_read;
+	private JLabel but_goto;
+	private JLabel but_delete;
+	private int selectedRow;
 	private JLabel moveHandler;
 	private JPanel masterPanel;
 	private static int moveHandlerHeight = 18;
@@ -163,14 +174,10 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		gbc_scrollPane_2.gridy = 0;
 		gbc_scrollPane_2.gridheight = 2;
 		buttonPanel.add(scrollPane_2, gbc_scrollPane_2);
-
-		String[] columnNames = { "ID", "Title" };
-		Object[][] data = new Object[50][2];
-		for (int i = 0; i < 50; i++) {
-			data[i][0] = i;
-			data[i][1] = "Lighthouse exploded for the " + i + "th time";
-		}
-		table = new JTable(data, columnNames) {
+		String[] colHeadings = {"ID","Title"};
+		DefaultTableModel model = new DefaultTableModel(35, colHeadings.length);
+		model.setColumnIdentifiers(colHeadings);
+		table = new JTable(model) {
 			private static final long serialVersionUID = 1L;
 
 			public Component prepareRenderer(TableCellRenderer renderer, int Index_row, int Index_col) {
@@ -190,10 +197,11 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 
 		JTableHeader header = table.getTableHeader();
 		header.setBackground(Color.BLACK);
-		header.setForeground(Color.red);
+		header.setForeground(Color.BLACK);
 		header.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
-		header.setAutoscrolls(false);
+		//header.setAutoscrolls(false);
 		header.setEnabled(false);
+		header.setPreferredSize(new Dimension(100,20));
 		TableCellRenderer renderer = header.getDefaultRenderer();
 		JLabel label = (JLabel) renderer;
 		label.setHorizontalAlignment(JLabel.LEFT);
@@ -206,13 +214,13 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		table.setBackground(new Color(49, 49, 49));
 		table.setShowVerticalLines(false);
 		table.setShowHorizontalLines(false);
-		table.setShowVerticalLines(false);
 		table.setShowGrid(false);
 		table.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
 		table.setForeground(Color.white);
 		table.setSelectionForeground(Color.gray);
-		table.setSelectionBackground(Color.red);
-		table.setRowSelectionAllowed(true);
+		table.setRowSelectionAllowed(false);
+		table.setRowHeight(20);
+		table.setFocusable(false);
 		int tablewidth = 345;
 		int col1width = 50;
 		int col2width = tablewidth - col1width;
@@ -220,6 +228,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		col1.setPreferredWidth(col1width);
 		TableColumn col2 = table.getColumnModel().getColumn(1);
 		col2.setPreferredWidth(col2width);
+		scrollPane_2.getViewport().setBackground(backgroundColor);
 		scrollPane_2.setViewportView(table);
 
 		// Right
@@ -231,15 +240,15 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		pane_3.setBackground(backgroundColor);
 		pane_3.setLayout(new GridLayout(0, 3));
 		pane_3.setVisible(false);
-		JLabel but = new JLabel("READ");
-		but.setBorder(BorderFactory.createLineBorder(Color.black));
-		JLabel but2 = new JLabel("GOTO");
-		but2.setBorder(BorderFactory.createLineBorder(Color.black));
-		JLabel but3 = new JLabel("DELETE");
-		but3.setBorder(BorderFactory.createLineBorder(Color.black));
-		pane_3.add(but);
-		pane_3.add(but2);
-		pane_3.add(but3);
+		but_read = new JLabel("READ");
+		but_read.setBorder(BorderFactory.createLineBorder(Color.black));
+		but_goto = new JLabel("GOTO");
+		but_goto.setBorder(BorderFactory.createLineBorder(Color.black));
+		but_delete = new JLabel("DELETE");
+		but_delete.setBorder(BorderFactory.createLineBorder(Color.black));
+		pane_3.add(but_read);
+		pane_3.add(but_goto);
+		pane_3.add(but_delete);
 		buttonPanel.add(pane_3, gbc_scrollPane_3);
 
 		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
@@ -269,7 +278,6 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 				45, 45, 45)));
 		this.getContentPane().add(masterPanel);
 		this.setVisible(true);
-
 	}
 
 	public void setModel(TableModel model) {
@@ -308,23 +316,36 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 			public void mouseReleased(MouseEvent e) {
 				MSI.setBackground(leftButtonColor);
 			}
+			
+			public void mouseClicked(MouseEvent e) {
+				// Activate and update table
+				table.setFocusable(true);
+				msiTableModel = new MsiTableModel(msiHandler);
+				table.setModel(msiTableModel);
+				table.getSelectionModel().addListSelectionListener(new MSIRowListener());
+			}
 		});
-
-		table.getSelectionModel().addListSelectionListener(new TableRowListener());
+		
+		but_goto.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {				
+				mainFrame.getMapWindows().get(0).getChartPanel().zoomToPoint(msiTableModel.getMessageLatLon(selectedRow));
+			}
+		});
 	}
 
-	private class TableRowListener implements ListSelectionListener {
+	private class MSIRowListener implements ListSelectionListener {
 
 		public void valueChanged(ListSelectionEvent event) {
 			if (event.getValueIsAdjusting()) {
 				return;
 			}
+								
 			DefaultListSelectionModel values = (DefaultListSelectionModel) event.getSource();
-
+			
 			// Show buttons and area in right pane
 			pane_3.setVisible(true);
 			scrollPane_1.setVisible(true);
-
+			selectedRow = values.getAnchorSelectionIndex();
 			// Update area
 			doc.delete(0, doc.length());
 			for (int i = 0; i < table.getModel().getColumnCount(); i++) {
@@ -334,6 +355,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 			area.setText(doc.toString());
 		}
 	}
+
 
 	@Override
 	public void findAndInit(Object obj) {
