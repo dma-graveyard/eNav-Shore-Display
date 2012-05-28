@@ -17,6 +17,7 @@ import javax.swing.border.MatteBorder;
 public class GuiStyler {
 	
 	public static Font defaultFont = new Font("Arial", Font.PLAIN, 11);
+	public static Font subTabFont = new Font("Arial", Font.PLAIN, 10);
 	public static Color textColor = new Color(237, 237, 237);
 	public static Color backgroundColor = new Color(83, 83, 83);
 	public static Border border = new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70));
@@ -29,6 +30,17 @@ public class GuiStyler {
 		label.setForeground(textColor);
 		label.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 5));
 		label.setBackground(new Color(65, 65, 65));
+		label.setOpaque(true);
+	}
+	
+	public static void styleSubTab(JLabel label){
+		label.setPreferredSize(new Dimension(124, 25));
+//		generalSettings.setSize(new Dimension(76, 30));
+//		label.setFont(subTabFont);
+		label.setFont(subTabFont);
+		label.setForeground(textColor);
+		label.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 5));
+		label.setBackground(new Color(75, 75, 75));
 		label.setOpaque(true);
 	}
 	

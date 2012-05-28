@@ -358,6 +358,8 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	 */
 	public void lockUnlockWindow(){
 
+		
+		
 		if(locked) {
 
 			masterPanel.add(mapPanel, BorderLayout.NORTH);

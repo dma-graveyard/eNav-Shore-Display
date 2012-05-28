@@ -10,6 +10,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -17,6 +19,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
@@ -31,6 +34,8 @@ import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 import dk.frv.enav.esd.gui.settingtabs.MapSettingsPanel;
 import dk.frv.enav.esd.gui.settingtabs.GuiStyler;
+import dk.frv.enav.esd.gui.settingtabs.MapWindowSinglePanel;
+import dk.frv.enav.esd.gui.settingtabs.MapWindowsPanel;
 import dk.frv.enav.esd.settings.Settings;
 
 public class JSettingsWindow extends ComponentFrame implements MouseListener {
@@ -53,13 +58,24 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 
 	private JLabel mapSettings;
 	private JLabel connections;
-	private JLabel windowSettings;
-	private JLabel msiLayer;
+	private JLabel aisSettings;
+	private JLabel eNavServices;
+	private JLabel mapWindows;
+	private JLabel routeSettings;
+
+	private List<JLabel> mapWindowsList;
+	private List<MapWindowSinglePanel> mapWindowsListPanels;
 
 	private MapSettingsPanel mapSettingsPanel;
-	private JPanel connectionsSettingsPanel;
-	private JPanel windowSettingsPanel;
-	private JPanel msiSettingsPanel;
+	private MapWindowsPanel mapWindowsPanel;
+	private JPanel connectionsPanel;
+	private JPanel aisSettingsPanel;
+	private JPanel eNavSettingsPanel;
+	private JPanel routeSettingsPanel;
+	
+	private JPanel contentPane;
+
+	private JPanel labelContainer;
 
 	private JLabel ok;
 	private JLabel cancel;
@@ -111,102 +127,6 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		breadCrumps.setHorizontalAlignment(SwingConstants.LEFT);
 		topPanel.add(breadCrumps);
 
-		JPanel bottomPanel = new JPanel();
-		backgroundPane.add(bottomPanel, "1, 3, fill, fill");
-		bottomPanel.setLayout(null);
-
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(0, 0, 140, 428);
-		scrollPane.setBorder(null);
-		bottomPanel.add(scrollPane);
-
-		// Panels
-
-		JPanel menuPanel = new JPanel();
-		scrollPane.setViewportView(menuPanel);
-		menuPanel.setBackground(GuiStyler.backgroundColor);
-		menuPanel.setLayout(null);
-
-		JPanel labelContainer = new JPanel();
-		labelContainer.setLocation(0, 0);
-		labelContainer.setBackground(GuiStyler.backgroundColor);
-		labelContainer.setSize(new Dimension(140, 500));
-
-		menuPanel.add(labelContainer);
-
-		String padding = "   ";
-		mapSettings = new JLabel("Map Settings", new ImageIcon("images/settings/map.png"), JLabel.LEFT);
-		GuiStyler.styleActiveTabButton(mapSettings);
-		labelContainer.add(mapSettings);
-
-		// underMenu = new JLabel(padding + "submenu");
-		// styleUnderMenu(underMenu);
-		// labelContainer.add(underMenu);
-
-		connections = new JLabel("Connections", new ImageIcon("images/settings/connections.png"), JLabel.LEFT);
-		GuiStyler.styleTabButton(connections);
-		labelContainer.add(connections);
-
-		windowSettings = new JLabel("Window Settings", new ImageIcon("images/settings/window.png"), JLabel.LEFT);
-		GuiStyler.styleTabButton(windowSettings);
-		labelContainer.add(windowSettings);
-
-		msiLayer = new JLabel("MSI Layer", new ImageIcon("images/settings/msi.png"), JLabel.LEFT);
-		GuiStyler.styleTabButton(msiLayer);
-		labelContainer.add(msiLayer);
-
-		JPanel contentPane = new JPanel();
-		contentPane.setBorder(new MatteBorder(0, 1, 0, 0, (Color) new Color(70, 70, 70)));
-		contentPane.setBounds(140, 0, 513, 428);
-		bottomPanel.add(contentPane);
-		contentPane.setBackground(GuiStyler.backgroundColor);
-		contentPane.setLayout(null);
-
-		//ok = new GradientLabel("OK", new ImageIcon("images/toolbar/select.png"), new Color(83, 83, 83), new Color(105, 105, 105));
-		ok = new JLabel("OK", new ImageIcon("images/buttons/ok.png"), JLabel.CENTER);
-		ok.setBounds(335, 390, 75, 20);
-		GuiStyler.styleButton(ok);
-		contentPane.add(ok);
-
-		//cancel = new GradientLabel("CANCEL", new Color(83, 83, 83), new Color(105, 105, 105));
-		cancel = new JLabel("CANCEL", new ImageIcon("images/buttons/cancel.png"), JLabel.CENTER);
-		GuiStyler.styleButton(cancel);
-		cancel.setBounds(417, 390, 75, 20);
-		contentPane.add(cancel);
-
-		// Content panels
-		mapSettingsPanel = new MapSettingsPanel(settings);
-		connectionsSettingsPanel = createConnectionsPanel();
-		connectionsSettingsPanel.setVisible(false);
-		windowSettingsPanel = createConnectionsPanel();
-		windowSettingsPanel.setVisible(false);
-		msiSettingsPanel = createConnectionsPanel();
-		msiSettingsPanel.setVisible(false);
-
-		contentPane.add(mapSettingsPanel);
-
-		contentPane.add(connectionsSettingsPanel);
-
-		contentPane.add(windowSettingsPanel);
-
-		contentPane.add(windowSettingsPanel);
-
-		contentPane.add(msiSettingsPanel);
-
-		// JLabel lblHeadline = new JLabel("Headline");
-		// lblHeadline.setBounds(10, 11, 243, 14);
-		// generalSettingsPanel.add(lblHeadline);
-		//
-		// JLabel lblBla = new JLabel("bla");
-		// lblBla.setBounds(10, 50, 46, 14);
-		// generalSettingsPanel.add(lblBla);
-		//
-		// JLabel lblBlabla = new JLabel("blabla");
-		// lblBlabla.setBounds(53, 87, 46, 14);
-		// generalSettingsPanel.add(lblBlabla);
-
-		addMouseListeners();
-
 	}
 
 	public void addMouseListeners() {
@@ -215,6 +135,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 				mapSettings.setBackground(new Color(45, 45, 45));
 				hideAllPanels();
 				mapSettingsPanel.setVisible(true);
+				hideMapTabs();
 			}
 
 			public void mouseReleased(MouseEvent e) {
@@ -225,47 +146,88 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 
 		});
 
+		mapWindows.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				mapWindows.setBackground(new Color(45, 45, 45));
+				hideAllPanels();
+				mapWindowsPanel.loadSettings();
+				mapWindowsPanel.setVisible(true);
+
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				resetTabs();
+				mapWindows.setBackground(new Color(55, 55, 55));
+				breadCrumps.setText("Preferences > Map Windows");
+
+				for (int i = 0; i < mapWindowsList.size(); i++) {
+					mapWindowsList.get(i).setVisible(true);
+				}
+
+			}
+
+		});
+
 		connections.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				connections.setBackground(new Color(45, 45, 45));
 				hideAllPanels();
-				connectionsSettingsPanel.setVisible(true);
+				connectionsPanel.setVisible(true);
+				hideMapTabs();
 			}
 
 			public void mouseReleased(MouseEvent e) {
 				resetTabs();
 				connections.setBackground(new Color(55, 55, 55));
-				breadCrumps.setText("Preferences > Connection Settings");
+				breadCrumps.setText("Preferences > Connections");
 			}
 
 		});
 
-		windowSettings.addMouseListener(new MouseAdapter() {
+		aisSettings.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				windowSettings.setBackground(new Color(45, 45, 45));
+				aisSettings.setBackground(new Color(45, 45, 45));
 				hideAllPanels();
-				windowSettingsPanel.setVisible(true);
+				aisSettingsPanel.setVisible(true);
+				hideMapTabs();
 			}
 
 			public void mouseReleased(MouseEvent e) {
 				resetTabs();
-				windowSettings.setBackground(new Color(55, 55, 55));
-				breadCrumps.setText("Preferences > Window Settings");
+				aisSettings.setBackground(new Color(55, 55, 55));
+				breadCrumps.setText("Preferences > AIS Settings");
 			}
 
 		});
 
-		msiLayer.addMouseListener(new MouseAdapter() {
+		eNavServices.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				msiLayer.setBackground(new Color(45, 45, 45));
+				eNavServices.setBackground(new Color(45, 45, 45));
 				hideAllPanels();
-				msiSettingsPanel.setVisible(true);
+				eNavSettingsPanel.setVisible(true);
+				hideMapTabs();
 			}
 
 			public void mouseReleased(MouseEvent e) {
 				resetTabs();
-				msiLayer.setBackground(new Color(55, 55, 55));
-				breadCrumps.setText("Preferences > MSI Layer Settings");
+				eNavServices.setBackground(new Color(55, 55, 55));
+				breadCrumps.setText("Preferences > e-Nav Services");
+			}
+
+		});
+
+		routeSettings.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				routeSettings.setBackground(new Color(45, 45, 45));
+				hideAllPanels();
+				routeSettingsPanel.setVisible(true);
+				hideMapTabs();
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				resetTabs();
+				routeSettings.setBackground(new Color(55, 55, 55));
+				breadCrumps.setText("Preferences > Routes Settings");
 			}
 
 		});
@@ -299,12 +261,18 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		// });
 
 	}
-	
+
 	public void resetTabs() {
 		mapSettings.setBackground(new Color(65, 65, 65));
 		connections.setBackground(new Color(65, 65, 65));
-		windowSettings.setBackground(new Color(65, 65, 65));
-		msiLayer.setBackground(new Color(65, 65, 65));
+		aisSettings.setBackground(new Color(65, 65, 65));
+		eNavServices.setBackground(new Color(65, 65, 65));
+		mapWindows.setBackground(new Color(65, 65, 65));
+		routeSettings.setBackground(new Color(65, 65, 65));
+
+		for (int i = 0; i < mapWindowsList.size(); i++) {
+			mapWindowsList.get(i).setBackground((new Color(75, 75, 75)));
+		}
 	}
 
 	public JPanel createConnectionsPanel() {
@@ -318,15 +286,113 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 
 	private void hideAllPanels() {
 		mapSettingsPanel.setVisible(false);
-		connectionsSettingsPanel.setVisible(false);
-		windowSettingsPanel.setVisible(false);
-		msiSettingsPanel.setVisible(false);
+		mapWindowsPanel.setVisible(false);
+		connectionsPanel.setVisible(false);
+		aisSettingsPanel.setVisible(false);
+		
+		for (int i = 0; i < mapWindowsListPanels.size(); i++) {
+			mapWindowsListPanels.get(i).setVisible(false);
+		}
+		
 	}
 
 	/**
 	 * Function for setting up custom GUI for the map frame
 	 */
 	public void initGUI() {
+
+		JPanel bottomPanel = new JPanel();
+		backgroundPane.add(bottomPanel, "1, 3, fill, fill");
+		bottomPanel.setLayout(null);
+
+		// JScrollPane scrollPane = new JScrollPane();
+		// scrollPane.setBounds(0, 0, 140, 428);
+		// scrollPane.setBorder(null);
+		// bottomPanel.add(scrollPane);
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setBounds(0, 0, 140, 428);
+		scrollPane.setBorder(null);
+		bottomPanel.add(scrollPane);
+
+		// Panels
+		JPanel menuPanel = new JPanel();
+		scrollPane.setViewportView(menuPanel);
+		menuPanel.setBackground(GuiStyler.backgroundColor);
+		menuPanel.setLayout(null);
+
+		labelContainer = new JPanel();
+		labelContainer.setLocation(0, 0);
+		labelContainer.setBackground(GuiStyler.backgroundColor);
+		labelContainer.setSize(new Dimension(140, 500));
+
+		menuPanel.add(labelContainer);
+
+		// If many tabs
+		// JPanel labelContainer = new JPanel();
+		// labelContainer.setLocation(0, 0);
+		// labelContainer.setBackground(GuiStyler.backgroundColor);
+		// labelContainer.setSize(new Dimension(140, 417));
+		// scrollPane.setViewportView(labelContainer);
+		// labelContainer.setLayout(new GridLayout(0, 1, 0, 0));
+
+		String padding = "   ";
+
+		contentPane = new JPanel();
+		contentPane.setBorder(new MatteBorder(0, 1, 0, 0, (Color) new Color(70, 70, 70)));
+		contentPane.setBounds(140, 0, 513, 428);
+		bottomPanel.add(contentPane);
+		contentPane.setBackground(GuiStyler.backgroundColor);
+		contentPane.setLayout(null);
+
+		// ok = new GradientLabel("OK", new
+		// ImageIcon("images/toolbar/select.png"), new Color(83, 83, 83), new
+		// Color(105, 105, 105));
+		ok = new JLabel("OK", new ImageIcon("images/buttons/ok.png"), JLabel.CENTER);
+		ok.setBounds(335, 390, 75, 20);
+		GuiStyler.styleButton(ok);
+		contentPane.add(ok);
+
+		// cancel = new GradientLabel("CANCEL", new Color(83, 83, 83), new
+		// Color(105, 105, 105));
+		cancel = new JLabel("CANCEL", new ImageIcon("images/buttons/cancel.png"), JLabel.CENTER);
+		GuiStyler.styleButton(cancel);
+		cancel.setBounds(417, 390, 75, 20);
+		contentPane.add(cancel);
+
+		// Content panels
+		mapSettingsPanel = new MapSettingsPanel(settings);
+
+		mapWindowsPanel = new MapWindowsPanel(mainFrame, settings);
+		mapWindowsPanel.setVisible(false);
+
+		connectionsPanel = createConnectionsPanel();
+		connectionsPanel.setVisible(false);
+
+		aisSettingsPanel = createConnectionsPanel();
+		aisSettingsPanel.setVisible(false);
+
+		eNavSettingsPanel = createConnectionsPanel();
+		eNavSettingsPanel.setVisible(false);
+
+		routeSettingsPanel = createConnectionsPanel();
+		routeSettingsPanel.setVisible(false);
+
+		contentPane.add(mapSettingsPanel);
+
+		contentPane.add(mapWindowsPanel);
+
+		contentPane.add(connectionsPanel);
+
+		contentPane.add(connectionsPanel);
+
+		contentPane.add(aisSettingsPanel);
+
+
+
+		generateTabs();
 
 		settingsWindow = this;
 
@@ -384,6 +450,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 				45, 45, 45)));
 
 		this.setContentPane(masterPanel);
+
 	}
 
 	@Override
@@ -397,11 +464,27 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		}
 
 		if (arg0.getSource() == cancel) {
+			
 			this.setVisible(false);
 		}
 
 	}
 
+	@Override
+	public void setVisible(boolean visible){
+		super.setVisible(visible);
+
+		//Remove the generated map panels so that we can make new ones
+		if (!visible && mapWindowsListPanels != null){
+			for (int i = 0; i < mapWindowsListPanels.size(); i++) {
+				contentPane.remove(mapWindowsListPanels.get(i));
+			}	
+		}
+		
+		
+		
+	}
+	
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
 		// TODO Auto-generated method stub
@@ -434,11 +517,109 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		}
 	}
 
+	public void createMapLabels() {
+		mapWindowsList = new ArrayList<JLabel>();
+		mapWindowsListPanels = new ArrayList<MapWindowSinglePanel>();
+
+		List<JMapFrame> mainWindows = mainFrame.getMapWindows();
+
+		for (int i = 0; i < mainWindows.size(); i++) {
+			JLabel mapLabel = new JLabel("      " + mainWindows.get(i).getTitle());
+			MapWindowSinglePanel panel = new MapWindowSinglePanel(mainFrame, i);
+			panel.loadSettings();
+			panel.setVisible(false);
+			contentPane.add(panel);
+			mapWindowsListPanels.add(panel);
+
+			mapLabel.setName(Integer.toString(i));
+			GuiStyler.styleSubTab(mapLabel);
+			mapWindowsList.add(mapLabel);
+
+			mapLabel.addMouseListener(new MouseAdapter() {
+				public void mousePressed(MouseEvent e) {
+					int id = Integer.parseInt(((JLabel) e.getSource()).getName());
+					((JLabel) e.getSource()).setBackground(new Color(45, 45, 45));
+					hideAllPanels();
+					mapWindowsListPanels.get(id).setVisible(true);
+				}
+
+				public void mouseReleased(MouseEvent e) {
+					resetTabs();
+
+					int id = Integer.parseInt(((JLabel) e.getSource()).getName());
+					((JLabel) e.getSource()).setBackground(new Color(55, 55, 55));
+					breadCrumps.setText("Preferences > Map Windows > " + mainFrame.getMapWindows().get(id).getTitle());
+				}
+
+			});
+
+		}
+	}
+
 	/**
 	 * Change the visiblity
 	 */
 	public void toggleVisibility() {
 		setVisible(!this.isVisible());
+
+		// Regenerate Tabs
+		if (this.isVisible()) {
+			System.out.println("ello visible toggle?");
+			generateTabs();
+		}else{
+			System.out.println("removing panels");
+			for (int i = 0; i < mapWindowsListPanels.size(); i++) {
+				contentPane.remove(mapWindowsListPanels.get(i));
+			}
+		}
+
+	}
+
+	public void generateTabs() {
+
+		labelContainer.removeAll();
+
+		mapSettings = new JLabel("Map Settings", new ImageIcon("images/settings/map.png"), JLabel.LEFT);
+		GuiStyler.styleActiveTabButton(mapSettings);
+
+		mapWindows = new JLabel("Map Windows", new ImageIcon("images/settings/window.png"), JLabel.LEFT);
+		GuiStyler.styleTabButton(mapWindows);
+
+		connections = new JLabel("Connections", new ImageIcon("images/settings/connections.png"), JLabel.LEFT);
+		GuiStyler.styleTabButton(connections);
+
+		aisSettings = new JLabel("AIS Settings", new ImageIcon("images/settings/binocular.png"), JLabel.LEFT);
+		GuiStyler.styleTabButton(aisSettings);
+
+		eNavServices = new JLabel("e-Nav Services", new ImageIcon("images/settings/servers-network.png"), JLabel.LEFT);
+		GuiStyler.styleTabButton(eNavServices);
+
+		routeSettings = new JLabel("Route Settings", new ImageIcon("images/settings/routes.png"), JLabel.LEFT);
+		GuiStyler.styleTabButton(routeSettings);
+
+		labelContainer.add(mapSettings);
+		labelContainer.add(mapWindows);
+
+		// Create labels for map windows
+		createMapLabels();
+		for (int i = 0; i < mapWindowsList.size(); i++) {
+			System.out.println("ello this is dog");
+			labelContainer.add(mapWindowsList.get(i));
+			mapWindowsList.get(i).setVisible(false);
+		}
+
+		labelContainer.add(connections);
+		labelContainer.add(aisSettings);
+		labelContainer.add(eNavServices);
+		labelContainer.add(routeSettings);
+
+		addMouseListeners();
+	}
+
+	public void hideMapTabs() {
+		for (int i = 0; i < mapWindowsList.size(); i++) {
+			mapWindowsList.get(i).setVisible(false);
+		}
 	}
 
 }
