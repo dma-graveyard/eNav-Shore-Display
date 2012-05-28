@@ -36,6 +36,7 @@ import javax.swing.DefaultListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.common.xml.msi.MsiLocation;
@@ -48,9 +49,9 @@ import dk.frv.enav.ins.common.text.Formatter;
 public class MsiTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 
-	private static final String[] COLUMN_NAMES = { "ID", "Ver", "Priority", "Updated", "Main Area", "Message",
-			"Valid from", "Valid until" };
-
+	private static final String[] AREA_COLUMN_NAMES = { "ID", "Ver", "Priority", "Updated", "Main Area", "Message", "Valid from", "Valid until" };
+	private static final String[] COLUMN_NAMES = { "ID", "Priority", "Updated", "Main Area" };
+	
 	private MsiHandler msiHandler;
 	private List<MsiHandler.MsiMessageExtended> messages;
 	private boolean filtered = false;
@@ -88,6 +89,10 @@ public class MsiTableModel extends AbstractTableModel {
 	public int getColumnCount() {
 		return COLUMN_NAMES.length;
 	}
+	
+	public int areaGetColumnCount() {
+		return AREA_COLUMN_NAMES.length;
+	}
 
 	/**
 	 * Return the column names
@@ -95,6 +100,10 @@ public class MsiTableModel extends AbstractTableModel {
 	@Override
 	public String getColumnName(int column) {
 		return COLUMN_NAMES[column];
+	}
+	
+	public String areaGetColumnName(int column) {
+		return AREA_COLUMN_NAMES[column];
 	}
 
 	/**
@@ -119,8 +128,74 @@ public class MsiTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		if(rowIndex == -1) return "";
 		MsiHandler.MsiMessageExtended message = messages.get(rowIndex);
+		
+		switch (columnIndex) {
+		case 0:
+			return message.msiMessage.getId();
+		case 1:
+			return message.msiMessage.getPriority();
+		case 2:
+			Date updated = message.msiMessage.getUpdated();
+			if (updated == null) {
+				updated = message.msiMessage.getCreated();
+			}
+			return Formatter.formatShortDateTime(updated);
+		case 3:
+			MsiLocation location = message.msiMessage.getLocation();
+			if (location != null) {
+				return location.getArea();
+			}
+			return "";
+		default:
+			return "";
 
+		}
+		/*
+		switch (columnIndex) {
+		case 0:
+			return message.msiMessage.getId();
+		case 1:
+			return message.msiMessage.getVersion();
+		case 2:
+			return message.msiMessage.getPriority();
+		case 3:
+			Date updated = message.msiMessage.getUpdated();
+			if (updated == null) {
+				updated = message.msiMessage.getCreated();
+			}
+			return Formatter.formatShortDateTime(updated);
+		case 4:
+			MsiLocation location = message.msiMessage.getLocation();
+			if (location != null) {
+				return location.getArea();
+			}
+			return "";
+		case 5:
+			String msgShort = message.msiMessage.getMessage();
+			if (msgShort == null) {
+				msgShort = "";
+			}
+			// if (msgShort.length() > 32) {
+			// msgShort = msgShort.substring(0, 28) + " ...";
+			// }
+			return msgShort;
+		case 6:
+			return Formatter.formatShortDateTime(message.msiMessage.getValidFrom());
+		case 7:
+			return Formatter.formatShortDateTime(message.msiMessage.getValidTo());
+		default:
+			return "";
+
+		}
+		*/
+	}
+	
+	public Object areaGetValueAt(int rowIndex, int columnIndex) {
+		if(rowIndex == -1) return "";
+		MsiHandler.MsiMessageExtended message = messages.get(rowIndex);
+		
 		switch (columnIndex) {
 		case 0:
 			return message.msiMessage.getId();
