@@ -426,8 +426,9 @@ public class ESD {
 		SensorSettings sensorSettings = settings.getSensorSettings();
 		switch (sensorSettings.getAisConnectionType()) {
 		case TCP:
+			aisSensor = new NmeaTcpSensor("10.0.60.16", 10000);
 			// aisSensor = new NmeaTcpSensor("192.168.10.250", 4001);
-			aisSensor = new NmeaTcpSensor("localhost", 4001);
+			//aisSensor = new NmeaTcpSensor("localhost", 4001);
 			break;
 		default:
 			LOG.error("Unknown sensor connection type: " + sensorSettings.getAisConnectionType());

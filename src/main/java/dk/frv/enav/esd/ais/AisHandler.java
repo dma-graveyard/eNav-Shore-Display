@@ -309,6 +309,8 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	public synchronized void receive(AisMessage aisMessage) {
 		// Mark successful reception
 		aisStatus.markAisReception();
+		
+		//System.out.println("AIS Received: " + aisMessage.getMsgId());
 
 		if (aisMessage instanceof AisPositionMessage) {
 			AisPositionMessage aisPositionMessage = (AisPositionMessage) aisMessage;
@@ -340,6 +342,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 			AisMessage24 msg24 = (AisMessage24) aisMessage;
 			updateClassBStatics(msg24);
 		} else if (aisMessage instanceof AisBinaryMessage) {
+						
 			AisBinaryMessage binaryMessage = (AisBinaryMessage) aisMessage;
 			AisApplicationMessage appMessage;
 			try {
@@ -354,6 +357,9 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 				// Handle route information
 				if (appMessage.getDac() == BroadcastIntendedRoute.DAC
 						&& appMessage.getFi() == BroadcastIntendedRoute.FI) {
+					
+					System.out.println("ROUTE RECEIVED!!!!");
+					
 					BroadcastIntendedRoute intendedRoute = (BroadcastIntendedRoute) appMessage;
 					// LOG.info("BroadcastRouteInformation: " +
 					// routeInformation);
