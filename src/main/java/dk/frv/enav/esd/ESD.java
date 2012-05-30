@@ -57,6 +57,7 @@ import dk.frv.enav.esd.util.OneInstanceGuard;
 import dk.frv.enav.ins.gps.GnssTime;
 import dk.frv.enav.ins.gps.GpsHandler;
 import dk.frv.enav.ins.nmea.SensorType;
+import dk.frv.enav.esd.services.ais.AisServices;
 import dk.frv.enav.ins.settings.SensorSettings;
 
 /**
@@ -83,6 +84,7 @@ public class ESD {
 	private static NmeaSensor gpsSensor;
 	private static GpsHandler gpsHandler;
 	private static ShoreServices shoreServices;
+	private static AisServices aisServices;
 	private static RouteManager routeManager;
 
 	private static ExceptionHandler exceptionHandler = new ExceptionHandler();
@@ -345,6 +347,10 @@ public class ESD {
 		// Create shore services
 		shoreServices = new ShoreServices();
 		beanHandler.add(shoreServices);
+		
+        // Create AIS services
+        aisServices = new AisServices();
+        beanHandler.add(aisServices);
 		
 		// Create MSI handler
 		msiHandler = new MsiHandler();

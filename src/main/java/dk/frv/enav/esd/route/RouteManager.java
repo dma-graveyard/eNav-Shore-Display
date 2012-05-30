@@ -55,16 +55,16 @@ import dk.frv.enav.esd.route.ActiveRoute.ActiveWpSelectionResult;
 import dk.frv.enav.esd.services.shore.ShoreServiceException;
 import dk.frv.enav.esd.services.shore.ShoreServices;
 import dk.frv.enav.esd.settings.EnavSettings;
-import dk.frv.enav.ins.ais.AisAdressedRouteSuggestion;
-import dk.frv.enav.ins.ais.AisAdressedRouteSuggestion.Status;
-import dk.frv.enav.ins.ais.AisBroadcastRouteSuggestion;
-import dk.frv.enav.ins.ais.AisRouteData;
-import dk.frv.enav.ins.ais.IAisRouteSuggestionListener;
+import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
+import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion.Status;
+import dk.frv.enav.esd.ais.AisBroadcastRouteSuggestion;
+import dk.frv.enav.esd.ais.AisRouteData;
+import dk.frv.enav.esd.ais.IAisRouteSuggestionListener;
 import dk.frv.enav.ins.gps.GnssTime;
 import dk.frv.enav.ins.gps.GpsData;
 import dk.frv.enav.ins.gps.GpsHandler;
 import dk.frv.enav.ins.gps.IGpsDataListener;
-import dk.frv.enav.ins.services.ais.AisServices;
+import dk.frv.enav.esd.services.ais.AisServices;
 
 
 /**
@@ -290,7 +290,6 @@ public class RouteManager extends MapHandlerChild implements Runnable, Serializa
 		}
 	}
 	
-	@Override
 	public void receiveRouteSuggestion(AisRouteData routeSuggestion) {
 		if (routeSuggestion instanceof AisAdressedRouteSuggestion) {
 			handleAddressedRouteSuggestion((AisAdressedRouteSuggestion)routeSuggestion);
@@ -560,6 +559,7 @@ public class RouteManager extends MapHandlerChild implements Runnable, Serializa
 			routeSuggestionDialog = (RouteSuggestionDialog)obj;
 		}
 		if (obj instanceof AisServices) {
+			System.out.println("Ais Services set");
 			aisServices = (AisServices)obj;
 		}
 	}
@@ -659,6 +659,11 @@ public class RouteManager extends MapHandlerChild implements Runnable, Serializa
 			
 		}
 		
+	}
+	
+	// Hack method for getting AisServices
+	public AisServices getAisServices() {
+		return aisServices;
 	}
 
 }

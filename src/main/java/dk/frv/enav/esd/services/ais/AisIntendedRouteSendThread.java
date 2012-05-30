@@ -27,49 +27,27 @@
  * either expressed or implied, of Danish Maritime Authority.
  * 
  */
-package dk.frv.enav.esd.route;
+package dk.frv.enav.esd.services.ais;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
+import dk.frv.ais.reader.SendRequest;
 
 /**
- * A serializable class for storing route information
+ * Thread for sending intended routes
  */
-public class RouteStore implements Serializable {
+public class AisIntendedRouteSendThread extends AisSendThread {
 
-	private static final long serialVersionUID = 1L;
-	
-	private Set<AisAdressedRouteSuggestion> addressedSuggestedRoutes = new HashSet<AisAdressedRouteSuggestion>();
-	private List<Route> routes = new LinkedList<Route>();
-	private ActiveRoute activeRoute = null;
-	private int activeRouteIndex = -1;
-	
-	public RouteStore(RouteManager routeManager) {
-		this.routes = routeManager.getRoutes();
-		this.activeRoute = routeManager.getActiveRoute();
-		this.activeRouteIndex = routeManager.getActiveRouteIndex();
-		this.addressedSuggestedRoutes = routeManager.getAddressedSuggestedRoutes();
+	public AisIntendedRouteSendThread(SendRequest sendRequest, AisServices aisServices) {
+		super(sendRequest, aisServices);
 	}
 	
-	public List<Route> getRoutes() {
-		return routes;
+	@Override
+	public void run() {
+		super.run();
+		
+		if (abk != null && abk.isSuccess()) {
+			aisServices.setLastIntendedRouteBroadcast();
+		}
+		
 	}
-	
-	public ActiveRoute getActiveRoute() {
-		return activeRoute;
-	}
-	
-	public int getActiveRouteIndex() {
-		return activeRouteIndex;
-	}
-	
-	public Set<AisAdressedRouteSuggestion> getAddressedSuggestedRoutes() {
-		return addressedSuggestedRoutes;
-	}
-	
+
 }

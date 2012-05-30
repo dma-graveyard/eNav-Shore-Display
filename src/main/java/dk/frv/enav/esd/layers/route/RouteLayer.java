@@ -51,7 +51,7 @@ import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.common.xml.metoc.MetocForecast;
 import dk.frv.enav.common.xml.metoc.MetocForecastPoint;
 import dk.frv.enav.esd.ESD;
-import dk.frv.enav.ins.ais.AisAdressedRouteSuggestion;
+import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
 import dk.frv.enav.ins.common.math.Vector2D;
 import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.gui.JMapFrame;

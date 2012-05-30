@@ -41,7 +41,7 @@ import com.bbn.openmap.omGraphics.OMGraphicList;
 import com.bbn.openmap.omGraphics.OMLine;
 
 import dk.frv.ais.geo.GeoLocation;
-import dk.frv.enav.ins.ais.AisAdressedRouteSuggestion;
+import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
 
 /**
  * Graphic for a suggested route

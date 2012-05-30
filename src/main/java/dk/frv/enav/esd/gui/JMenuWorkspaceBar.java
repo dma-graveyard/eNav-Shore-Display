@@ -46,6 +46,9 @@ import javax.swing.JMenuItem;
 
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.gui.fileselection.WorkspaceFileFilter;
+import dk.frv.enav.esd.route.Route;
+import dk.frv.enav.esd.route.RouteManager;
+import dk.frv.enav.esd.services.ais.AisServices;
 
 /**
  * Toolbar used in the mainframe
@@ -86,6 +89,9 @@ public class JMenuWorkspaceBar extends JMenuBar {
 
 		JMenuItem preferences = new JMenuItem("Preferences");
 		fm.add(preferences);
+		
+		JMenuItem sendRoute = new JMenuItem("Send epic route");
+		fm.add(sendRoute);
 		
 		JMenuItem mi = new JMenuItem("Exit");
 		fm.add(mi);
@@ -149,7 +155,6 @@ public class JMenuWorkspaceBar extends JMenuBar {
 			}
 		});
 
-		
 		saveWorkspace.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -162,6 +167,42 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		});
 		
 		//Action listeners
+		
+		// Send route testing
+		sendRoute.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				// Get route manager (just to get a random imported route)
+				RouteManager rm = mainFrame.getRouteManagerDialog().getRouteManager();
+				System.out.println("Number of routes: " + rm.getRouteCount());
+				Long targetShip = (long) 219517000; // The ship we want to send the route to
+				
+				if(rm.getRouteCount() > 0) {
+					// TODO
+					// Pick first route in the list of routes
+					Route route = rm.getRoute(0);
+					
+					// TODO
+					System.out.println("Route selected: " + route.toString());
+					
+					// Hack for testing
+					AisServices test = rm.getAisServices();
+					
+					if(test == null) {
+						System.out.println("AisServices er null!!");
+					} else {
+						test.sendIntendedRoute(targetShip);
+						System.out.println("Intended route sent to: " + targetShip);
+					}
+						
+				} else {
+					// Not possible to send route without route
+					System.out.println("You need to import a route first.");
+				}
+				
+				
+			}
+		});
 		
 		toggleFullScreen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

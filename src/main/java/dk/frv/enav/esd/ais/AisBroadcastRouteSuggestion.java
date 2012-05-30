@@ -27,49 +27,45 @@
  * either expressed or implied, of Danish Maritime Authority.
  * 
  */
-package dk.frv.enav.esd.route;
+package dk.frv.enav.esd.ais;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.Date;
 
-import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
+import dk.frv.ais.message.binary.RouteInformation;
 
 /**
- * A serializable class for storing route information
+ * Class representing a broadcast route suggestion
  */
-public class RouteStore implements Serializable {
-
+public class AisBroadcastRouteSuggestion extends AisRouteData {
 	private static final long serialVersionUID = 1L;
 	
-	private Set<AisAdressedRouteSuggestion> addressedSuggestedRoutes = new HashSet<AisAdressedRouteSuggestion>();
-	private List<Route> routes = new LinkedList<Route>();
-	private ActiveRoute activeRoute = null;
-	private int activeRouteIndex = -1;
+	private Date validFrom;
+	private Date validTo;
 	
-	public RouteStore(RouteManager routeManager) {
-		this.routes = routeManager.getRoutes();
-		this.activeRoute = routeManager.getActiveRoute();
-		this.activeRouteIndex = routeManager.getActiveRouteIndex();
-		this.addressedSuggestedRoutes = routeManager.getAddressedSuggestedRoutes();
+	/**
+	 * Copy constructor
+	 * @param broadcastRouteSuggestion
+	 */
+	public AisBroadcastRouteSuggestion(AisBroadcastRouteSuggestion broadcastRouteSuggestion) {
+		super(broadcastRouteSuggestion);
 	}
 	
-	public List<Route> getRoutes() {
-		return routes;
+	/**
+	 * Constructor given AIS route information
+	 * @param routeInformation
+	 */
+	public AisBroadcastRouteSuggestion(RouteInformation routeInformation) {
+		super(routeInformation);
+		validFrom = etaFirst;
+		validTo = etaLast;		
 	}
 	
-	public ActiveRoute getActiveRoute() {
-		return activeRoute;
+	public Date getValidFrom() {
+		return validFrom;
 	}
 	
-	public int getActiveRouteIndex() {
-		return activeRouteIndex;
+	public Date getValidTo() {
+		return validTo;
 	}
-	
-	public Set<AisAdressedRouteSuggestion> getAddressedSuggestedRoutes() {
-		return addressedSuggestedRoutes;
-	}
-	
+
 }

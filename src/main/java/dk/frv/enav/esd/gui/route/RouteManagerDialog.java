@@ -404,6 +404,11 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 		routeSelectionModel.setSelectionInterval(routeTable.getRowCount() - 1, routeTable.getRowCount() - 1);
 	}
 	
+	// Hackish method for now to get the routemanager
+	public RouteManager getRouteManager() {
+		return routeManager;
+	}
+	
 	private void exportAllToFile() {
 		for (int i=0; i < routeTable.getRowCount(); i++) {
 			exportToFile(i);

@@ -27,49 +27,17 @@
  * either expressed or implied, of Danish Maritime Authority.
  * 
  */
-package dk.frv.enav.esd.route;
-
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
+package dk.frv.enav.esd.ais;
 
 /**
- * A serializable class for storing route information
+ * Interface to implement for classes wanting to receive route suggestions
  */
-public class RouteStore implements Serializable {
+public interface IAisRouteSuggestionListener {
+	
+	/**
+	 * Method called when routeSuggestion is received
+	 * @param routeSuggestion
+	 */
+	void receiveRouteSuggestion(AisRouteData routeSuggestion);
 
-	private static final long serialVersionUID = 1L;
-	
-	private Set<AisAdressedRouteSuggestion> addressedSuggestedRoutes = new HashSet<AisAdressedRouteSuggestion>();
-	private List<Route> routes = new LinkedList<Route>();
-	private ActiveRoute activeRoute = null;
-	private int activeRouteIndex = -1;
-	
-	public RouteStore(RouteManager routeManager) {
-		this.routes = routeManager.getRoutes();
-		this.activeRoute = routeManager.getActiveRoute();
-		this.activeRouteIndex = routeManager.getActiveRouteIndex();
-		this.addressedSuggestedRoutes = routeManager.getAddressedSuggestedRoutes();
-	}
-	
-	public List<Route> getRoutes() {
-		return routes;
-	}
-	
-	public ActiveRoute getActiveRoute() {
-		return activeRoute;
-	}
-	
-	public int getActiveRouteIndex() {
-		return activeRouteIndex;
-	}
-	
-	public Set<AisAdressedRouteSuggestion> getAddressedSuggestedRoutes() {
-		return addressedSuggestedRoutes;
-	}
-	
 }

@@ -49,8 +49,8 @@ import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.gui.ComponentFrame;
 import dk.frv.enav.esd.gui.MainFrame;
 import dk.frv.enav.esd.route.RouteManager;
-import dk.frv.enav.ins.ais.AisAdressedRouteSuggestion;
-import dk.frv.enav.ins.common.text.Formatter;
+import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
+import dk.frv.enav.esd.common.text.Formatter;
 import dk.frv.enav.ins.gps.GpsData;
 
 
