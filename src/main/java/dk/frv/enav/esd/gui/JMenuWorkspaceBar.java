@@ -84,8 +84,12 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		JMenuItem toggleFullScreen = new JMenuItem("Toggle Fullscreen");
 		fm.add(toggleFullScreen);
 
+		JMenuItem preferences = new JMenuItem("Preferences");
+		fm.add(preferences);
+		
 		JMenuItem mi = new JMenuItem("Exit");
 		fm.add(mi);
+		
 
 		//Maps menu
 		
@@ -176,6 +180,13 @@ public class JMenuWorkspaceBar extends JMenuBar {
 				ESD.closeApp();
 			}
 		});
+		
+		preferences.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mainFrame.getSettingsWindow().toggleVisibility();
+			}
+		});
+
 
 		addMap.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

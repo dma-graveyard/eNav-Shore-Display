@@ -83,8 +83,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private MainFrame mainFrame;
 	volatile boolean shouldRun = true;
 	private float mapScale = 0;
+	private Point2D xy;
 
 	private OMGraphic highlighted;
+	private VesselLayer highlightedVessel;
 	private OMGraphic closest = null;
 	long highlightedMMSI;
 
@@ -165,6 +167,15 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 				}
 			}
 			doPrepare();
+			// move ship highlight icon
+			// ESD.sleep(500);
+			if (highlighted != null) {
+				Point2D newXY = chartPanel.getMap().getProjection().forward(highlightedVessel.getLat(), highlightedVessel.getLon());
+				if (xy != newXY) {
+					xy = newXY;
+					highlightInfoPanel.displayHighlight((int) xy.getX() - 23, (int) xy.getY() - 6);
+				}
+			}
 		}
 	}
 
@@ -269,11 +280,12 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 
 		if (newClosest != highlighted) {
 			highlighted = newClosest;
-			VesselLayer vessel = (VesselLayer) newClosest;
-			highlightedMMSI = vessel.getMMSI();
-			Point2D xy = chartPanel.getMap().getProjection().forward(vessel.getLat(), vessel.getLon());
+			highlightedVessel = (VesselLayer) newClosest;
+			highlightedMMSI = highlightedVessel.getMMSI();
+			xy = chartPanel.getMap().getProjection().forward(highlightedVessel.getLat(), highlightedVessel.getLon());
 			// MOVE AND SHOW GLASS PANE
-			statusArea.setHighlightedVesselMMSI(vessel.getMMSI());
+			statusArea.setHighlightedVesselMMSI(highlightedVessel.getMMSI());
+			System.out.println(xy);
 			highlightInfoPanel.displayHighlight((int) xy.getX() - 23, (int) xy.getY() - 6);
 			highlightInfoPanel.setVisible(true);
 		} else {
@@ -314,7 +326,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 				break;
 			}
 		}
-		
+
 		if (allClosest.size() == 0) {
 			aisInfoPanel.setVisible(false);
 			closest = null;
@@ -326,14 +338,14 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			if (newClosest instanceof OMGraphic) {
 				closest = newClosest;
 				VesselLayer vessel = (VesselLayer) newClosest;
-				int x = (int) containerPoint.getX()+10;
-				int y = (int) containerPoint.getY()+10;
+				int x = (int) containerPoint.getX() + 10;
+				int y = (int) containerPoint.getY() + 10;
 				aisInfoPanel.showAisInfo(drawnVessels.get(vessel.getMMSI()));
-				if(chartPanel.getMap().getProjection().getWidth() - x < aisInfoPanel.getWidth()){
-					x -= aisInfoPanel.getWidth()+20;
+				if (chartPanel.getMap().getProjection().getWidth() - x < aisInfoPanel.getWidth()) {
+					x -= aisInfoPanel.getWidth() + 20;
 				}
-				if(chartPanel.getMap().getProjection().getHeight() - y < aisInfoPanel.getHeight()){
-					y -= aisInfoPanel.getHeight()+20;
+				if (chartPanel.getMap().getProjection().getHeight() - y < aisInfoPanel.getHeight()) {
+					y -= aisInfoPanel.getHeight() + 20;
 				}
 				aisInfoPanel.setPos(x, y);
 				aisInfoPanel.setVisible(true);

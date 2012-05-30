@@ -55,10 +55,10 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 	private int wmsHeight;
 	private Double wmsullon;
 	private Double wmsullat;
-//	private Double deltaX = 0.0013;
-//	private Double deltaY = 0.00058;
-	private Double deltaX = 0.00;
-	private Double deltaY = 0.00;
+	private Double deltaX = 0.0013;
+	private Double deltaY = 0.00058;
+//	private Double deltaX = 0.00;
+//	private Double deltaY = 0.00;
 	private boolean wmsImage;
 	
 	/**
@@ -68,6 +68,11 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 		super();
 		wmsQuery = ESD.getSettings().getGuiSettings().getWmsQuery();
 	}
+	
+	public void setWMSString(String wmsString){
+		this.wmsQuery = wmsString;
+	}
+	
 	
 	/**
 	 * Set the position of the WMS image and what area we wish to display

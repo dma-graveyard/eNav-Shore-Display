@@ -81,7 +81,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private JMenuWorkspaceBar topMenu;
 	private boolean fullscreen = false;
 	private int mouseMode = 2;
-	private boolean wmsLayerEnabled = true;
+	private boolean wmsLayerEnabled;
 	private boolean msiLayerEnabled = true;
 
 	private BeanContextServicesSupport beanHandler;
@@ -93,6 +93,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private ToolBar toolbar = new ToolBar(this);
 	private NotificationArea notificationArea = new NotificationArea(this);
 	private NotificationCenter notificationCenter = new NotificationCenter();
+	private JSettingsWindow settingsWindow = new JSettingsWindow();
 
 	private StatusArea statusArea = new StatusArea(this);
 
@@ -101,6 +102,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	 */
 	public MainFrame() {
 		super();
+		System.out.println("before init gui");
 		initGUI();
 
 	}
@@ -121,9 +123,12 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		topMenu.addMap(window, false, false);
 		if (!wmsLayerEnabled){
+			System.out.println("wmslayer is not enabled");
 			window.getChartPanel().getWmsLayer().setVisible(false);
 			window.getChartPanel().getBgLayer().setVisible(true);
 		}else{
+			System.out.println("wmslayer is enabled");
+			window.getChartPanel().getWmsLayer().setVisible(true);
 			window.getChartPanel().getBgLayer().setVisible(false);
 		}
 		
@@ -136,7 +141,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	/**
-	 * Add a new mapWindow with specific paramters, usually called when loading
+	 * Add a new mapWindow with specific parameters, usually called when loading
 	 * a workspace
 	 * 
 	 * @param workspace
@@ -155,6 +160,13 @@ public class MainFrame extends JFrame implements WindowListener {
 		topMenu.addMap(window, locked, alwaysInFront);
 //		window.getChartPanel().getWmsLayer().setVisible(isWmsLayerEnabled());
 		window.getChartPanel().getMsiLayer().setVisible(isMsiLayerEnabled());
+		
+		if (!wmsLayerEnabled){
+			window.getChartPanel().getWmsLayer().setVisible(false);
+			window.getChartPanel().getBgLayer().setVisible(true);
+		}else{
+			window.getChartPanel().getBgLayer().setVisible(false);
+		}
 		
 		return window;
 	}
@@ -244,8 +256,14 @@ public class MainFrame extends JFrame implements WindowListener {
 		// Get settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
 
+		System.out.println("Setting wmslayer enabled to:" + guiSettings.useWMS());
+		wmsLayerEnabled = guiSettings.useWMS();
+		
 		Workspace workspace = ESD.getSettings().getWorkspace();
 
+		
+		
+		
 		setTitle(TITLE);
 
 		// Set location and size
@@ -260,6 +278,8 @@ public class MainFrame extends JFrame implements WindowListener {
 			setSize(guiSettings.getAppDimensions());
 		}
 
+		
+		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setIconImage(getAppIcon());
 		addWindowListener(this);
@@ -286,19 +306,20 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		// Initiate the permanent window elements
 		desktop.getManager().setStatusArea(statusArea);
-
 		desktop.getManager().setNotificationArea(notificationArea);
-
 		desktop.getManager().setToolbar(toolbar);
-
 		desktop.getManager().setNotCenter(notificationCenter);
+		desktop.getManager().setSettings(settingsWindow);
 
 		desktop.add(statusArea, true);
 		desktop.add(notificationCenter, true);
 		desktop.add(toolbar, true);
 		desktop.add(notificationArea, true);
+		desktop.add(settingsWindow, true);
 
 		beanHandler.add(notificationArea);
+		beanHandler.add(settingsWindow);
+		beanHandler.add(settingsWindow);
 		// dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
 		// Add self to bean handler
@@ -559,6 +580,10 @@ public class MainFrame extends JFrame implements WindowListener {
 	 */
 	public void setMSILayerEnabled(boolean msiLayerEnabled) {
 		this.msiLayerEnabled = msiLayerEnabled;
+	}
+
+	public JSettingsWindow getSettingsWindow() {
+		return settingsWindow;
 	}
 	
 	
