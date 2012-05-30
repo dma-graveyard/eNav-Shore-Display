@@ -33,6 +33,7 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -70,14 +71,14 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private static final long serialVersionUID = 1L;
 	private OMGraphicList list = new OMGraphicList();
 	private VesselAisHandler aisHandler;
-	private List<AisMessageExtended> shipList;
 	private ChartPanel chartPanel;
 	private HighlightInfoPanel highlightInfoPanel = null;
 	private AisInfoPanel aisInfoPanel = null;
 	private StatusArea statusArea;
 	private JMapFrame jMapFrame;
 
-	private HashMap<Long, Vessel> drawnVessels = new HashMap<Long, Vessel>();
+	private HashMap<Long, Vessel> drawnVessels;
+	private HashMap<Long, Boolean> chartPanelVessels = new HashMap<Long, Boolean>();
 	private Vessel vesselComponent;
 	private VesselPositionData location;
 	private MainFrame mainFrame;
@@ -121,7 +122,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	 */
 	public void mapClearTargets() {
 		list.clear();
-		drawnVessels.clear();
+		//chartPanelVessels.clear();
 	}
 
 	/**
@@ -129,10 +130,11 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	 */
 	private void drawVessels() {
 		if (aisHandler != null) {
-
+			boolean scaleUpdated = false;
 			if (chartPanel.getMap().getScale() != mapScale) {
 				mapScale = chartPanel.getMap().getScale();
 				mapClearTargets();
+				scaleUpdated = true;
 			}
 
 			if ((highlightedMMSI != 0 && highlightedMMSI != statusArea.getHighlightedVesselMMSI())
@@ -141,31 +143,23 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 				highlighted = null;
 				highlightedMMSI = 0;
 			}
-
-			shipList = aisHandler.getShipList();
-			for (int i = 0; i < shipList.size(); i++) {
-				if (aisHandler.getVesselTargets().containsKey(shipList.get(i).MMSI)) {
-
-					// Get information
-					AisMessageExtended vessel = shipList.get(i);
-					VesselTarget vesselTarget = aisHandler.getVesselTargets().get(vessel.MMSI);
-					location = vesselTarget.getPositionData();
-
-					double trueHeading = location.getTrueHeading();
-					if (trueHeading == 511) {
-						trueHeading = location.getCog();
-					}
-
-					if (!drawnVessels.containsKey(vessel.MMSI)) {
-						vesselComponent = new Vessel(vessel.MMSI);
-						list.add(vesselComponent);
-						drawnVessels.put(vessel.MMSI, vesselComponent);
-					}
-					drawnVessels.get(vessel.MMSI).updateLayers(trueHeading, location.getPos().getLatitude(),
-							location.getPos().getLongitude(), vesselTarget.getStaticData(), location.getSog(),
-							Math.toRadians(location.getCog()), mapScale);
+			
+			drawnVessels = new HashMap<Long, Vessel>(aisHandler.getVesselComponentList());
+			List<Long> mmsis = aisHandler.getShipMMSIs();
+			// For each vessel known of
+			for (Long mmsi : mmsis) {
+				// Check if vessel is already drawn on THIS map
+				if(!chartPanelVessels.containsKey(mmsi)){
+					vesselComponent = drawnVessels.get(mmsi);
+					list.add(vesselComponent);
+					chartPanelVessels.put(mmsi, true);
+				}
+				if(scaleUpdated) {
+					drawnVessels.get(mmsi).updateMapScale(mapScale);
+					System.out.println("Updating Scale");
 				}
 			}
+			
 			doPrepare();
 			// move ship highlight icon
 			if (highlighted != null) {

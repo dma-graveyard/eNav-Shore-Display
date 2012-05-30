@@ -139,7 +139,7 @@ public class Vessel extends OMGraphicList {
 	 *            Scale of the chartMap
 	 */
 	public void updateLayers(double trueHeading, double lat, double lon, VesselStaticData staticData, double sog,
-			double cogR, float mapScale) {
+			double cogR) {
 
 		vessel.setLocation(lat, lon);
 		vessel.setHeading(trueHeading);
@@ -195,9 +195,10 @@ public class Vessel extends OMGraphicList {
 			} else {
 				nameMMSI.setY(20);
 			}
-
 		}
+	}
 
+	public void updateMapScale(float mapScale) {
 		// Scale for text-labels
 		boolean b1 = mapScale < 750000;
 		showHeading(b1);

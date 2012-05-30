@@ -38,6 +38,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -53,6 +54,8 @@ import dk.frv.ais.message.AisMessage6;
 import dk.frv.ais.message.AisPositionMessage;
 import dk.frv.ais.message.binary.AddressedRouteInformation;
 import dk.frv.ais.message.binary.AisApplicationMessage;
+import dk.frv.enav.esd.ais.AisHandler.AisMessageExtended;
+import dk.frv.enav.esd.layers.ais.Vessel;
 import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.settings.Settings;
@@ -84,7 +87,9 @@ public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 	protected NmeaSensor nmeaSensor = null;
 	protected Settings settings;
 	protected List<IAisRouteSuggestionListener> suggestionListeners = new ArrayList<IAisRouteSuggestionListener>();
-
+	private HashMap<Long, Vessel> drawnVessels = new HashMap<Long, Vessel>();
+	private List<Long> vesselMMSI = new ArrayList<Long>();
+	
 	/**
 	 * Constructor for VesselsAisHandler
 	 * @param settings
@@ -196,6 +201,37 @@ public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 			}
 		}
 		return list;
+	}
+	
+	public List<Long> getShipMMSIs() {
+		return vesselMMSI;
+	}
+	
+	public HashMap<Long, Vessel> getVesselComponentList() {
+		List<AisMessageExtended> shipList = getShipList();
+		for (int i = 0; i < shipList.size(); i++) {
+			if (getVesselTargets().containsKey(shipList.get(i).MMSI)) {
+				AisMessageExtended vessel = shipList.get(i);
+				if (!drawnVessels.containsKey(vessel.MMSI)) {
+					Vessel vesselComponent = new Vessel(vessel.MMSI);
+					drawnVessels.put(vessel.MMSI, vesselComponent);
+					vesselMMSI.add(vessel.MMSI);
+				}
+				
+				VesselTarget vesselTarget = getVesselTargets().get(vessel.MMSI);
+				VesselPositionData location = vesselTarget.getPositionData();
+				double trueHeading = location.getTrueHeading();
+				if (trueHeading == 511) {
+					trueHeading = location.getCog();
+				}
+				drawnVessels.get(vessel.MMSI).updateLayers(trueHeading, location.getPos().getLatitude(),
+						location.getPos().getLongitude(), vesselTarget.getStaticData(), location.getSog(),
+						Math.toRadians(location.getCog()));
+				
+			}
+		}
+		
+		return drawnVessels;
 	}
 	
 	/**
