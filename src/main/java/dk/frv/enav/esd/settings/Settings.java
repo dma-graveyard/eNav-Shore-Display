@@ -43,8 +43,8 @@ import org.apache.log4j.Logger;
 import com.bbn.openmap.util.PropUtils;
 
 import dk.frv.enav.esd.gui.JMapFrame;
-import dk.frv.enav.ins.settings.AisSettings;
-import dk.frv.enav.ins.settings.SensorSettings;
+import dk.frv.enav.esd.settings.AisSettings;
+import dk.frv.enav.esd.settings.AisSettings;
 
 /**
  * Settings class
@@ -62,10 +62,9 @@ public class Settings implements Serializable {
 	
 	
 	private MapSettings mapSettings = new MapSettings();
-	private SensorSettings sensorSettings = new SensorSettings();
 //	private NavSettings navSettings = new NavSettings();
 	private AisSettings aisSettings = new AisSettings();
-//	private EnavSettings enavSettings = new EnavSettings();
+	private EnavSettings enavSettings = new EnavSettings();
 	private Workspace workspace = new Workspace();
 	
 	
@@ -88,11 +87,10 @@ public class Settings implements Serializable {
 			return;
 		}
 		aisSettings.readProperties(props);
-//		enavSettings.readProperties(props);
+		enavSettings.readProperties(props);
 		guiSettings.readProperties(props);
 		mapSettings.readProperties(props);
 //		navSettings.readProperties(props);
-		sensorSettings.readProperties(props);
 		
 		
 		workspaceFile = guiSettings.getWorkspace();
@@ -135,13 +133,12 @@ public class Settings implements Serializable {
 	 */
 	public void saveToFile() {
 		Properties props = new Properties();
-//		aisSettings.setProperties(props);
-//		enavSettings.setProperties(props);
+		aisSettings.setProperties(props);
+		enavSettings.setProperties(props);
 		guiSettings.setProperties(props);
 		mapSettings.setProperties(props);
 
 //		navSettings.setProperties(props);
-//		sensorSettings.setProperties(props);
 		
 		try {
 			FileWriter outFile = new FileWriter(settingsFile);
@@ -202,10 +199,6 @@ public class Settings implements Serializable {
 		return settingsFile;
 	}
 
-	public SensorSettings getSensorSettings() {
-		return sensorSettings;
-	}
-	
 	public AisSettings getAisSettings() {
 		return aisSettings;
 	}
@@ -213,4 +206,10 @@ public class Settings implements Serializable {
 	public Workspace getWorkspace(){
 		return workspace;
 	}
+
+	public EnavSettings getEnavSettings() {
+		return enavSettings;
+	}
+	
+	
 }

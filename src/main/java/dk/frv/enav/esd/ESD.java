@@ -56,7 +56,7 @@ import dk.frv.enav.esd.util.OneInstanceGuard;
 import dk.frv.enav.ins.gps.GnssTime;
 import dk.frv.enav.ins.gps.GpsHandler;
 import dk.frv.enav.ins.nmea.SensorType;
-import dk.frv.enav.ins.settings.SensorSettings;
+import dk.frv.enav.esd.settings.AisSettings;
 
 /**
  * Main class with main method.
@@ -414,11 +414,19 @@ public class ESD {
 	 * Starts the needed sensors such as the AIS TCP connection
 	 */
 	private static void startSensors() {
-		SensorSettings sensorSettings = settings.getSensorSettings();
-		switch (sensorSettings.getAisConnectionType()) {
+		AisSettings sensorSettings = settings.getAisSettings();
+        switch (sensorSettings.getAisConnectionType()) {
+		case NONE:
+//			aisSensor = new NmeaStdinSensor();
+			break;
 		case TCP:
-			// aisSensor = new NmeaTcpSensor("192.168.10.250", 4001);
-			aisSensor = new NmeaTcpSensor("localhost", 4001);
+			aisSensor = new NmeaTcpSensor(sensorSettings.getAisHostOrSerialPort(), sensorSettings.getAisTcpPort()); 
+			break;
+		case SERIAL:
+//			aisSensor = new NmeaSerialSensor(sensorSettings.getAisHostOrSerialPort());
+			break;		
+		case FILE:
+//			aisSensor = new NmeaFileSensor(sensorSettings.getAisFilename(), sensorSettings);
 			break;
 		default:
 			LOG.error("Unknown sensor connection type: " + sensorSettings.getAisConnectionType());
@@ -428,31 +436,23 @@ public class ESD {
 			aisSensor.addSensorType(SensorType.AIS);
 		}
 
-		switch (sensorSettings.getGpsConnectionType()) {
-		case TCP:
-			gpsSensor = new NmeaTcpSensor(sensorSettings.getGpsHostOrSerialPort(), sensorSettings.getGpsTcpPort());
-			break;
-		default:
-			LOG.error("Unknown sensor connection type: " + sensorSettings.getAisConnectionType());
-		}
-
 		if (gpsSensor != null) {
 			gpsSensor.addSensorType(SensorType.GPS);
 		}
 		if (aisSensor != null) {
-			aisSensor.setSimulateGps(sensorSettings.isSimulateGps());
-			aisSensor.setSimulatedOwnShip(sensorSettings.getSimulatedOwnShip());
+			aisSensor.setSimulateGps(false);
+//			aisSensor.setSimulatedOwnShip(false);
 			aisSensor.start();
 			// Add ais sensor to bean context
 			beanHandler.add(aisSensor);
 		}
-		if (gpsSensor != null && gpsSensor != aisSensor) {
-			gpsSensor.setSimulateGps(sensorSettings.isSimulateGps());
-			gpsSensor.setSimulatedOwnShip(sensorSettings.getSimulatedOwnShip());
-			gpsSensor.start();
-			// Add gps sensor to bean context
-			beanHandler.add(gpsSensor);
-		}
+//		if (gpsSensor != null && gpsSensor != aisSensor) {
+//			gpsSensor.setSimulateGps(sensorSettings.isSimulateGps());
+//			gpsSensor.setSimulatedOwnShip(sensorSettings.getSimulatedOwnShip());
+//			gpsSensor.start();
+//			// Add gps sensor to bean context
+//			beanHandler.add(gpsSensor);
+//		}
 
 	}
 
