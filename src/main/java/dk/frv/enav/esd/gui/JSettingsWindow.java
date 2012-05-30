@@ -36,7 +36,13 @@ import dk.frv.enav.esd.gui.settingtabs.MapSettingsPanel;
 import dk.frv.enav.esd.gui.settingtabs.GuiStyler;
 import dk.frv.enav.esd.gui.settingtabs.MapWindowSinglePanel;
 import dk.frv.enav.esd.gui.settingtabs.MapWindowsPanel;
+import dk.frv.enav.esd.gui.settingtabs.connectionStatus;
+import dk.frv.enav.esd.layers.wms.WMSService;
 import dk.frv.enav.esd.settings.Settings;
+import dk.frv.enav.esd.ais.AisHandler;
+import dk.frv.enav.esd.ais.VesselAisHandler;
+import dk.frv.enav.esd.services.shore.ShoreServices;
+import dk.frv.enav.esd.status.IStatusComponent;
 
 public class JSettingsWindow extends ComponentFrame implements MouseListener {
 
@@ -68,11 +74,11 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 
 	private MapSettingsPanel mapSettingsPanel;
 	private MapWindowsPanel mapWindowsPanel;
-	private JPanel connectionsPanel;
+	private connectionStatus connectionsPanel;
 	private JPanel aisSettingsPanel;
 	private JPanel eNavSettingsPanel;
 	private JPanel routeSettingsPanel;
-	
+
 	private JPanel contentPane;
 
 	private JPanel labelContainer;
@@ -90,6 +96,8 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 	JInternalFrame settingsWindow = null;
 	private MainFrame mainFrame;
 	private Settings settings;
+	private List<IStatusComponent> statusComponents = new ArrayList<IStatusComponent>();
+	private boolean reset = false;
 
 	/**
 	 * Create the frame.
@@ -152,6 +160,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 				hideAllPanels();
 				mapWindowsPanel.loadSettings();
 				mapWindowsPanel.setVisible(true);
+				updateLabels();
 
 			}
 
@@ -173,6 +182,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 				connections.setBackground(new Color(45, 45, 45));
 				hideAllPanels();
 				connectionsPanel.setVisible(true);
+				connectionsPanel.showStatus(statusComponents);
 				hideMapTabs();
 			}
 
@@ -289,11 +299,11 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		mapWindowsPanel.setVisible(false);
 		connectionsPanel.setVisible(false);
 		aisSettingsPanel.setVisible(false);
-		
+
 		for (int i = 0; i < mapWindowsListPanels.size(); i++) {
 			mapWindowsListPanels.get(i).setVisible(false);
 		}
-		
+
 	}
 
 	/**
@@ -368,7 +378,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		mapWindowsPanel = new MapWindowsPanel(mainFrame, settings);
 		mapWindowsPanel.setVisible(false);
 
-		connectionsPanel = createConnectionsPanel();
+		connectionsPanel = new connectionStatus(mainFrame);
 		connectionsPanel.setVisible(false);
 
 		aisSettingsPanel = createConnectionsPanel();
@@ -389,8 +399,6 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		contentPane.add(connectionsPanel);
 
 		contentPane.add(aisSettingsPanel);
-
-
 
 		generateTabs();
 
@@ -450,6 +458,8 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 				45, 45, 45)));
 
 		this.setContentPane(masterPanel);
+		
+		reset = true;
 
 	}
 
@@ -459,32 +469,47 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		if (arg0.getSource() == ok) {
 			// Map settings
 			mapSettingsPanel.saveSettings();
+
+			for (int i = 0; i < mapWindowsListPanels.size(); i++) {
+				mapWindowsListPanels.get(i).saveSettings();
+			}
+
 			settings.saveToFile();
 			this.setVisible(false);
 		}
 
 		if (arg0.getSource() == cancel) {
-			
+
 			this.setVisible(false);
 		}
 
 	}
 
 	@Override
-	public void setVisible(boolean visible){
+	public void setVisible(boolean visible) {
 		super.setVisible(visible);
 
-		//Remove the generated map panels so that we can make new ones
-		if (!visible && mapWindowsListPanels != null){
+		// Remove the generated map panels so that we can make new ones
+		if (!visible && mapWindowsListPanels != null) {
 			for (int i = 0; i < mapWindowsListPanels.size(); i++) {
 				contentPane.remove(mapWindowsListPanels.get(i));
-			}	
+			}
 		}
 		
+		//Reset view
+		if (reset){
+		mapSettings.setBackground(new Color(45, 45, 45));
+		hideAllPanels();
+		mapSettingsPanel.setVisible(true);
+		hideMapTabs();
 		
-		
+		resetTabs();
+		mapSettings.setBackground(new Color(55, 55, 55));
+		breadCrumps.setText("Preferences > Map Settings");
+		}
+
 	}
-	
+
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
 		// TODO Auto-generated method stub
@@ -515,6 +540,20 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 			mainFrame = (MainFrame) obj;
 			initGUI();
 		}
+
+		if (obj instanceof VesselAisHandler) {
+			// aisHandler = (AisHandler) obj;
+			statusComponents.add((VesselAisHandler) obj);
+		}
+			if (obj instanceof ShoreServices) {
+//			shoreServices = (ShoreServices) obj;
+			statusComponents.add((ShoreServices) obj);
+		}
+			if (obj instanceof WMSService) {
+//				System.out.println("wmsService");
+//				shoreServices = (ShoreServices) obj;
+				statusComponents.add((WMSService) obj);
+			}
 	}
 
 	public void createMapLabels() {
@@ -537,6 +576,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 
 			mapLabel.addMouseListener(new MouseAdapter() {
 				public void mousePressed(MouseEvent e) {
+					updateLabels();
 					int id = Integer.parseInt(((JLabel) e.getSource()).getName());
 					((JLabel) e.getSource()).setBackground(new Color(45, 45, 45));
 					hideAllPanels();
@@ -556,6 +596,12 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		}
 	}
 
+	public void updateLabels() {
+		for (int i = 0; i < mapWindowsList.size(); i++) {
+			mapWindowsList.get(i).setText(mapWindowsListPanels.get(i).getMapTitle());
+		}
+	}
+
 	/**
 	 * Change the visiblity
 	 */
@@ -564,10 +610,10 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 
 		// Regenerate Tabs
 		if (this.isVisible()) {
-			System.out.println("ello visible toggle?");
+//			System.out.println("ello visible toggle?");
 			generateTabs();
-		}else{
-			System.out.println("removing panels");
+		} else {
+//			System.out.println("removing panels");
 			for (int i = 0; i < mapWindowsListPanels.size(); i++) {
 				contentPane.remove(mapWindowsListPanels.get(i));
 			}
@@ -603,7 +649,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		// Create labels for map windows
 		createMapLabels();
 		for (int i = 0; i < mapWindowsList.size(); i++) {
-			System.out.println("ello this is dog");
+//			System.out.println("ello this is dog");
 			labelContainer.add(mapWindowsList.get(i));
 			mapWindowsList.get(i).setVisible(false);
 		}

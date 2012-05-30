@@ -66,6 +66,8 @@ import dk.frv.enav.ins.common.util.Converter;
 import dk.frv.enav.ins.gps.GpsData;
 import dk.frv.enav.ins.gps.GpsHandler;
 import dk.frv.enav.ins.nmea.SensorType;
+import dk.frv.enav.esd.status.AisStatus;
+import dk.frv.enav.esd.status.ComponentStatus;
 
 /**
  * AisHandler for Vessels
@@ -84,6 +86,7 @@ public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 	protected NmeaSensor nmeaSensor = null;
 	protected Settings settings;
 	protected List<IAisRouteSuggestionListener> suggestionListeners = new ArrayList<IAisRouteSuggestionListener>();
+	private AisStatus aisStatus = new AisStatus();
 
 	/**
 	 * Constructor for VesselsAisHandler
@@ -279,6 +282,10 @@ public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 	@Override
 	public synchronized void receive(AisMessage aisMessage) {
 		super.receive(aisMessage);
+		
+		// Mark successful reception 
+		aisStatus.markAisReception();
+		
 		// Look for route suggestion
 		if (aisMessage instanceof AisBinaryMessage) {
 			AisBinaryMessage binaryMessage = (AisBinaryMessage) aisMessage;
@@ -413,4 +420,19 @@ public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 		super.updatePos(mmsi, positionData, aisClass);
 	}
 
+	/**
+	 * Return the aisStatus
+	 * @return - aisStatus
+	 */
+	public AisStatus getAisStatus() {
+		return aisStatus;
+	}
+
+	/**
+	 * get aisstatus as a Component status type
+	 */
+	@Override
+	public ComponentStatus getStatus() {
+		return aisStatus;
+	}
 }

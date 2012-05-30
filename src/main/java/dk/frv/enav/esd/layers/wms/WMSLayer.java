@@ -38,8 +38,9 @@ import dk.frv.enav.esd.gui.JMapFrame;
 
 /**
  * Layer handling all WMS data and displaying of it
+ * 
  * @author David A. Camre (davidcamre@gmail.com)
- *
+ * 
  */
 public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 	private static final long serialVersionUID = 1L;
@@ -66,21 +67,27 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 
 	}
 
+	public WMSService getWmsService() {
+		return wmsService;
+	}
+
 	/**
 	 * Draw the WMS onto the map
-	 * @param list of elements to be drawn
+	 * 
+	 * @param list
+	 *            of elements to be drawn
 	 */
 	public void drawWMS(OMGraphicList list) {
 		this.list.clear();
 		this.list.add(list);
 		// wmsInfoPanel.setVisible(false);
-		
-		if (wmsService.isWmsImage() && this.isVisible()){
+
+		if (wmsService.isWmsImage() && this.isVisible()) {
 			jMapFrame.getChartPanel().getBgLayer().setVisible(false);
-		}else{
+		} else {
 			jMapFrame.getChartPanel().getBgLayer().setVisible(true);
 		}
-		
+
 		doPrepare();
 	}
 
@@ -94,7 +101,7 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 			jMapFrame = (JMapFrame) obj;
 			wmsInfoPanel = new WMSInfoPanel();
 			jMapFrame.getLoadingPanel().add(wmsInfoPanel);
-			wmsInfoPanel.setPos( 20, 30);
+			wmsInfoPanel.setPos(20, 30);
 		}
 
 	}
@@ -109,26 +116,26 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 	public void run() {
 		while (shouldRun) {
 			ESD.sleep(1000);
-			if (this.isVisible() && jMapFrame.getWidth()>0 && jMapFrame.getWidth() >0) {
-				// 
-				
-//				if (height != chartPanel.getMap().getHeight() || width != chartPanel.getMap().getWidth()){
-//					wmsInfoPanel.setPos( (jMapFrame.getChartPanel().getHeight() / 2) -50, (jMapFrame.getChartPanel().getWidth() / 2) - 50);
-//				}
-				
+			if (this.isVisible() && jMapFrame.getWidth() > 0 && jMapFrame.getWidth() > 0) {
+				//
+
+				// if (height != chartPanel.getMap().getHeight() || width !=
+				// chartPanel.getMap().getWidth()){
+				// wmsInfoPanel.setPos( (jMapFrame.getChartPanel().getHeight() /
+				// 2) -50, (jMapFrame.getChartPanel().getWidth() / 2) - 50);
+				// }
+
 				if (upperLeftLon != chartPanel.getMap().getProjection().getUpperLeft().getX()
 						|| upperLeftLat != chartPanel.getMap().getProjection().getUpperLeft().getY()
 						|| lowerRightLon != chartPanel.getMap().getProjection().getLowerRight().getX()
 						|| lowerRightLat != chartPanel.getMap().getProjection().getLowerRight().getY()
 						|| width != chartPanel.getMap().getWidth() || height != chartPanel.getMap().getHeight()) {
 
-					
 					// System.out.println("New request");
 					// wmsInfoPanel.showText("Loading");
-//					System.out.println(jMapFrame.getHeight());
-//					System.out.println(jMapFrame.getWidth());
-					
-					
+					// System.out.println(jMapFrame.getHeight());
+					// System.out.println(jMapFrame.getWidth());
+
 					wmsInfoPanel.displayLoadingImage();
 					// wmsInfoPanel.setVisible(true);
 
@@ -141,9 +148,9 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 
 					width = chartPanel.getMap().getWidth();
 					height = chartPanel.getMap().getHeight();
-					
-					System.out.println(height);
-					System.out.println(width);
+
+//					System.out.println(height);
+//					System.out.println(width);
 
 					// System.out.println(chartPanel.getMap().getProjection().forward(chartPanel.getMap().getProjection().getLowerRight()));
 					// System.out.println(upperLeftLon);
@@ -154,10 +161,7 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 					wmsService.setWMSPosition(chartPanel.getMap().getProjection().getCenter().getX(), chartPanel
 							.getMap().getProjection().getCenter().getY(), upperLeftLon, upperLeftLat, lowerRightLon,
 							lowerRightLat, width, height);
-					
-					
 
-					
 					drawWMS(wmsService.getWmsList());
 					wmsInfoPanel.setVisible(false);
 				}

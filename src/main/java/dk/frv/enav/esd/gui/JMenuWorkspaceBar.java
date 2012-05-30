@@ -322,6 +322,19 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		JMenu menuItem = mapMenus.get(window.getId());
 		maps.remove(menuItem);
 	}
+	
+	public void lockMapMenu(final JMapFrame window, boolean locked) {
+		JMenu menuItem = mapMenus.get(window.getId());
+
+		menuItem.getItem(0).setSelected(locked);
+	}
+	
+	public void onTopMapMenu(final JMapFrame window, boolean locked) {
+		JMenu menuItem = mapMenus.get(window.getId());
+
+		menuItem.getItem(2).setSelected(locked);
+	}
+
 
 	/**
 	 * Rename a mapwindow in the toolbar

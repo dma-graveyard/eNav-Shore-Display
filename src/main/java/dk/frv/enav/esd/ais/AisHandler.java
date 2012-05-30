@@ -70,9 +70,9 @@ import dk.frv.enav.ins.ais.VesselTarget;
 import dk.frv.enav.ins.ais.VesselTargetSettings;
 import dk.frv.enav.ins.gps.GnssTime;
 import dk.frv.enav.ins.services.ais.AisServices;
-import dk.frv.enav.ins.status.AisStatus;
-import dk.frv.enav.ins.status.ComponentStatus;
-import dk.frv.enav.ins.status.IStatusComponent;
+import dk.frv.enav.esd.status.AisStatus;
+import dk.frv.enav.esd.status.ComponentStatus;
+import dk.frv.enav.esd.status.IStatusComponent;
 
 /**
  * Class for handling incoming AIS messages on a vessel and maintainer of AIS

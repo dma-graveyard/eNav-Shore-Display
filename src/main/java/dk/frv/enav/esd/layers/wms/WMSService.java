@@ -41,10 +41,13 @@ import com.bbn.openmap.plugin.wms.WMSPlugIn;
 import com.bbn.openmap.proj.Projection;
 
 import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.status.ComponentStatus;
+import dk.frv.enav.esd.status.IStatusComponent;
+import dk.frv.enav.esd.status.WMSStatus;
 import dk.frv.enav.ins.common.graphics.CenterRaster;
 
 
-public class WMSService extends WMSPlugIn implements ImageServerConstants {
+public class WMSService extends WMSPlugIn implements ImageServerConstants, IStatusComponent {
 
 	private OMGraphicList wmsList = new OMGraphicList();
 	private String wmsQuery = "";
@@ -60,6 +63,7 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 //	private Double deltaX = 0.00;
 //	private Double deltaY = 0.00;
 	private boolean wmsImage;
+	private WMSStatus status = new WMSStatus();
 	
 	/**
 	 * Constructor for the WMS Service - loads the WMS server from the settings file
@@ -112,7 +116,7 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 				
 			
 		
-		System.out.println(queryString);
+//		System.out.println(queryString);
 		
 		return queryString;
 	}
@@ -147,6 +151,7 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 				wmsList.add(new CenterRaster(this.wmsullat, this.wmsullon, this.wmsWidth, this.wmsHeight, noImageIcon));
 				wmsImage = false;
 			}else{
+				status.markContactSuccess();
 				wmsList.add(new CenterRaster(this.wmsullat, this.wmsullon, this.wmsWidth, this.wmsHeight, wmsImg));
 				wmsImage = true;
 			}
@@ -158,9 +163,11 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 			//If iconHeight or width == -1 no WMS available
 			
 		} catch (java.net.MalformedURLException murle) {
+			status.markContactError(murle);
 			System.out.println("Bad URL!");
 		} catch (java.io.IOException ioe) {
 			System.out.println("IO Exception");
+			status.markContactError(ioe);
 		}
 		return wmsList;
 	}
@@ -179,6 +186,11 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 	public String getServerName() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public ComponentStatus getStatus() {
+		return status;
 	}
 
 }

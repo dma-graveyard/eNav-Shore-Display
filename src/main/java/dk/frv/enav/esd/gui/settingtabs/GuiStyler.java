@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -42,6 +43,19 @@ public class GuiStyler {
 		label.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 5));
 		label.setBackground(new Color(75, 75, 75));
 		label.setOpaque(true);
+	}
+	
+	public static void styleCheckbox(JCheckBox checkbox){
+		
+//		generalSettings.setSize(new Dimension(76, 30));
+//		label.setFont(subTabFont);
+		
+		
+		checkbox.setFont(subTabFont);
+		checkbox.setForeground(textColor);
+		checkbox.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 5));
+		checkbox.setBackground(backgroundColor);
+		checkbox.setOpaque(true);
 	}
 	
 	public static void styleActiveTabButton(JLabel label){

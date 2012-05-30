@@ -414,7 +414,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		msiLayer.doUpdate();
 
 		if (wmsLayer.isVisible()) {
-			System.out.println("wms is visible");
+//			System.out.println("wms is visible");
 			bgLayer.setVisible(false);
 		}
 

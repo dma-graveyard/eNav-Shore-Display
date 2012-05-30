@@ -121,7 +121,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	public JMapFrame(int id, MainFrame mainFrame, Point2D center, float scale) {
 
 		super("New Window " + id, true, true, true, true);
-
+		
 		this.mainFrame = mainFrame;
 		this.id = id;
 		chartPanel = new ChartPanel(mainFrame, this);
@@ -493,9 +493,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 			this.setTitle(title);
 			mainFrame.renameMapWindow(this);
 			moveHandler.setText(title);
-
 		}
-
 	}
 
 	/**
@@ -517,6 +515,12 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		this.revalidate();
 		this.repaint();
 
+	}
+	
+	@Override
+	public void setTitle(String title){
+		super.setTitle(title);
+		moveHandler.setText(title);
 	}
 
 }
