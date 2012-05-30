@@ -44,11 +44,13 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import dk.frv.ais.geo.GeoLocation;
+import dk.frv.enav.common.xml.msi.MsiMessage;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 import dk.frv.enav.esd.gui.msi.MsiTableModel;
 import dk.frv.enav.esd.gui.settingtabs.GuiStyler;
 import dk.frv.enav.esd.msi.IMsiUpdateListener;
 import dk.frv.enav.esd.msi.MsiHandler;
+import dk.frv.enav.esd.msi.MsiHandler.MsiMessageExtended;
 
 public class NotificationCenter extends ComponentFrame implements ListSelectionListener, ActionListener,
 		IMsiUpdateListener {
@@ -80,7 +82,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	private JPanel pane_3;
 	private JScrollPane scrollPane_1;
 	private JLabel MSI;
-	private JPanel servicePanel;
+	private JPanel msiPanel;
 	private JLabel AIS;
 	private Color leftButtonColor = Color.DARK_GRAY;
 	private Color leftButtonColorClicked = new Color(45, 45, 45);
@@ -95,7 +97,9 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	private JPanel masterPanel;
 	private static int moveHandlerHeight = 18;
 	private JPanel mapPanel;
-
+	private int selectedService;
+	private DefaultListSelectionModel values;
+	
 	public NotificationCenter() {
 		super("NOTCENTER", false, true, false, false);
 
@@ -155,7 +159,6 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 
 		JPanel pane = new JPanel();
 		pane.setLayout(new FlowLayout());
-		//pane.setLayout(new GridLayout(0, 1));
 		pane.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
 		pane.setBackground(backgroundColor);
 		GridBagConstraints gbc_pane = new GridBagConstraints();
@@ -166,56 +169,44 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		buttonPanel.add(pane, gbc_pane);
 
 		JPanel labelContainer = new JPanel();
-		labelContainer.setLocation(0, 0);
-		labelContainer.setSize(new Dimension(135, 600));
 		labelContainer.setBackground(backgroundColor);
 		pane.add(labelContainer);
 
-		/*
-		 * MSI = new JLabel("  MSI");
-		 * MSI.setHorizontalAlignment(SwingConstants.LEFT);
-		 * labelContainer.add(MSI); styleButton(MSI, leftButtonColor);
-		 * 
-		 * AIS = new JLabel("  AIS");
-		 * AIS.setHorizontalAlignment(SwingConstants.LEFT);
-		 * labelContainer.add(AIS); styleButton(AIS, leftButtonColor);
-		 */
 		Integer messageCount = unreadMessages.get("MSI");
-
 		if (messageCount == null)
 			messageCount = 0;
-
 		
 		// Style the notification panel
-		servicePanel = new JPanel();
-		servicePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		servicePanel.setBackground(new Color(65, 65, 65));
-		servicePanel.setBorder(notificationPadding);
-		servicePanel.setPreferredSize(new Dimension(notificationWidth, notificationHeight));
-
+		msiPanel = new JPanel();
+		msiPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		msiPanel.setBackground(new Color(65, 65, 65));
+		msiPanel.setPreferredSize(new Dimension(notificationWidth, notificationHeight));
+		msiPanel.setSize(new Dimension(notificationWidth, notificationHeight));
+		
 		// Create labels for each service
-		// The label
+		
+		// MSI
 		JLabel notification = new JLabel("  MSI");
-		notification.setPreferredSize(new Dimension(76, notificationHeight));
+		notification.setPreferredSize(new Dimension(98, notificationHeight));
+		notification.setSize(new Dimension(76, notificationHeight));
 		notification.setFont(new Font("Arial", Font.PLAIN, 11));
 		notification.setForeground(new Color(237, 237, 237));
-		servicePanel.add(notification);
-
+		msiPanel.add(notification);
 		// Unread messages
 		JLabel messages = new JLabel(messageCount.toString(),SwingConstants.RIGHT);
-		//JLabel messages = new JLabel("5", SwingConstants.RIGHT);
 		messages.setPreferredSize(new Dimension(20, notificationHeight));
+		messages.setSize(new Dimension(20, notificationHeight));
 		messages.setFont(new Font("Arial", Font.PLAIN, 9));
 		messages.setForeground(new Color(100, 100, 100));
 		messages.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
-		servicePanel.add(messages);
-
+		msiPanel.add(messages);
 		// The unread indicator
 		JLabel unreadIndicator = new JLabel();
 		unreadIndicator.setPreferredSize(new Dimension(7, notificationHeight));
-		servicePanel.add(unreadIndicator);
+		unreadIndicator.setSize(new Dimension(7, notificationHeight));
+		msiPanel.add(unreadIndicator);
 
-		labelContainer.add(servicePanel);
+		labelContainer.add(msiPanel);
 
 		// Make list of labels to use when updating service
 		indicatorLabels.put("MSI", unreadIndicator);
@@ -246,6 +237,20 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 				} else {
 					comp.setBackground(new Color(65, 65, 65));
 				}
+				
+				if(isCellSelected(Index_row, Index_col)){             
+					comp.setForeground(Color.white);
+		            comp.setBackground(new Color(85, 85, 85)); 		                          
+		        }
+				
+				if(msiTableModel != null){
+					if(msiTableModel.isAwk(Index_row) && Index_col == 0){
+						comp.setForeground(new Color(130,165,80));
+					} else if(!msiTableModel.isAwk(Index_row) && Index_col == 0){
+						comp.setForeground(new Color(165, 80, 80));
+					}
+				}
+				
 				return comp;
 			}
 
@@ -279,7 +284,6 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		table.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
 		table.setForeground(Color.white);
 		table.setSelectionForeground(Color.gray);
-		table.setRowSelectionAllowed(false);
 		table.setRowHeight(20);
 		table.setFocusable(false);
 		table.setAutoResizeMode(0);
@@ -297,26 +301,20 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		pane_3.setBackground(backgroundColor);
 		pane_3.setLayout(new FlowLayout());
 		pane_3.setVisible(false);
-		//but_read = new JLabel("READ");
-		//but_read.setBorder(BorderFactory.createLineBorder(Color.black));
-		//but_goto = new JLabel("GOTO");
-		//but_goto.setBorder(BorderFactory.createLineBorder(Color.black));
-		//but_delete = new JLabel("DELETE");
-		//but_delete.setBorder(BorderFactory.createLineBorder(Color.black));
 		
-		but_read = new JLabel("READ", new ImageIcon("images/buttons/ok.png"), JLabel.CENTER);
-		//but_read.setBounds(335, 390, 75, 20);
+		but_read = new JLabel("Read", new ImageIcon("images/notificationcenter/tick.png"), JLabel.CENTER);
 		GuiStyler.styleButton(but_read);
+		but_read.setPreferredSize(new Dimension(75, 20));
 		pane_3.add(but_read);
 		
-		but_goto = new JLabel("GOTO", new ImageIcon("images/buttons/ok.png"), JLabel.CENTER);
-		//but_goto.setBounds(335, 390, 75, 20);
+		but_goto = new JLabel("Goto", new ImageIcon("images/notificationcenter/geotag.png"), JLabel.CENTER);
 		GuiStyler.styleButton(but_goto);
+		but_goto.setPreferredSize(new Dimension(75, 20));
 		pane_3.add(but_goto);
 		
-		but_delete = new JLabel("DELETE", new ImageIcon("images/buttons/ok.png"), JLabel.CENTER);
-		//but_delete.setBounds(335, 390, 75, 20);
+		but_delete = new JLabel("Delete", new ImageIcon("images/notificationcenter/bin.png"), JLabel.CENTER);
 		GuiStyler.styleButton(but_delete);
+		but_delete.setPreferredSize(new Dimension(75, 20));
 		pane_3.add(but_delete);
 		
 		
@@ -439,30 +437,34 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	}
 
 	public void addMouseListeners() {
-/*
-		AIS.addMouseListener(new MouseAdapter() {
+
+		msiPanel.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				AIS.setBackground(leftButtonColorClicked);
+				msiPanel.setBackground(leftButtonColorClicked);
 			}
 
 			public void mouseReleased(MouseEvent e) {
-				AIS.setBackground(leftButtonColor);
-			}
-		});*/
-
-		servicePanel.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				servicePanel.setBackground(leftButtonColorClicked);
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				servicePanel.setBackground(leftButtonColor);
+				msiPanel.setBackground(leftButtonColor);
 			}
 
 			public void mouseClicked(MouseEvent e) {
 				// Activate and update table
 				table.setFocusable(true);
 				showMiddleTable(0); // 0 = MSI
+				
+			}
+		});
+		
+		but_read.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if(selectedService == 0) { // MSI
+					int rowAfter = selectedRow;
+					MsiMessage msiMessage = msiHandler.getMessageList().get(selectedRow).msiMessage;
+					msiHandler.setAcknowledged(msiMessage);
+					msiUpdate();
+					showMiddleTable(0);
+					table.changeSelection(rowAfter, 0, false, false);
+				}
 			}
 		});
 
@@ -472,27 +474,26 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 						.zoomToPoint(msiTableModel.getMessageLatLon(selectedRow));
 			}
 		});
+		
+		but_delete.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if(selectedService == 0) { // MSI
+					MsiMessage msiMessage = msiHandler.getMessageList().get(selectedRow).msiMessage;
+					msiHandler.deleteMessage(msiMessage);
+					msiUpdate();
+					showMiddleTable(0);
+				}
+			}
+		});
 	}
 
 	public void showMiddleTable(int service) {
 		switch (service) {
 		case 0:
 			// MSI
+			selectedService = service;
 			msiTableModel = new MsiTableModel(msiHandler);
 			table.setModel(msiTableModel);
-
-			/*
-			 * table.getColumnModel().getColumn(0).setPreferredWidth(40);
-			 * table.getColumnModel().getColumn(1).setPreferredWidth(40);
-			 * table.getColumnModel().getColumn(2).setPreferredWidth(60);
-			 * table.getColumnModel().getColumn(3).setPreferredWidth(100);
-			 * table.getColumnModel().getColumn(4).setPreferredWidth(130);
-			 * table.getColumnModel().getColumn(5).setPreferredWidth(80);
-			 * table.getColumnModel().getColumn(6).setPreferredWidth(80);
-			 * table.getColumnModel().getColumn(7).setPreferredWidth(80);
-			 * table.getTableHeader().setPreferredSize(new
-			 * Dimension(40+40+60+100+130+80+80+80, 15));
-			 */
 			table.getColumnModel().getColumn(0).setPreferredWidth(40);
 			table.getColumnModel().getColumn(1).setPreferredWidth(60);
 			table.getColumnModel().getColumn(2).setPreferredWidth(90);
@@ -501,7 +502,6 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 			table.getSelectionModel().addListSelectionListener(new MSIRowListener());
 			break;
 		default:
-			removeArea();
 			break;
 		}
 	}
@@ -513,12 +513,17 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 				return;
 			}
 
-			DefaultListSelectionModel values = (DefaultListSelectionModel) event.getSource();
+			values = (DefaultListSelectionModel) event.getSource();
 
 			// Show buttons and area in right pane
 			pane_3.setVisible(true);
 			scrollPane_1.setVisible(true);
 			selectedRow = values.getAnchorSelectionIndex();
+			if(msiTableModel.isAwk(selectedRow)){
+				but_read.setVisible(false);
+			} else {
+				but_read.setVisible(true);
+			}
 			// Update area
 			doc.delete(0, doc.length());
 			doc.append("<font size=\"2\" face=\"times, serif\" color=\"white\">");
@@ -553,7 +558,6 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 
 	@Override
 	public void msiUpdate() {
-
 		try {
 			setMessages("MSI", msiHandler.getUnAcknowledgedMSI());
 		} catch (InterruptedException e) {

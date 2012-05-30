@@ -69,6 +69,13 @@ public class MsiTableModel extends AbstractTableModel {
 	public GeoLocation getMessageLatLon(int rowIndex){
 		return messages.get(rowIndex).msiMessage.getLocation().getCenter();
 	}
+	
+	public boolean isAwk(int rowIndex){
+		if(rowIndex == -1){
+			return false;
+		}
+		return messages.get(rowIndex).acknowledged;
+	}
 
 	/**
 	 * Get column class at specific index
@@ -152,44 +159,6 @@ public class MsiTableModel extends AbstractTableModel {
 			return "";
 
 		}
-		/*
-		switch (columnIndex) {
-		case 0:
-			return message.msiMessage.getId();
-		case 1:
-			return message.msiMessage.getVersion();
-		case 2:
-			return message.msiMessage.getPriority();
-		case 3:
-			Date updated = message.msiMessage.getUpdated();
-			if (updated == null) {
-				updated = message.msiMessage.getCreated();
-			}
-			return Formatter.formatShortDateTime(updated);
-		case 4:
-			MsiLocation location = message.msiMessage.getLocation();
-			if (location != null) {
-				return location.getArea();
-			}
-			return "";
-		case 5:
-			String msgShort = message.msiMessage.getMessage();
-			if (msgShort == null) {
-				msgShort = "";
-			}
-			// if (msgShort.length() > 32) {
-			// msgShort = msgShort.substring(0, 28) + " ...";
-			// }
-			return msgShort;
-		case 6:
-			return Formatter.formatShortDateTime(message.msiMessage.getValidFrom());
-		case 7:
-			return Formatter.formatShortDateTime(message.msiMessage.getValidTo());
-		default:
-			return "";
-
-		}
-		*/
 	}
 	
 	public Object areaGetValueAt(int rowIndex, int columnIndex) {
