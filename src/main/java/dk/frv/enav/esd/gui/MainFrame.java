@@ -543,6 +543,11 @@ public class MainFrame extends JFrame implements WindowListener {
 	public void toggleNotificationCenter() {
 		notificationCenter.toggleVisibility();
 	}
+	
+	public void toggleNotificationCenter(int service) {
+		notificationCenter.showMiddleTable(service);
+		notificationCenter.toggleVisibility();
+	}
 
 	@Override
 	public void windowActivated(WindowEvent we) {

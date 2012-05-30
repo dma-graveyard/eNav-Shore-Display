@@ -142,14 +142,31 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 				highlightedMMSI = 0;
 			}
 
+			Point2D lr = chartPanel.getMap().getProjection().getLowerRight();
+			Point2D ul = chartPanel.getMap().getProjection().getUpperLeft();
+			double lrlat = lr.getY();
+			double lrlon = lr.getX();
+			double ullat = ul.getY();
+			double ullon = ul.getX();
+
 			shipList = aisHandler.getShipList();
 			for (int i = 0; i < shipList.size(); i++) {
 				if (aisHandler.getVesselTargets().containsKey(shipList.get(i).MMSI)) {
-
 					// Get information
 					AisMessageExtended vessel = shipList.get(i);
 					VesselTarget vesselTarget = aisHandler.getVesselTargets().get(vessel.MMSI);
 					location = vesselTarget.getPositionData();
+
+					// Check if vessel is near map coordinates
+					boolean t1 = location.getPos().getLatitude() >= lrlat;
+					boolean t2 = (location.getPos().getLatitude() <= ullat);
+					boolean t3 = location.getPos().getLongitude() >= ullon;
+					boolean t4 = location.getPos().getLongitude() <= lrlon;;
+
+					if (!(t1&&t2&&t3&&t4)) {
+						continue;
+					}
+					
 
 					double trueHeading = location.getTrueHeading();
 					if (trueHeading == 511) {
@@ -168,9 +185,9 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			}
 			doPrepare();
 			// move ship highlight icon
-			// ESD.sleep(500);
 			if (highlighted != null) {
-				Point2D newXY = chartPanel.getMap().getProjection().forward(highlightedVessel.getLat(), highlightedVessel.getLon());
+				Point2D newXY = chartPanel.getMap().getProjection()
+						.forward(highlightedVessel.getLat(), highlightedVessel.getLon());
 				if (xy != newXY) {
 					xy = newXY;
 					highlightInfoPanel.displayHighlight((int) xy.getX() - 23, (int) xy.getY() - 6);
@@ -285,7 +302,6 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			xy = chartPanel.getMap().getProjection().forward(highlightedVessel.getLat(), highlightedVessel.getLon());
 			// MOVE AND SHOW GLASS PANE
 			statusArea.setHighlightedVesselMMSI(highlightedVessel.getMMSI());
-			System.out.println(xy);
 			highlightInfoPanel.displayHighlight((int) xy.getX() - 23, (int) xy.getY() - 6);
 			highlightInfoPanel.setVisible(true);
 		} else {
