@@ -307,12 +307,12 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		but_read.setPreferredSize(new Dimension(75, 20));
 		pane_3.add(but_read);
 		
-		but_goto = new JLabel("Goto", new ImageIcon("images/notificationcenter/geotag.png"), JLabel.CENTER);
+		but_goto = new JLabel("Goto", new ImageIcon("images/notificationcenter/map-pin.png"), JLabel.CENTER);
 		GuiStyler.styleButton(but_goto);
 		but_goto.setPreferredSize(new Dimension(75, 20));
 		pane_3.add(but_goto);
 		
-		but_delete = new JLabel("Delete", new ImageIcon("images/notificationcenter/bin.png"), JLabel.CENTER);
+		but_delete = new JLabel("Delete", new ImageIcon("images/notificationcenter/cross.png"), JLabel.CENTER);
 		GuiStyler.styleButton(but_delete);
 		but_delete.setPreferredSize(new Dimension(75, 20));
 		pane_3.add(but_delete);
