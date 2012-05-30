@@ -138,7 +138,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 			public void mouseReleased(MouseEvent e) {
 				msi.setBorder(notificationPadding);
 				msi.setBackground(new Color(65, 65, 65));
-				mainFrame.toggleNotificationCenter();
+				mainFrame.toggleNotificationCenter(0);
 			}
 
 		});

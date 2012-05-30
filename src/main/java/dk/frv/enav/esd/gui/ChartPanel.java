@@ -492,6 +492,10 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		}
 
 	}
+	
+	public void zoomToPoint(GeoLocation waypoint) {
+		map.setCenter(waypoint.getLatitude(), waypoint.getLongitude());
+	}
 
 	/**
 	 * Given a set of points scale and center so that all points are contained

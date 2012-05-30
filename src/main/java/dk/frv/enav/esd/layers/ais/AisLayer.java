@@ -168,7 +168,6 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			}
 			doPrepare();
 			// move ship highlight icon
-			// ESD.sleep(500);
 			if (highlighted != null) {
 				Point2D newXY = chartPanel.getMap().getProjection().forward(highlightedVessel.getLat(), highlightedVessel.getLon());
 				if (xy != newXY) {
@@ -285,7 +284,6 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			xy = chartPanel.getMap().getProjection().forward(highlightedVessel.getLat(), highlightedVessel.getLon());
 			// MOVE AND SHOW GLASS PANE
 			statusArea.setHighlightedVesselMMSI(highlightedVessel.getMMSI());
-			System.out.println(xy);
 			highlightInfoPanel.displayHighlight((int) xy.getX() - 23, (int) xy.getY() - 6);
 			highlightInfoPanel.setVisible(true);
 		} else {

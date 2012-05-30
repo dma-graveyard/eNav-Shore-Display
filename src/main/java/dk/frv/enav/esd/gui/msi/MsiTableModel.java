@@ -32,8 +32,13 @@ package dk.frv.enav.esd.gui.msi;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 
+import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.common.xml.msi.MsiLocation;
 import dk.frv.enav.esd.msi.MsiHandler;
 import dk.frv.enav.ins.common.text.Formatter;
@@ -44,9 +49,9 @@ import dk.frv.enav.ins.common.text.Formatter;
 public class MsiTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 
-	private static final String[] COLUMN_NAMES = { "ID", "Ver", "Priority", "Updated", "Main Area", "Message",
-			"Valid from", "Valid until" };
-
+	private static final String[] AREA_COLUMN_NAMES = { "ID", "Ver", "Priority", "Updated", "Main Area", "Message", "Valid from", "Valid until" };
+	private static final String[] COLUMN_NAMES = { "ID", "Priority", "Updated", "Main Area" };
+	
 	private MsiHandler msiHandler;
 	private List<MsiHandler.MsiMessageExtended> messages;
 	private boolean filtered = false;
@@ -59,6 +64,17 @@ public class MsiTableModel extends AbstractTableModel {
 		super();
 		this.msiHandler = msiHandler;
 		updateMessages();
+	}
+	
+	public GeoLocation getMessageLatLon(int rowIndex){
+		return messages.get(rowIndex).msiMessage.getLocation().getCenter();
+	}
+	
+	public boolean isAwk(int rowIndex){
+		if(rowIndex == -1){
+			return false;
+		}
+		return messages.get(rowIndex).acknowledged;
 	}
 
 	/**
@@ -80,6 +96,10 @@ public class MsiTableModel extends AbstractTableModel {
 	public int getColumnCount() {
 		return COLUMN_NAMES.length;
 	}
+	
+	public int areaGetColumnCount() {
+		return AREA_COLUMN_NAMES.length;
+	}
 
 	/**
 	 * Return the column names
@@ -87,6 +107,10 @@ public class MsiTableModel extends AbstractTableModel {
 	@Override
 	public String getColumnName(int column) {
 		return COLUMN_NAMES[column];
+	}
+	
+	public String areaGetColumnName(int column) {
+		return AREA_COLUMN_NAMES[column];
 	}
 
 	/**
@@ -111,8 +135,36 @@ public class MsiTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		if(rowIndex == -1) return "";
 		MsiHandler.MsiMessageExtended message = messages.get(rowIndex);
+		
+		switch (columnIndex) {
+		case 0:
+			return message.msiMessage.getId();
+		case 1:
+			return message.msiMessage.getPriority();
+		case 2:
+			Date updated = message.msiMessage.getUpdated();
+			if (updated == null) {
+				updated = message.msiMessage.getCreated();
+			}
+			return Formatter.formatShortDateTime(updated);
+		case 3:
+			MsiLocation location = message.msiMessage.getLocation();
+			if (location != null) {
+				return location.getArea();
+			}
+			return "";
+		default:
+			return "";
 
+		}
+	}
+	
+	public Object areaGetValueAt(int rowIndex, int columnIndex) {
+		if(rowIndex == -1) return "";
+		MsiHandler.MsiMessageExtended message = messages.get(rowIndex);
+		
 		switch (columnIndex) {
 		case 0:
 			return message.msiMessage.getId();
