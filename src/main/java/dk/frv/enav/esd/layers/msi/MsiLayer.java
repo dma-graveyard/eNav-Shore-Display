@@ -186,22 +186,31 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 			}
 		}
 		
-		if (newClosest != closest) {
+		if (newClosest != closest && this.isVisible()) {
 			Point containerPoint = SwingUtilities.convertPoint(mapBean, e.getPoint(), jMapFrame);
 			if (newClosest instanceof MsiSymbolGraphic) {
 				closest = newClosest;
 				MsiSymbolGraphic msiSymbolGraphic = (MsiSymbolGraphic)newClosest;
-				msiInfoPanel.setPos((int)containerPoint.getX(), (int)containerPoint.getY() - 10);
+				
+				int x = (int) containerPoint.getX()+10;
+				int y = (int) containerPoint.getY()+10;
 				msiInfoPanel.showMsiInfo(msiSymbolGraphic.getMsiMessage());
-				jMapFrame.getGlassPanel().setVisible(true);
+				if(mapBean.getProjection().getWidth() - x < msiInfoPanel.getWidth()){
+					x -= msiInfoPanel.getWidth()+20;
+				}
+				if(mapBean.getProjection().getHeight() - y < msiInfoPanel.getHeight()){
+					y -= msiInfoPanel.getHeight()+20;
+				}
+				msiInfoPanel.setPos(x, y);
+				
+				msiInfoPanel.setVisible(true);
 				return true;
 			} else if (newClosest instanceof MsiDirectionalIcon) {
 				closest = newClosest;
-				jMapFrame.getGlassPanel().setVisible(true);
+				msiInfoPanel.setVisible(true);
 				return true;
 			} else {
 				msiInfoPanel.setVisible(false);
-				jMapFrame.getGlassPanel().setVisible(false);
 				closest = null;
 				return false;				
 			}

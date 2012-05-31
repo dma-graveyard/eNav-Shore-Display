@@ -75,7 +75,7 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 		this.list.add(list);
 		// wmsInfoPanel.setVisible(false);
 		
-		if (wmsService.isWmsImage()){
+		if (wmsService.isWmsImage() && this.isVisible()){
 			jMapFrame.getChartPanel().getBgLayer().setVisible(false);
 		}else{
 			jMapFrame.getChartPanel().getBgLayer().setVisible(true);
@@ -160,7 +160,6 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 					
 					drawWMS(wmsService.getWmsList());
 					wmsInfoPanel.setVisible(false);
-					jMapFrame.getLoadingPanel().setVisible(false);
 				}
 			}
 		}

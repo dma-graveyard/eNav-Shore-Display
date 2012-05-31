@@ -52,7 +52,8 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 	private NotificationCenter notCenter;
 	private NotificationArea notificationArea;
 	private StatusArea statusArea;
-
+	private JSettingsWindow settings;
+	
 	/**
 	 * Constructor for desktopmanager
 	 * @param desktop
@@ -89,6 +90,7 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 		super.activateFrame(notificationArea);
 		super.activateFrame(toolbar);
 		super.activateFrame(notCenter);
+		super.activateFrame(settings);
 	}
 
 	/**
@@ -209,6 +211,14 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 	 */
 	public void setNotCenter(NotificationCenter notCenter) {
 		this.notCenter = notCenter;
+	}
+	
+	/**
+	 * Set Settings Window
+	 * @param notCenter
+	 */
+	public void setSettings(JSettingsWindow settings) {
+		this.settings = settings;
 	}
 
 	/**
