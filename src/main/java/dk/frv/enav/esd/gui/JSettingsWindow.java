@@ -499,6 +499,9 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 	public void mouseClicked(MouseEvent arg0) {
 
 		if (arg0.getSource() == ok) {
+			
+			this.setVisible(false);
+			
 			// Map settings check if changed
 			if (mapSettingsChanged){
 				mapSettingsPanel.saveSettings();
@@ -529,7 +532,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 
 			
 			settings.saveToFile();
-			this.setVisible(false);
+			
 		}
 		if (arg0.getSource() == cancel) {
 
