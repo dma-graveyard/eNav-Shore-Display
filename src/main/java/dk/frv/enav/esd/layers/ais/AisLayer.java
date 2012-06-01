@@ -53,12 +53,9 @@ import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.gui.ChartPanel;
 import dk.frv.enav.esd.gui.JMapFrame;
 import dk.frv.enav.esd.gui.StatusArea;
-import dk.frv.enav.esd.layers.msi.MsiDirectionalIcon;
-import dk.frv.enav.esd.layers.msi.MsiSymbolGraphic;
 import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.ins.ais.VesselPositionData;
 import dk.frv.enav.ins.ais.VesselTarget;
-import dk.frv.enav.ins.gui.MainFrame;
 
 /**
  * The class AisLayer is the layer containing all AIS targets. The class handles
@@ -80,10 +77,13 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private HashMap<Long, Vessel> drawnVessels = new HashMap<Long, Vessel>();
 	private Vessel vesselComponent;
 	private VesselPositionData location;
-	private MainFrame mainFrame;
 	volatile boolean shouldRun = true;
 	private float mapScale = 0;
 	private Point2D xy;
+	private int offsetUnlockedX = 23;
+	private int offsetUnlockedY = 6;
+	private int offsetLockedX = 23;
+	private int offsetLockedY = 33;
 
 	private OMGraphic highlighted;
 	private VesselLayer highlightedVessel;
@@ -190,7 +190,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 						.forward(highlightedVessel.getLat(), highlightedVessel.getLon());
 				if (xy != newXY) {
 					xy = newXY;
-					highlightInfoPanel.displayHighlight((int) xy.getX() - 23, (int) xy.getY() - 6);
+					if(jMapFrame.isLocked())
+						highlightInfoPanel.displayHighlight((int) xy.getX() - offsetLockedX, (int) xy.getY() - offsetLockedY);
+					else
+						highlightInfoPanel.displayHighlight((int) xy.getX() - offsetUnlockedX, (int) xy.getY() - offsetUnlockedY);
 				}
 			}
 		}
@@ -308,7 +311,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			xy = chartPanel.getMap().getProjection().forward(highlightedVessel.getLat(), highlightedVessel.getLon());
 			// MOVE AND SHOW GLASS PANE
 			statusArea.setHighlightedVesselMMSI(highlightedVessel.getMMSI());
-			highlightInfoPanel.displayHighlight((int) xy.getX() - 23, (int) xy.getY() - 6);
+			if(jMapFrame.isLocked())
+				highlightInfoPanel.displayHighlight((int) xy.getX() - offsetLockedX, (int) xy.getY() - offsetLockedY);
+			else
+				highlightInfoPanel.displayHighlight((int) xy.getX() - offsetUnlockedX, (int) xy.getY() - offsetUnlockedY);
 			highlightInfoPanel.setVisible(true);
 		} else {
 			// HIDE GLASS PANE
