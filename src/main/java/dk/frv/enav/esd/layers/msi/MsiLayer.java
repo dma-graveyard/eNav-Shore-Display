@@ -194,6 +194,7 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 				
 				int x = (int) containerPoint.getX()+10;
 				int y = (int) containerPoint.getY()+10;
+				jMapFrame.getGlassPanel().setVisible(true);
 				msiInfoPanel.showMsiInfo(msiSymbolGraphic.getMsiMessage());
 				if(mapBean.getProjection().getWidth() - x < msiInfoPanel.getWidth()){
 					x -= msiInfoPanel.getWidth()+20;

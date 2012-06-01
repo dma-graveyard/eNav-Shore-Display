@@ -64,6 +64,7 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants, IStat
 //	private Double deltaY = 0.00;
 	private boolean wmsImage;
 	private WMSStatus status = new WMSStatus();
+	private float zoomLevel = -1;
 	
 	/**
 	 * Constructor for the WMS Service - loads the WMS server from the settings file
@@ -77,7 +78,9 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants, IStat
 		this.wmsQuery = wmsString;
 	}
 	
-	
+	public void setZoomLevel(float zoom){
+		zoomLevel = zoom;
+	}
 	/**
 	 * Set the position of the WMS image and what area we wish to display
 	 * @param ullon
@@ -109,13 +112,65 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants, IStat
 	 * @return
 	 */
 	public String getQueryString(){	
-		String queryString = wmsQuery
-				+ "&BBOX="+bbox				
-				+ "&WIDTH=" + width 
-				+ "&HEIGHT=" + height;
-				
-			
+		String queryString = "";
 		
+		
+		if (wmsQuery.indexOf("kortforsyningen.kms.dk/soe_enc_primar") > 0){
+			
+			String[] splittedUrl = wmsQuery.split("&");
+			String newUrl = "";
+			
+			String styleReplacer = "";
+			
+			//3428460
+			//Do style 244
+			if (zoomLevel > 727875){
+				styleReplacer = "STYLES=style-id-244";
+			}
+			
+			//Do style 200
+			if (zoomLevel <= 727875){
+				styleReplacer = "STYLES=style-id-200";
+			}
+			
+			//Do style 246
+			if (zoomLevel <= 363937){
+				styleReplacer = "STYLES=style-id-246";
+			}
+			
+			//Do style 245
+			if (zoomLevel <= 181968){
+				styleReplacer = "STYLES=style-id-245";
+			}
+			
+
+			
+			for (int i = 0; i < splittedUrl.length; i++) {
+				
+				if (splittedUrl[i].startsWith("STYLES=")){
+					splittedUrl[i] = styleReplacer;
+				}
+				
+				if (i != splittedUrl.length-1){
+					
+				newUrl = newUrl + splittedUrl[i] + "&";
+				}else{
+					newUrl = newUrl + splittedUrl[i];	
+				}
+				
+			}
+			queryString = newUrl
+					+ "&BBOX="+bbox				
+					+ "&WIDTH=" + width 
+					+ "&HEIGHT=" + height;
+		}else{
+			queryString = wmsQuery
+					+ "&BBOX="+bbox				
+					+ "&WIDTH=" + width 
+					+ "&HEIGHT=" + height;
+		}
+		
+
 //		System.out.println(queryString);
 		
 		return queryString;
