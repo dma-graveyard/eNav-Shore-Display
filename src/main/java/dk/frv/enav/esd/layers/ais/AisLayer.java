@@ -202,6 +202,9 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 				return;
 			HashMap<String, String> info = new HashMap<String, String>();
 			Vessel vessel = this.drawnVessels.get(this.highlightedMMSI);
+			if (vessel!= null){
+				
+			
 			info.put("MMSI", Long.toString(vessel.getMMSI()));
 			info.put("Name", vessel.getName());
 			info.put("COG", vessel.getHeading());
@@ -213,6 +216,9 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			info.put("DST", vessel.getDest());
 			info.put("Type", vessel.getShipType());
 			statusArea.receiveHighlight(info, vessel.getMMSI());
+			}else{
+				statusArea.removeHighlight();
+			}
 		} else {
 			statusArea.removeHighlight();
 		}
