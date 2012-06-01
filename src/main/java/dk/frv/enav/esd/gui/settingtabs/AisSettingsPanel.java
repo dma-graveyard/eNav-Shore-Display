@@ -1,7 +1,6 @@
 package dk.frv.enav.esd.gui.settingtabs;
 
 import java.awt.Color;
-import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -13,17 +12,8 @@ import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 
-import dk.frv.enav.esd.gui.MainFrame;
-import dk.frv.enav.esd.layers.wms.WMSService;
 import dk.frv.enav.esd.settings.AisSettings;
 import dk.frv.enav.esd.settings.AisSettings.SensorConnectionType;
-import dk.frv.enav.esd.status.AisStatus;
-import dk.frv.enav.esd.status.ComponentStatus;
-import dk.frv.enav.esd.status.IStatusComponent;
-import dk.frv.enav.esd.status.ComponentStatus.Status;
-import dk.frv.enav.esd.status.ShoreServiceStatus;
-import dk.frv.enav.esd.status.WMSStatus;
-import dk.frv.enav.ins.common.text.Formatter;
 
 public class AisSettingsPanel extends JPanel{
 

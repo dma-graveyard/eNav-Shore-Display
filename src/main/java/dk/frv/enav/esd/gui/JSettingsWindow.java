@@ -31,18 +31,18 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.ais.VesselAisHandler;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 import dk.frv.enav.esd.gui.settingtabs.AisSettingsPanel;
-import dk.frv.enav.esd.gui.settingtabs.MapSettingsPanel;
+import dk.frv.enav.esd.gui.settingtabs.ConnectionStatus;
+import dk.frv.enav.esd.gui.settingtabs.ENavSettingsPanel;
 import dk.frv.enav.esd.gui.settingtabs.GuiStyler;
+import dk.frv.enav.esd.gui.settingtabs.MapSettingsPanel;
 import dk.frv.enav.esd.gui.settingtabs.MapWindowSinglePanel;
 import dk.frv.enav.esd.gui.settingtabs.MapWindowsPanel;
-import dk.frv.enav.esd.gui.settingtabs.ConnectionStatus;
 import dk.frv.enav.esd.layers.wms.WMSService;
-import dk.frv.enav.esd.settings.Settings;
-import dk.frv.enav.esd.ais.AisHandler;
-import dk.frv.enav.esd.ais.VesselAisHandler;
 import dk.frv.enav.esd.services.shore.ShoreServices;
+import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.esd.status.IStatusComponent;
 
 public class JSettingsWindow extends ComponentFrame implements MouseListener {
@@ -69,6 +69,12 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 	private JLabel eNavServices;
 	private JLabel mapWindows;
 	private JLabel routeSettings;
+	
+	private boolean mapSettingsChanged = true;
+	private boolean aisSettingsChanged = false;
+	private boolean eNavServicesChanged = false;
+	private boolean mapWindowsChanged = false;
+//	private boolean routeSettingsChanged = false;
 
 	private List<JLabel> mapWindowsList;
 	private List<MapWindowSinglePanel> mapWindowsListPanels;
@@ -77,7 +83,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 	private MapWindowsPanel mapWindowsPanel;
 	private ConnectionStatus connectionsPanel;
 	private AisSettingsPanel aisSettingsPanel;
-	private JPanel eNavSettingsPanel;
+	private ENavSettingsPanel eNavSettingsPanel;
 	private JPanel routeSettingsPanel;
 
 	private JPanel contentPane;
@@ -145,12 +151,15 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 				hideAllPanels();
 				mapSettingsPanel.setVisible(true);
 				hideMapTabs();
-			}
-
-			public void mouseReleased(MouseEvent e) {
+				
 				resetTabs();
 				mapSettings.setBackground(new Color(55, 55, 55));
 				breadCrumps.setText("Preferences > Map Settings");
+				mapSettingsChanged = true;
+			}
+
+			public void mouseReleased(MouseEvent e) {
+
 			}
 
 		});
@@ -163,9 +172,6 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 				mapWindowsPanel.setVisible(true);
 				updateLabels();
 
-			}
-
-			public void mouseReleased(MouseEvent e) {
 				resetTabs();
 				mapWindows.setBackground(new Color(55, 55, 55));
 				breadCrumps.setText("Preferences > Map Windows");
@@ -173,6 +179,11 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 				for (int i = 0; i < mapWindowsList.size(); i++) {
 					mapWindowsList.get(i).setVisible(true);
 				}
+
+				mapWindowsChanged = true;
+			}
+
+			public void mouseReleased(MouseEvent e) {
 
 			}
 
@@ -185,12 +196,14 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 				connectionsPanel.setVisible(true);
 				connectionsPanel.showStatus(statusComponents);
 				hideMapTabs();
-			}
-
-			public void mouseReleased(MouseEvent e) {
+				
 				resetTabs();
 				connections.setBackground(new Color(55, 55, 55));
 				breadCrumps.setText("Preferences > Connections");
+
+			}
+
+			public void mouseReleased(MouseEvent e) {
 			}
 
 		});
@@ -202,12 +215,16 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 				aisSettingsPanel.loadSettings(settings.getAisSettings());
 				aisSettingsPanel.setVisible(true);
 				hideMapTabs();
-			}
-
-			public void mouseReleased(MouseEvent e) {
+				
 				resetTabs();
 				aisSettings.setBackground(new Color(55, 55, 55));
 				breadCrumps.setText("Preferences > AIS Settings");
+				
+				aisSettingsChanged = true;
+
+			}
+
+			public void mouseReleased(MouseEvent e) {
 			}
 
 		});
@@ -216,14 +233,21 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 			public void mousePressed(MouseEvent e) {
 				eNavServices.setBackground(new Color(45, 45, 45));
 				hideAllPanels();
+//				eNavSettingsPanel.
+				//TO DO
+				eNavSettingsPanel.loadSettings(settings.getEnavSettings());
 				eNavSettingsPanel.setVisible(true);
 				hideMapTabs();
-			}
-
-			public void mouseReleased(MouseEvent e) {
+				
 				resetTabs();
 				eNavServices.setBackground(new Color(55, 55, 55));
 				breadCrumps.setText("Preferences > e-Nav Services");
+				
+				eNavServicesChanged = true;
+
+			}
+
+			public void mouseReleased(MouseEvent e) {
 			}
 
 		});
@@ -234,12 +258,15 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 				hideAllPanels();
 				routeSettingsPanel.setVisible(true);
 				hideMapTabs();
-			}
-
-			public void mouseReleased(MouseEvent e) {
+				
 				resetTabs();
 				routeSettings.setBackground(new Color(55, 55, 55));
 				breadCrumps.setText("Preferences > Routes Settings");
+//				routeSettingsChanged = true;
+
+			}
+
+			public void mouseReleased(MouseEvent e) {
 			}
 
 		});
@@ -301,6 +328,8 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		mapWindowsPanel.setVisible(false);
 		connectionsPanel.setVisible(false);
 		aisSettingsPanel.setVisible(false);
+		eNavSettingsPanel.setVisible(false);
+		routeSettingsPanel.setVisible(false);
 
 		for (int i = 0; i < mapWindowsListPanels.size(); i++) {
 			mapWindowsListPanels.get(i).setVisible(false);
@@ -350,7 +379,6 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		// scrollPane.setViewportView(labelContainer);
 		// labelContainer.setLayout(new GridLayout(0, 1, 0, 0));
 
-		String padding = "   ";
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new MatteBorder(0, 1, 0, 0, (Color) new Color(70, 70, 70)));
@@ -386,7 +414,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		aisSettingsPanel = new AisSettingsPanel();
 		aisSettingsPanel.setVisible(false);
 
-		eNavSettingsPanel = createConnectionsPanel();
+		eNavSettingsPanel = new ENavSettingsPanel();
 		eNavSettingsPanel.setVisible(false);
 
 		routeSettingsPanel = createConnectionsPanel();
@@ -398,9 +426,11 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 
 		contentPane.add(connectionsPanel);
 
-		contentPane.add(connectionsPanel);
-
 		contentPane.add(aisSettingsPanel);
+		
+		contentPane.add(eNavSettingsPanel);
+
+//		contentPane.add(routeSettingsPanel);
 
 		generateTabs();
 
@@ -469,14 +499,35 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 	public void mouseClicked(MouseEvent arg0) {
 
 		if (arg0.getSource() == ok) {
-			// Map settings
-			mapSettingsPanel.saveSettings();
-			aisSettingsPanel.saveSettings();
-
-			for (int i = 0; i < mapWindowsListPanels.size(); i++) {
-				mapWindowsListPanels.get(i).saveSettings();
+			// Map settings check if changed
+			if (mapSettingsChanged){
+				mapSettingsPanel.saveSettings();
+				
+				//Set the new WMS Query
+				for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
+					mainFrame.getMapWindows().get(i).getChartPanel().getWmsLayer().getWmsService().setWMSString(settings.getGuiSettings().getWmsQuery());
+				}
 			}
+			
+			if (aisSettingsChanged){
+				aisSettingsPanel.saveSettings();	
+			}
+			
+			if (eNavServicesChanged){
+				eNavSettingsPanel.saveSettings();	
+			}
+			
+			if (mapWindowsChanged){
+				for (int i = 0; i < mapWindowsListPanels.size(); i++) {
+					mapWindowsListPanels.get(i).saveSettings();
+				}				
+			}
+			
 
+
+
+
+			
 			settings.saveToFile();
 			this.setVisible(false);
 		}
@@ -659,7 +710,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		labelContainer.add(connections);
 		labelContainer.add(aisSettings);
 		labelContainer.add(eNavServices);
-		labelContainer.add(routeSettings);
+//		labelContainer.add(routeSettings);
 
 		addMouseListeners();
 	}
