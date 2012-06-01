@@ -32,11 +32,12 @@ import com.jgoodies.forms.layout.RowSpec;
 
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
+import dk.frv.enav.esd.gui.settingtabs.AisSettingsPanel;
 import dk.frv.enav.esd.gui.settingtabs.MapSettingsPanel;
 import dk.frv.enav.esd.gui.settingtabs.GuiStyler;
 import dk.frv.enav.esd.gui.settingtabs.MapWindowSinglePanel;
 import dk.frv.enav.esd.gui.settingtabs.MapWindowsPanel;
-import dk.frv.enav.esd.gui.settingtabs.connectionStatus;
+import dk.frv.enav.esd.gui.settingtabs.ConnectionStatus;
 import dk.frv.enav.esd.layers.wms.WMSService;
 import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.esd.ais.AisHandler;
@@ -74,8 +75,8 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 
 	private MapSettingsPanel mapSettingsPanel;
 	private MapWindowsPanel mapWindowsPanel;
-	private connectionStatus connectionsPanel;
-	private JPanel aisSettingsPanel;
+	private ConnectionStatus connectionsPanel;
+	private AisSettingsPanel aisSettingsPanel;
 	private JPanel eNavSettingsPanel;
 	private JPanel routeSettingsPanel;
 
@@ -198,6 +199,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 			public void mousePressed(MouseEvent e) {
 				aisSettings.setBackground(new Color(45, 45, 45));
 				hideAllPanels();
+				aisSettingsPanel.loadSettings(settings.getAisSettings());
 				aisSettingsPanel.setVisible(true);
 				hideMapTabs();
 			}
@@ -378,10 +380,10 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		mapWindowsPanel = new MapWindowsPanel(mainFrame, settings);
 		mapWindowsPanel.setVisible(false);
 
-		connectionsPanel = new connectionStatus(mainFrame);
+		connectionsPanel = new ConnectionStatus(mainFrame);
 		connectionsPanel.setVisible(false);
 
-		aisSettingsPanel = createConnectionsPanel();
+		aisSettingsPanel = new AisSettingsPanel();
 		aisSettingsPanel.setVisible(false);
 
 		eNavSettingsPanel = createConnectionsPanel();
@@ -469,6 +471,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		if (arg0.getSource() == ok) {
 			// Map settings
 			mapSettingsPanel.saveSettings();
+			aisSettingsPanel.saveSettings();
 
 			for (int i = 0; i < mapWindowsListPanels.size(); i++) {
 				mapWindowsListPanels.get(i).saveSettings();
@@ -477,7 +480,6 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 			settings.saveToFile();
 			this.setVisible(false);
 		}
-
 		if (arg0.getSource() == cancel) {
 
 			this.setVisible(false);

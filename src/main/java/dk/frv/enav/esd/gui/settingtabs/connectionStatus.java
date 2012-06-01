@@ -18,7 +18,7 @@ import dk.frv.enav.esd.status.ShoreServiceStatus;
 import dk.frv.enav.esd.status.WMSStatus;
 import dk.frv.enav.ins.common.text.Formatter;
 
-public class connectionStatus extends JPanel{
+public class ConnectionStatus extends JPanel{
 
 	/**
 	 * 
@@ -34,7 +34,7 @@ public class connectionStatus extends JPanel{
 	private JLabel wmsLastContactDate;
 	
 	
-	public connectionStatus(MainFrame mainFrame){
+	public ConnectionStatus(MainFrame mainFrame){
 		super();
 		
 		setBackground(GuiStyler.backgroundColor);

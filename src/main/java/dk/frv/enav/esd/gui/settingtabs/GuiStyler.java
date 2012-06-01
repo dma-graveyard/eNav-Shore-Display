@@ -7,7 +7,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
+import javax.swing.ComboBoxEditor;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -43,6 +45,30 @@ public class GuiStyler {
 		label.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 5));
 		label.setBackground(new Color(75, 75, 75));
 		label.setOpaque(true);
+	}
+	
+	public static void styleDropDown(JComboBox comboBox){
+		
+//		comboBox.setBackground(backgroundColor);
+//		comboBox.setFont(defaultFont);
+//		comboBox.setForeground(textColor);
+//		comboBox.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 5));
+//		
+//		comboBox.setOpaque(true);
+		
+//		ComboBoxEditor test = comboBox.getEditor();
+//		
+//		test.getEditorComponent().setBackground(backgroundColor);
+		
+//		JTextField txtField = (JTextField) comboBox.getEditor().getEditorComponent();
+//		styleTextFields(txtField);
+//		
+//		JComboBox.DefaultEditor editor = (JComboBox.DefaultEditor)comboBox.getEditor();
+//        editor.getTextField().setBackground(GuiStyler.backgroundColor);
+//        editor.getTextField().setForeground(GuiStyler.textColor);
+//        editor.getTextField().setFont(GuiStyler.defaultFont);
+//        editor.getTextField().setCaretColor(GuiStyler.textColor);
+		
 	}
 	
 	public static void styleCheckbox(JCheckBox checkbox){
@@ -120,5 +146,6 @@ public class GuiStyler {
 		jtextField.setForeground(GuiStyler.textColor);
 		jtextField.setFont(GuiStyler.defaultFont);
 		jtextField.setCaretColor(GuiStyler.textColor);
+		jtextField.setBorder(GuiStyler.border);
 	}
 }
