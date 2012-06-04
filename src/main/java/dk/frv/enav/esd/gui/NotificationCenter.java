@@ -201,9 +201,9 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		// Center
 		// MARKER GOES HERE
 		headerPanel = new JPanel(new FlowLayout(0));
-		headerPanel.setBackground(Color.black);
-		headerPanel.setPreferredSize(new Dimension(300,15));
-		headerPanel.setSize(new Dimension(300,15));
+		headerPanel.setBackground(new Color(39,39,39));
+		headerPanel.setPreferredSize(new Dimension(300,10));
+		headerPanel.setSize(new Dimension(300,10));
 		((FlowLayout)headerPanel.getLayout()).setHgap(0);
 		GridBagConstraints gbc_test = new GridBagConstraints();
 		gbc_test.fill = GridBagConstraints.HORIZONTAL;
@@ -501,17 +501,20 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	
 	private JPanel createHeaderColumn(String name, int width){
 		JPanel container = new JPanel();
-		container.setSize(width,15);
-		container.setPreferredSize(new Dimension(width,15));
-		container.setBackground(Color.black);
-		//container.setLayout(null);
+		container.setSize(width,10);
+		container.setPreferredSize(new Dimension(width,10));
+		container.setBackground(new Color(39,39,39));
 		container.setBounds(0, 0, width, 15);
 		((FlowLayout)container.getLayout()).setVgap(0);
 		((FlowLayout)container.getLayout()).setHgap(0);
 		
 		JLabel col = new JLabel(name);
+		col.setSize(width,10);
+		col.setPreferredSize(new Dimension(width,10));
 		col.setForeground(Color.white);
 		col.setFont(new Font("Arial", Font.BOLD, 9));
+		if(name=="ID")
+			col.setHorizontalAlignment(0);
 		container.add(col);
 		return container;
 	}
