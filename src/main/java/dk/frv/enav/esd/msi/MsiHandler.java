@@ -47,6 +47,7 @@ import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.layers.msi.MsiLayer;
 import dk.frv.enav.esd.services.shore.ShoreServiceException;
 import dk.frv.enav.esd.services.shore.ShoreServices;
+import dk.frv.enav.esd.settings.EnavSettings;
 import dk.frv.enav.ins.gps.GpsData;
 import dk.frv.enav.ins.gps.IGpsDataListener;
 import dk.frv.enav.ins.route.IRoutesUpdateListener;
@@ -109,9 +110,8 @@ public class MsiHandler extends MapHandlerChild implements Runnable, IRoutesUpda
 	/**
 	 * Constructor
 	 */
-	public MsiHandler() {
-		// pollInterval = enavSettings.getMsiPollInterval();
-		pollInterval = 600;
+	public MsiHandler(EnavSettings enavSettings) {
+		pollInterval = enavSettings.getMsiPollInterval();
 		msiStore = MsiStore.loadFromFile();
 		ESD.startThread(this, "MsiHandler");
 	}

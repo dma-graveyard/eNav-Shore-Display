@@ -58,7 +58,6 @@ import dk.frv.ais.message.AisMessage5;
 import dk.frv.ais.message.AisPositionMessage;
 import dk.frv.ais.message.binary.AisApplicationMessage;
 import dk.frv.ais.message.binary.BroadcastIntendedRoute;
-import dk.frv.enav.ins.EeINS;
 import dk.frv.enav.ins.ais.AisIntendedRoute;
 import dk.frv.enav.ins.ais.AisTarget;
 import dk.frv.enav.ins.ais.AtoNTarget;
@@ -70,6 +69,7 @@ import dk.frv.enav.ins.ais.VesselTarget;
 import dk.frv.enav.ins.ais.VesselTargetSettings;
 import dk.frv.enav.ins.gps.GnssTime;
 import dk.frv.enav.ins.services.ais.AisServices;
+import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.status.AisStatus;
 import dk.frv.enav.esd.status.ComponentStatus;
 import dk.frv.enav.esd.status.IStatusComponent;
@@ -380,11 +380,11 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	public void run() {
 		
 		// Publish loaded targets
-		EeINS.sleep(2000);
+		ESD.sleep(2000);
 		publishAll();
 
 		while (true) {
-			EeINS.sleep(10000);
+			ESD.sleep(10000);
 			// Update status on targets
 			updateStatus();
 
@@ -682,6 +682,13 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 			}
 			return false;
 		}
+		
+		if (aisTarget.hasGone(now, ESD.getSettings().getAisSettings().isStrict())) {
+			aisTarget.setStatus(AisTarget.Status.GONE);
+			publishUpdate(aisTarget);
+			return false;
+		}
+		
 		if (aisTarget.hasGone(now, strictAisMode)) {
 			aisTarget.setStatus(AisTarget.Status.GONE);
 			publishUpdate(aisTarget);
