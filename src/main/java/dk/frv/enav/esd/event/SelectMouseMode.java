@@ -38,13 +38,10 @@ import java.awt.geom.Point2D;
 import javax.swing.JPanel;
 
 import com.bbn.openmap.MapBean;
-import com.bbn.openmap.proj.Proj;
 import com.bbn.openmap.proj.Projection;
-import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.enav.esd.gui.ChartPanel;
 import dk.frv.enav.esd.gui.JMapFrame;
-import dk.frv.enav.esd.gui.MainFrame;
 
 
 
@@ -61,7 +58,6 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
 
     private ClickTimer clickTimer;
     protected Point point1, point2;
-    private MainFrame mainFrame;
     private JPanel glassFrame;
     
 
@@ -150,9 +146,8 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
      * Mouse clicked event
      */
     public void mouseClicked(MouseEvent e) {
-    	System.out.println(getModeCursor());
     	super.mouseClicked(e);
-    	Object obj = e.getSource();
+//    	Object obj = e.getSource();
     	
     	if(e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() != 2)
     		return;

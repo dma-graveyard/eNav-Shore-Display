@@ -31,9 +31,7 @@ package dk.frv.enav.esd.event;
 
 import java.awt.Cursor;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
@@ -68,7 +66,6 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
 	private boolean mouseDragged = false;
 	boolean layerMouseDrag = false;
 	private int maxScale;
-    private ChartPanel chartPanel;
     private MainFrame mainFrame;
     private JPanel glassFrame;
     
