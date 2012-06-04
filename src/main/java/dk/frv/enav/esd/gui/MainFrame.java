@@ -474,12 +474,21 @@ public class MainFrame extends JFrame implements WindowListener {
 				toolbar.setLocation(workspace.getToolbarPosition());
 				notificationArea.setLocation(workspace.getNotificationAreaPosition());
 				statusArea.setLocation(workspace.getStatusPosition());
-				try {
-					window.setMaximum(workspace.isMaximized().get(i));
-				} catch (PropertyVetoException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				
+				
+				
+				if (workspace.isMaximized().get(i)){
+					window.setSize(600, 600);
+					window.setMaximizedIcon();
+					try {
+						window.setMaximum(workspace.isMaximized().get(i));
+					} catch (PropertyVetoException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
+
+		
 
 				if (workspace.isLocked().get(i)) {
 					window.lockUnlockWindow();
