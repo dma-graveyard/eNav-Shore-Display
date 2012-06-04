@@ -8,7 +8,9 @@ import java.awt.Toolkit;
 public class StaticImages {
 
     Cursor dragCursorMouseClicked; 
-    Cursor dragCursor; 
+    Cursor dragCursor;
+    Cursor navCursorMouseClicked; 
+    Cursor navCursor; 
 
     public StaticImages(){
     	
@@ -21,7 +23,13 @@ public class StaticImages {
       dragCursor = toolkit.createCustomCursor(image, new Point(0,0), "Drag");
       
       Image image2 = toolkit.getImage("images/toolbar/drag_on_mouse.png");
-      dragCursorMouseClicked = toolkit.createCustomCursor(image2, new Point(0,0), "Drag_on_mouse");  
+      dragCursorMouseClicked = toolkit.createCustomCursor(image2, new Point(0,0), "Drag_on_mouse");
+      
+      Image image3 = toolkit.getImage("images/toolbar/zoom_mouse.png");
+      navCursor = toolkit.createCustomCursor(image3, new Point(0,0), "Zoom");
+      
+      Image image4 = toolkit.getImage("images/toolbar/zoom_on_mouse.png");
+      navCursorMouseClicked = toolkit.createCustomCursor(image4, new Point(0,0), "Zoom_on_mouse");  
       
     }
 
@@ -29,18 +37,18 @@ public class StaticImages {
 		return dragCursorMouseClicked;
 	}
 
-	public void setDragCursorMouseClicked(Cursor dragCursorMouseClicked) {
-		this.dragCursorMouseClicked = dragCursorMouseClicked;
-	}
-
 	public Cursor getDragCursor() {
 		return dragCursor;
 	}
 
-	public void setDragCursor(Cursor dragCursor) {
-		this.dragCursor = dragCursor;
+	public Cursor getNavCursorMouseClicked() {
+		return navCursorMouseClicked;
 	}
+
+	public Cursor getNavCursor() {
+		return navCursor;
+	}
+
 	
-    
     
 }

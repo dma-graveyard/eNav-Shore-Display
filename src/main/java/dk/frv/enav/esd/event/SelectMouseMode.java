@@ -35,12 +35,16 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
+import javax.swing.JPanel;
+
 import com.bbn.openmap.MapBean;
 import com.bbn.openmap.proj.Proj;
 import com.bbn.openmap.proj.Projection;
 import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.enav.esd.gui.ChartPanel;
+import dk.frv.enav.esd.gui.JMapFrame;
+import dk.frv.enav.esd.gui.MainFrame;
 
 
 
@@ -57,6 +61,9 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
 
     private ClickTimer clickTimer;
     protected Point point1, point2;
+    private MainFrame mainFrame;
+    private JPanel glassFrame;
+    
 
 	private boolean mouseDragged = false;
 	boolean layerMouseDrag = false;
@@ -74,11 +81,6 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
      */
     public SelectMouseMode(boolean shouldConsumeEvents) {
         super(modeID, shouldConsumeEvents);
-        // override the default cursor
-//        setModeCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        System.out.println(getModeCursor());
-        setModeCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-        System.out.println(getModeCursor());
     }
 
     /**
@@ -95,6 +97,12 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
 	 * Find and init bean function used in initializing other classes
 	 */
     public void findAndInit(Object someObj) {
+    	
+    	if (someObj instanceof JMapFrame) {
+    		glassFrame = ((JMapFrame) someObj).getGlassPanel();
+    		glassFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    	}
+    	
     	super.findAndInit(someObj);
     }
     
@@ -222,7 +230,7 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
      * @param e MouseEvent to be handled
      */
     public void mouseEntered(MouseEvent e) {
-    	System.out.println(getModeCursor());
+    	glassFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         super.mouseEntered(e);
     }
 

@@ -41,6 +41,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.Properties;
 
+import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 import com.bbn.openmap.MapBean;
@@ -50,6 +51,7 @@ import com.bbn.openmap.proj.Projection;
 import com.bbn.openmap.util.PropUtils;
 
 import dk.frv.enav.esd.gui.ChartPanel;
+import dk.frv.enav.esd.gui.JMapFrame;
 import dk.frv.enav.esd.gui.MainFrame;
 
 /**
@@ -79,8 +81,9 @@ public class DragMouseMode extends AbstractCoordMouseMode {
     private float opaqueness;
     private boolean leaveShadow;
     private boolean useCursor;
-    private ChartPanel chartPanel;
     private MainFrame mainFrame;
+    private JPanel glassFrame;
+    
     
     
     Cursor dragCursorMouseClicked; 
@@ -170,16 +173,16 @@ public class DragMouseMode extends AbstractCoordMouseMode {
 	 * Find and init bean function used in initializing other classes
 	 */
     public void findAndInit(Object someObj) {
-    	if (someObj instanceof ChartPanel) {
-           chartPanel = (ChartPanel) someObj;
-        }
-    	
     	if (someObj instanceof MainFrame) {
             mainFrame = (MainFrame) someObj;
             setCursors();
-//            setModeCursor(dragCursor);
-            setModeCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
          }
+    	
+    	if (someObj instanceof JMapFrame) {
+    		glassFrame = ((JMapFrame) someObj).getGlassPanel();
+    		glassFrame.setCursor(dragCursor);
+    	}
+    	
     	super.findAndInit(someObj);
     }
 
@@ -356,9 +359,8 @@ public class DragMouseMode extends AbstractCoordMouseMode {
      * Event on mouse pressed
      */
     public void mousePressed(MouseEvent arg0){
-    	System.out.println("Set cursor mode");
-    	System.out.println(dragCursorMouseClicked);
-    	chartPanel.getMap().setCursor(dragCursorMouseClicked);
+    	glassFrame.setCursor(dragCursorMouseClicked);
+//    	chartPanel.getMap().setCursor(dragCursorMouseClicked);
     	}
 
     /**
@@ -382,7 +384,7 @@ public class DragMouseMode extends AbstractCoordMouseMode {
             // bufferedMapImage = null; //clean up when not active...
         }
         super.mouseReleased(arg0);
-    	chartPanel.getMap().setCursor(dragCursor);
+        glassFrame.setCursor(dragCursor);
     }
 
     /**
@@ -470,12 +472,17 @@ public class DragMouseMode extends AbstractCoordMouseMode {
 //                Cursor cursor = tk.createCustomCursor(pointerImage,
 //                        new Point(0, 0),
 //                        "PP");
-                setModeCursor(dragCursorMouseClicked);
+            	glassFrame.setCursor(dragCursor);
                 
                 return;
             } catch (Exception e) {
                 // Problem finding image probably, just move on.
             }
         }
+    }
+    
+    public void mouseEntered(MouseEvent e) {
+    	glassFrame.setCursor(dragCursor);
+        super.mouseEntered(e);
     }
 }
