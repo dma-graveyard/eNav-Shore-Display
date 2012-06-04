@@ -125,7 +125,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		// setLayout(new BorderLayout());
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		// Set border
-		setBorder(BorderFactory.createLineBorder(Color.GRAY));
+//		setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		// Max scale
 		this.maxScale = ESD.getSettings().getMapSettings().getMaxScale();
 
