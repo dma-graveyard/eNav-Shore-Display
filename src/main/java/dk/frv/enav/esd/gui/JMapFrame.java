@@ -148,7 +148,6 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		}
 
 		mainFrame.getDesktop().getManager().addToFront(id, this);
-
 	}
 
 	/**

@@ -359,11 +359,11 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	/**
-	 * Load and setup a nwe workspace from a file
+	 * Load and setup a new workspace from a file
 	 * @param parent
 	 * @param filename
 	 */
-	public void loadNewWorkspace(String parent, String filename) {
+	public void loadNewWorkspace(String parent, String filename) {		
 		Workspace workspace = ESD.getSettings().loadWorkspace(parent, filename);
 		setWorkSpace(workspace);
 	}
@@ -442,6 +442,8 @@ public class MainFrame extends JFrame implements WindowListener {
 	 * @param workspace
 	 */
 	public void setWorkSpace(Workspace workspace) {
+		
+		getDesktop().getManager().clearToFront();
 
 		while (mapWindows.size() != 0) {
 			try {
@@ -484,7 +486,6 @@ public class MainFrame extends JFrame implements WindowListener {
 
 				// window.getChartPanel().getMap().setScale(0.001f);
 				// window.getChartPanel().getMap().setCenter(workspace.getCenter().get(i));
-
 			}
 
 		}
@@ -497,6 +498,8 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	/**
 	 * Toggle the toolbars as locked
+	 * 
+	 * This function is never called in the current version.
 	 */
 	public void toggleBarsLock() {
 		toolbarsLocked = !toolbarsLocked;

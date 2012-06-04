@@ -406,6 +406,7 @@ public class ToolBar extends JInternalFrame {
 			if (i < toolItemGroups.size() - 1) {
 				JSeparator sep = new JSeparator();
 				sep.setForeground(new Color(65, 65, 65));
+				sep.setBackground(new Color(83, 83, 83));
 				buttonPanel.add(sep);
 
 				height = height + 7;
