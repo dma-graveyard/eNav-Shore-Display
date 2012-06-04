@@ -96,6 +96,7 @@ public class AisSendThread extends Thread implements ISendResultListener {
 			aisServices.sendResult(false);
 		}
 		
+		System.out.println("abk: " + abk);
 		LOG.debug("abk: " + abk);
 		
 		

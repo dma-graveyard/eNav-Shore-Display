@@ -38,11 +38,14 @@ import org.apache.log4j.Logger;
 import com.bbn.openmap.MapHandlerChild;
 
 import dk.frv.ais.message.AisMessage6;
+import dk.frv.ais.message.AisMessage7;
 import dk.frv.ais.message.AisMessage8;
 import dk.frv.ais.message.AisPosition;
 import dk.frv.ais.message.binary.AddressedRouteInformation;
 import dk.frv.ais.message.binary.AsmAcknowledge;
 import dk.frv.ais.message.binary.BroadcastIntendedRoute;
+import dk.frv.ais.message.binary.RouteInformation;
+import dk.frv.ais.message.binary.RouteMessage;
 import dk.frv.ais.message.binary.RouteSuggestionReply;
 import dk.frv.ais.message.binary.RouteSuggestion;
 import dk.frv.ais.reader.SendRequest;
@@ -53,6 +56,7 @@ import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.ins.route.ActiveRoute;
 import dk.frv.enav.ins.settings.AisSettings;
 import dk.frv.enav.ins.settings.Settings;
+import dk.frv.enav.esd.route.Route;
 
 /**
  * AIS service component providing an AIS link interface.
@@ -77,16 +81,51 @@ public class AisServices extends MapHandlerChild {
 	/**
 	 * Send a route suggestion
 	 */
-	public void sendIntendedRoute(long destination) {
-		
-		/*
-		 * TODO:
-		 * - Figure out 
-		 */
+	public void sendRouteSuggestion(long destination, Route route) {
 		
 		// Create route suggestion
 		RouteSuggestion routeSuggestion = new RouteSuggestion();
-		//routeSuggestion.
+		routeSuggestion.setRouteType(2); // 2 = Recommended
+		routeSuggestion.setMsgLinkId(99); // How ?
+		
+		int maxWps = 8;
+		long maxTimeLen = Long.MAX_VALUE;
+		
+		// Get first and last wp
+		int startWp = 0;//route.getActiveWaypointIndex();
+		// Find last wp if no time limit
+		int lastWp = startWp;
+		int maxWp = startWp + maxWps - 1;
+		while (lastWp < maxWp && lastWp < route.getWaypoints().size() - 1) {
+			long timeLen = route.getWpEta(lastWp).getTime() - route.getWpEta(startWp).getTime(); 
+			if (lastWp > startWp + 1 && timeLen >= maxTimeLen) {
+				lastWp--;
+				break;
+			}
+			lastWp++;
+		}
+				
+		// Find start and duration
+		Date start = route.getWpEta(startWp);
+		Date end = route.getWpEta(lastWp);
+		int duration = (int)(end.getTime() - start.getTime()) / 1000 / 60;
+		routeSuggestion.setDuration(duration);
+		
+		// Set start time
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(start);
+		cal.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
+		routeSuggestion.setStartMonth(cal.get(Calendar.MONTH) + 1);
+		routeSuggestion.setStartDay(cal.get(Calendar.DAY_OF_MONTH));
+		routeSuggestion.setStartHour(cal.get(Calendar.HOUR_OF_DAY));
+		routeSuggestion.setStartMin(cal.get(Calendar.MINUTE));
+		
+		// Add waypoints
+		for (int i = startWp; i <= lastWp; i++) {
+			routeSuggestion.addWaypoint(new AisPosition(route.getWaypoints().get(i).getPos()));
+		}
+		
+		System.out.println("Route suggestion: " + routeSuggestion);
 		
 		// Create a new AIS message - Id: 6
 		AisMessage6 msg6 = new AisMessage6();
@@ -95,9 +134,10 @@ public class AisServices extends MapHandlerChild {
 		msg6.setAppMessage(routeSuggestion);
 		//msg6.setFi(28);
 		//msg6.setMsgId(6);
-		//msg6.setDac(1);
+		//msg6.setDac(219);
 		msg6.setRetransmit(0);
 		
+		System.out.println("Message6: " + msg6);
 		
 		// Create a send request
 		SendRequest sendRequest = new SendRequest(msg6, nextSeq(), (int)destination);
@@ -108,8 +148,36 @@ public class AisServices extends MapHandlerChild {
 		// Start send thread
 		aisSendThread.start();
 		
-		System.out.print("Intended route sent");
+		System.out.print("Intended route sent");	
+	}
+	
+	/**
+	 * Acknowledge the vessels reception of a route suggestion
+	 */
+	public void acknowledgeRoute(AisMessage6 receivedMsg6, AddressedRouteInformation routeInformation, int step) { // This should probably not be AddressedRouteInformation
+		// Create acknowledge message
+		AsmAcknowledge acknowledge = new AsmAcknowledge();
+		acknowledge.setReceivedFi(routeInformation.getFi());
+		acknowledge.setReceivedDac(routeInformation.getDac());
+		acknowledge.setAiAvailable(1);
+		acknowledge.setAiResponse(1);
+		acknowledge.setTextSequenceNum(routeInformation.getMsgLinkId());
 		
+		// Create AIS msg 7
+		AisMessage7 msg7 = new AisMessage7();
+		if(step == 2) // update this
+			msg7.setDest2(receivedMsg6.getUserId());
+		else if(step == 3)
+			msg7.setDest3(receivedMsg6.getUserId());
+		
+		// Create a send request
+		SendRequest sendRequest = new SendRequest(msg7, nextSeq(), (int)receivedMsg6.getUserId());
+		
+		// Create a send thread
+		AisSendThread aisSendThread = new AisSendThread(sendRequest, this);
+		
+		// Start send thread
+		aisSendThread.start();
 	}
 	
 	/**

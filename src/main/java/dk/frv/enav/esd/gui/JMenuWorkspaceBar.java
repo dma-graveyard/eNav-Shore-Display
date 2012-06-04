@@ -191,7 +191,7 @@ public class JMenuWorkspaceBar extends JMenuBar {
 					if(test == null) {
 						System.out.println("AisServices er null!!");
 					} else {
-						test.sendIntendedRoute(targetShip);
+						test.sendRouteSuggestion(targetShip, route);
 						System.out.println("Intended route sent to: " + targetShip);
 					}
 						
