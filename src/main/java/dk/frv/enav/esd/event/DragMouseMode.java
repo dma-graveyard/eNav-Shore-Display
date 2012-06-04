@@ -33,9 +33,6 @@ import java.awt.AlphaComposite;
 import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -50,7 +47,6 @@ import com.bbn.openmap.event.ProjectionEvent;
 import com.bbn.openmap.proj.Projection;
 import com.bbn.openmap.util.PropUtils;
 
-import dk.frv.enav.esd.gui.ChartPanel;
 import dk.frv.enav.esd.gui.JMapFrame;
 import dk.frv.enav.esd.gui.MainFrame;
 
