@@ -288,6 +288,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	    masterPanel = new JPanel(new BorderLayout());
 	    masterPanel.add(mapPanel, BorderLayout.NORTH);
 	    masterPanel.add(chartPanel, BorderLayout.SOUTH);
+	    masterPanel.setBackground(new Color(45, 45, 45));
 	    masterPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
         
 	    this.setContentPane(masterPanel);
@@ -319,12 +320,16 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		
 		if(locked) {
 
+			this.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
 			masterPanel.add(mapPanel, BorderLayout.NORTH);
+			masterPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
 			locked = false;
 			mapFrame.setResizable(true);
+			
 
 		} else {
-
+			setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
+			masterPanel.setBorder(null);
 			masterPanel.remove(mapPanel);
 			locked = true;
 			mapFrame.setResizable(false);
