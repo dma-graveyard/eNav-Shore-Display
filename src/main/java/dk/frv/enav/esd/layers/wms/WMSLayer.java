@@ -104,7 +104,7 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 		if (obj instanceof JMapFrame) {
 			jMapFrame = (JMapFrame) obj;
 			wmsInfoPanel = new WMSInfoPanel();
-			jMapFrame.getLoadingPanel().add(wmsInfoPanel);
+			jMapFrame.getGlassPanel().add(wmsInfoPanel);
 			wmsInfoPanel.setPos(20, 30);
 		}
 		if (obj instanceof MainFrame){
@@ -149,7 +149,7 @@ public class WMSLayer extends OMGraphicHandlerLayer implements Runnable {
 					wmsInfoPanel.displayLoadingImage();
 					// wmsInfoPanel.setVisible(true);
 
-					jMapFrame.getLoadingPanel().setVisible(true);
+					jMapFrame.getGlassPanel().setVisible(true);
 
 					upperLeftLon = chartPanel.getMap().getProjection().getUpperLeft().getX();
 					upperLeftLat = chartPanel.getMap().getProjection().getUpperLeft().getY();

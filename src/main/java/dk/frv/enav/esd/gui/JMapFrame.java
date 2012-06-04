@@ -74,9 +74,6 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	private int id;
 	private final MainFrame mainFrame;
 	private JPanel glassPanel;
-	private JPanel loadingPanel;
-	private JPanel highlightPanel;
-	private JPanel aisPanel;
 	private JLabel moveHandler;
 	private JPanel mapPanel;
 	private JPanel masterPanel;
@@ -106,8 +103,6 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		this.setVisible(true);
 
 		initGlassPane();
-		initLoadingPane();
-		initHighlightPane();
 		chartPanel.initChart();
 		initGUI();
 
@@ -131,8 +126,6 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		this.setVisible(true);
 
 		initGlassPane();
-//		initLoadingPane();
-//		initHighlightPane();
 		chartPanel.initChart(center, scale);
 		initGUI();
 
@@ -177,43 +170,12 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	}
 
 	/**
-	 * Function for getting the loadingPanel of the map frame
-	 * @return loadingPanel the loadingPanel of the map frame
-	 */
-	public JPanel getLoadingPanel() {
-//		return loadingPanel;
-		return glassPanel;
-	}
-
-	public JPanel getHighlightPanel(){
-//		return highlightPanel;
-		return glassPanel;
-	}
-
-	public JPanel getAisPanel(){
-//		return aisPanel;
-		return glassPanel;
-	}
-
-	/**
 	 * Function for initializing the glasspane
 	 */
 	private void initGlassPane() {
 		glassPanel = (JPanel) getGlassPane();
 		glassPanel.setLayout(null);
 		glassPanel.setVisible(false);
-	}
-
-	private void initHighlightPane() {
-		highlightPanel = (JPanel) getGlassPane();
-		highlightPanel.setLayout(null);
-		highlightPanel.setVisible(false);
-	}
-
-	public void initAisPane() {
-		aisPanel = (JPanel) getGlassPane();
-		aisPanel.setLayout(null);
-		aisPanel.setVisible(false);
 	}
 
 	/**
@@ -330,15 +292,6 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
         
 	    this.setContentPane(masterPanel);
 	    repaintMapWindow();
-	}
-
-	/**
-	 * Function for initializing the loading animation
-	 */
-	private void initLoadingPane() {
-		loadingPanel = (JPanel) getGlassPane();
-		loadingPanel.setLayout(null);
-		loadingPanel.setVisible(false);
 	}
 
 	/**
