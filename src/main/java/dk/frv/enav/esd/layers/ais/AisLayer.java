@@ -94,7 +94,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	 */
 	@Override
 	public void run() {
-		jMapFrame.getGlassPanel().setVisible(true);
+		
 		while (shouldRun) {
 			ESD.sleep(1000);
 			drawVessels();
@@ -256,6 +256,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			jMapFrame.getGlassPanel().add(highlightInfoPanel);
 			aisInfoPanel = new AisInfoPanel();
 			jMapFrame.getGlassPanel().add(aisInfoPanel);
+			jMapFrame.getGlassPanel().setVisible(true);
 		}
 	}
 
