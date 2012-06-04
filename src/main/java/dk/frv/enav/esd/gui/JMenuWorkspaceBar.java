@@ -208,9 +208,9 @@ public class JMenuWorkspaceBar extends JMenuBar {
 	    
 	    lockAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!mainFrame.isToolbarsLocked()){
-					mainFrame.toggleBarsLock();
-				}
+				//if(!mainFrame.isToolbarsLocked()){
+				//	mainFrame.toggleBarsLock();
+				//}
 				
 				lockAll();
 			}
@@ -219,9 +219,9 @@ public class JMenuWorkspaceBar extends JMenuBar {
 	    unlockAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				unLockAll();
-				if(mainFrame.isToolbarsLocked()){
-					mainFrame.toggleBarsLock();
-				}
+				//if(mainFrame.isToolbarsLocked()){
+				//	mainFrame.toggleBarsLock();
+				//}
 			}
 		});
 	    

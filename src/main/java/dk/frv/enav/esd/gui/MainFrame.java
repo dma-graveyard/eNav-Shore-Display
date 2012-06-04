@@ -488,6 +488,8 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	/**
 	 * Toggle the toolbars as locked
+	 * 
+	 * This function is never called in the current version.
 	 */
 	public void toggleBarsLock() {
 		toolbarsLocked = !toolbarsLocked;
