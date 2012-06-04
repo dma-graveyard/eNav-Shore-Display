@@ -306,7 +306,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			return false;
 		}
 
-		if (newClosest != highlighted) {
+		if (newClosest != highlighted && newClosest != null) {
 			highlighted = newClosest;
 			highlightedVessel = (VesselLayer) newClosest;
 			highlightedMMSI = highlightedVessel.getMMSI();
