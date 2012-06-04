@@ -77,6 +77,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	private JLabel moveHandler;
 	private JPanel mapPanel;
 	private JPanel masterPanel;
+	private JLabel maximize;
 	
 	
 	private static int moveHandlerHeight = 18;
@@ -243,7 +244,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
         minimize.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 3));
         mapToolsPanel.add(minimize);
         
-        final JLabel maximize = new JLabel(new ImageIcon("images/window/maximize.png"));
+        maximize = new JLabel(new ImageIcon("images/window/maximize.png"));
         maximize.addMouseListener(new MouseAdapter() {  
         	
 		    public void mouseReleased(MouseEvent e) { 
@@ -295,6 +296,11 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	    repaintMapWindow();
 	}
 
+	public void setMaximizedIcon(){
+		maximized = true;
+		maximize.setIcon(new ImageIcon("images/window/restore.png"));
+	}
+	
 	/**
 	 * Function for getting the status of map frame in terms of in front
 	 * @return
