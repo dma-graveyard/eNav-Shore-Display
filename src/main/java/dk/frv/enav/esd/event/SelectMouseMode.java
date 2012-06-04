@@ -75,7 +75,10 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
     public SelectMouseMode(boolean shouldConsumeEvents) {
         super(modeID, shouldConsumeEvents);
         // override the default cursor
-        setModeCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+//        setModeCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        System.out.println(getModeCursor());
+        setModeCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+        System.out.println(getModeCursor());
     }
 
     /**
@@ -139,6 +142,7 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
      * Mouse clicked event
      */
     public void mouseClicked(MouseEvent e) {
+    	System.out.println(getModeCursor());
     	super.mouseClicked(e);
     	Object obj = e.getSource();
     	
@@ -218,6 +222,7 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
      * @param e MouseEvent to be handled
      */
     public void mouseEntered(MouseEvent e) {
+    	System.out.println(getModeCursor());
         super.mouseEntered(e);
     }
 

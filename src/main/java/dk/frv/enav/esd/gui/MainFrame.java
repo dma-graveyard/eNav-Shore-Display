@@ -147,9 +147,6 @@ public class MainFrame extends JFrame implements WindowListener {
 		return window;
 	}
 
-	
-	
-	
 	public StaticImages getStaticImages() {
 		return staticImages;
 	}

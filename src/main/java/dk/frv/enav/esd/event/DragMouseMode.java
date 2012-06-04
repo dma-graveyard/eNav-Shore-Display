@@ -111,14 +111,15 @@ public class DragMouseMode extends AbstractCoordMouseMode {
         // override the default cursor
 //        
 //        //Get the default toolkit  
-        Toolkit toolkit = Toolkit.getDefaultToolkit();  
-          
-        //Load an image for the cursor  
-        Image image = toolkit.getImage("images/toolbar/drag_mouse.png");
-        dragCursor = toolkit.createCustomCursor(image, new Point(0,0), "Drag");
         
-        Image image2 = toolkit.getImage("images/toolbar/drag_on_mouse.png");
-        dragCursorMouseClicked = toolkit.createCustomCursor(image2, new Point(0,0), "Drag_on_mouse");  
+//        Toolkit toolkit = Toolkit.getDefaultToolkit();  
+//          
+//        //Load an image for the cursor  
+//        Image image = toolkit.getImage("images/toolbar/drag_mouse.png");
+//        dragCursor = toolkit.createCustomCursor(image, new Point(0,0), "Drag");
+//        
+//        Image image2 = toolkit.getImage("images/toolbar/drag_on_mouse.png");
+//        dragCursorMouseClicked = toolkit.createCustomCursor(image2, new Point(0,0), "Drag_on_mouse");  
         
 //        setModeCursor(dragCursor);
         
@@ -127,6 +128,7 @@ public class DragMouseMode extends AbstractCoordMouseMode {
 
     private void setCursors(){
     	dragCursor = mainFrame.getStaticImages().getDragCursor(); 
+    	dragCursorMouseClicked = mainFrame.getStaticImages().getDragCursorMouseClicked();
     }
     
     /**
@@ -175,6 +177,8 @@ public class DragMouseMode extends AbstractCoordMouseMode {
     	if (someObj instanceof MainFrame) {
             mainFrame = (MainFrame) someObj;
             setCursors();
+//            setModeCursor(dragCursor);
+            setModeCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
          }
     	super.findAndInit(someObj);
     }
@@ -352,6 +356,8 @@ public class DragMouseMode extends AbstractCoordMouseMode {
      * Event on mouse pressed
      */
     public void mousePressed(MouseEvent arg0){
+    	System.out.println("Set cursor mode");
+    	System.out.println(dragCursorMouseClicked);
     	chartPanel.getMap().setCursor(dragCursorMouseClicked);
     	}
 
