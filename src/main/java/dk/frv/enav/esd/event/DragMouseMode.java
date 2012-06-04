@@ -47,8 +47,8 @@ import com.bbn.openmap.event.ProjectionEvent;
 import com.bbn.openmap.proj.Projection;
 import com.bbn.openmap.util.PropUtils;
 
+import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.gui.JMapFrame;
-import dk.frv.enav.esd.gui.MainFrame;
 
 /**
  * Mouse mode for dragging
@@ -77,7 +77,6 @@ public class DragMouseMode extends AbstractCoordMouseMode {
     private float opaqueness;
     private boolean leaveShadow;
     private boolean useCursor;
-    private MainFrame mainFrame;
     private JPanel glassFrame;
     
     
@@ -126,8 +125,8 @@ public class DragMouseMode extends AbstractCoordMouseMode {
     }
 
     private void setCursors(){
-    	dragCursor = mainFrame.getStaticImages().getDragCursor(); 
-    	dragCursorMouseClicked = mainFrame.getStaticImages().getDragCursorMouseClicked();
+    	dragCursor = ESD.getStaticImages().getDragCursor(); 
+    	dragCursorMouseClicked = ESD.getStaticImages().getDragCursorMouseClicked();
     }
     
     /**
@@ -169,12 +168,8 @@ public class DragMouseMode extends AbstractCoordMouseMode {
 	 * Find and init bean function used in initializing other classes
 	 */
     public void findAndInit(Object someObj) {
-    	if (someObj instanceof MainFrame) {
-            mainFrame = (MainFrame) someObj;
-            setCursors();
-         }
-    	
     	if (someObj instanceof JMapFrame) {
+    		setCursors();
     		glassFrame = ((JMapFrame) someObj).getGlassPanel();
     		glassFrame.setCursor(dragCursor);
     	}

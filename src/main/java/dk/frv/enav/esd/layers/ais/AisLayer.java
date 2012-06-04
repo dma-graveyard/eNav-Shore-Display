@@ -73,7 +73,6 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private AisInfoPanel aisInfoPanel = null;
 	private StatusArea statusArea;
 	private JMapFrame jMapFrame;
-
 	private HashMap<Long, Vessel> drawnVessels = new HashMap<Long, Vessel>();
 	private Vessel vesselComponent;
 	private VesselPositionData location;
@@ -258,7 +257,6 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			aisInfoPanel = new AisInfoPanel();
 			jMapFrame.getGlassPanel().add(aisInfoPanel);
 		}
-
 	}
 
 	@Override

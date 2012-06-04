@@ -44,7 +44,6 @@ import com.bbn.openmap.proj.coords.LatLonPoint;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.gui.ChartPanel;
 import dk.frv.enav.esd.gui.JMapFrame;
-import dk.frv.enav.esd.gui.MainFrame;
 
 
 
@@ -66,7 +65,6 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
 	private boolean mouseDragged = false;
 	boolean layerMouseDrag = false;
 	private int maxScale;
-    private MainFrame mainFrame;
     private JPanel glassFrame;
     
     Cursor navCursorMouseClicked; 
@@ -101,8 +99,8 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
     }
 
     private void setCursors(){
-    	navCursor = mainFrame.getStaticImages().getNavCursor(); 
-    	navCursorMouseClicked = mainFrame.getStaticImages().getNavCursorMouseClicked();
+    	navCursor = ESD.getStaticImages().getNavCursor(); 
+    	navCursorMouseClicked = ESD.getStaticImages().getNavCursorMouseClicked();
     }
     
     /**
@@ -119,13 +117,9 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
 	/**
 	 * Find and init bean function used in initializing other classes
 	 */
-    public void findAndInit(Object someObj) {
-    	if (someObj instanceof MainFrame) {
-            mainFrame = (MainFrame) someObj;
-            setCursors();
-         }
-    	
+    public void findAndInit(Object someObj) {	
     	if (someObj instanceof JMapFrame) {
+    		setCursors();
     		glassFrame = ((JMapFrame) someObj).getGlassPanel();
     		glassFrame.setCursor(navCursor);
     	}

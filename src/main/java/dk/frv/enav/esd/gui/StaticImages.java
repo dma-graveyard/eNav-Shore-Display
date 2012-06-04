@@ -5,13 +5,24 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 
+import javax.swing.ImageIcon;
+
 public class StaticImages {
 
     Cursor dragCursorMouseClicked; 
     Cursor dragCursor;
     Cursor navCursorMouseClicked; 
     Cursor navCursor; 
-
+    ImageIcon highlightIcon;
+    ImageIcon vesselWhite;
+    ImageIcon vesselBlue;
+    ImageIcon vesselLightgreen;
+    ImageIcon vesselCyan;
+    ImageIcon vesselRed;
+    ImageIcon vesselWhite0;
+	ImageIcon vesselBrown;
+    ImageIcon vesselMagenta;
+    ImageIcon vesselLightgray;
     public StaticImages(){
     	
     	
@@ -31,6 +42,18 @@ public class StaticImages {
       Image image4 = toolkit.getImage("images/toolbar/zoom_on_mouse.png");
       navCursorMouseClicked = toolkit.createCustomCursor(image4, new Point(0,0), "Zoom_on_mouse");  
       
+      highlightIcon = new ImageIcon("images/ais/highlight.png");
+      
+      vesselWhite = new ImageIcon("images/vesselIcons/white1_90.png");   
+      vesselBlue = new ImageIcon("images/vesselIcons/blue1_90.png");
+      vesselLightgreen = new ImageIcon("images/vesselIcons/lightgreen1_90.png");
+      vesselCyan = new ImageIcon("images/vesselIcons/cyan1_90.png");
+      vesselRed = new ImageIcon("images/vesselIcons/red1_90.png");
+      vesselWhite0 = new ImageIcon("images/vesselIcons/white0.png");
+      vesselBrown = new ImageIcon("images/vesselIcons/brown1_90.png");
+      vesselMagenta = new ImageIcon("images/vesselIcons/magenta1_90.png");
+      vesselLightgray = new ImageIcon("images/vesselIcons/lightgray1_90.png");
+      
     }
 
 	public Cursor getDragCursorMouseClicked() {
@@ -49,6 +72,45 @@ public class StaticImages {
 		return navCursor;
 	}
 
+	public ImageIcon getHighlightIcon(){
+		return highlightIcon;
+	}
+	
+	public ImageIcon getVesselWhite() {
+		return vesselWhite;
+	}
+
+	public ImageIcon getVesselBlue() {
+		return vesselBlue;
+	}
+
+	public ImageIcon getVesselLightgreen() {
+		return vesselLightgreen;
+	}
+
+	public ImageIcon getVesselCyan() {
+		return vesselCyan;
+	}
+
+	public ImageIcon getVesselRed() {
+		return vesselRed;
+	}
+
+	public ImageIcon getVesselWhite0() {
+		return vesselWhite0;
+	}
+
+	public ImageIcon getVesselBrown() {
+		return vesselBrown;
+	}
+
+	public ImageIcon getVesselMagenta() {
+		return vesselMagenta;
+	}
+
+	public ImageIcon getVesselLightgray() {
+		return vesselLightgray;
+	}
 	
     
 }

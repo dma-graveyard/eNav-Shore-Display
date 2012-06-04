@@ -1,7 +1,5 @@
 package dk.frv.enav.esd.layers.ais;
 
-import dk.frv.ais.message.AisMessage;
-import dk.frv.enav.common.xml.msi.MsiMessage;
 import dk.frv.enav.esd.gui.InfoPanel;
 
 /**

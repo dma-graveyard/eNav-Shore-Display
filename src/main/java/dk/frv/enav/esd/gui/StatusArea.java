@@ -47,7 +47,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.border.EtchedBorder;
 
 import com.bbn.openmap.proj.coords.LatLonPoint;
