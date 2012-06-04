@@ -96,7 +96,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private JSettingsWindow settingsWindow = new JSettingsWindow();
 
 	private StatusArea statusArea = new StatusArea(this);
-	
+	private JMapFrame activeMapWindow = null;
 
 	/**
 	 * Constructor
@@ -107,6 +107,20 @@ public class MainFrame extends JFrame implements WindowListener {
 		initGUI();
 
 	}
+
+	
+	
+	public JMapFrame getActiveMapWindow() {
+		return activeMapWindow;
+	}
+
+
+
+	public void setActiveMapWindow(JMapFrame activeMapWindow) {
+		this.activeMapWindow = activeMapWindow;
+	}
+
+
 
 	/**
 	 * Create and add a new map window

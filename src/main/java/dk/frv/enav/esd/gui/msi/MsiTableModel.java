@@ -32,11 +32,7 @@ package dk.frv.enav.esd.gui.msi;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
 
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.common.xml.msi.MsiLocation;

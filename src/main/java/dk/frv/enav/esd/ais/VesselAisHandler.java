@@ -57,7 +57,8 @@ import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.settings.Settings;
-import dk.frv.enav.ins.EeINS;
+import dk.frv.enav.esd.status.AisStatus;
+import dk.frv.enav.esd.status.ComponentStatus;
 import dk.frv.enav.ins.ais.AisAdressedRouteSuggestion;
 import dk.frv.enav.ins.ais.IAisRouteSuggestionListener;
 import dk.frv.enav.ins.ais.VesselPositionData;
@@ -67,8 +68,6 @@ import dk.frv.enav.ins.common.util.Converter;
 import dk.frv.enav.ins.gps.GpsData;
 import dk.frv.enav.ins.gps.GpsHandler;
 import dk.frv.enav.ins.nmea.SensorType;
-import dk.frv.enav.esd.status.AisStatus;
-import dk.frv.enav.esd.status.ComponentStatus;
 
 /**
  * AisHandler for Vessels

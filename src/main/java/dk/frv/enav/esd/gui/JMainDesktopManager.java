@@ -41,6 +41,8 @@ import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
+import dk.frv.enav.esd.ESD;
+
 public class JMainDesktopManager extends DefaultDesktopManager {
 	/**
 	 * Desktopmanager used in controlling windows
@@ -70,6 +72,8 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 
 		if (f instanceof JMapFrame) {
 
+			ESD.getMainFrame().setActiveMapWindow((JMapFrame) f);
+			
 			if (toFront.size() == 0) {
 				super.activateFrame(f);
 			} else {

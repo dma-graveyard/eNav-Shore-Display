@@ -9,11 +9,9 @@ import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 
 import dk.frv.enav.esd.gui.MainFrame;
-import dk.frv.enav.esd.layers.wms.WMSService;
 import dk.frv.enav.esd.status.AisStatus;
 import dk.frv.enav.esd.status.ComponentStatus;
 import dk.frv.enav.esd.status.IStatusComponent;
-import dk.frv.enav.esd.status.ComponentStatus.Status;
 import dk.frv.enav.esd.status.ShoreServiceStatus;
 import dk.frv.enav.esd.status.WMSStatus;
 import dk.frv.enav.ins.common.text.Formatter;

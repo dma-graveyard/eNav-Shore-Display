@@ -457,7 +457,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 
 		but_goto.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				mainFrame.getMapWindows().get(0).getChartPanel()
+				mainFrame.getActiveMapWindow().getChartPanel()
 						.zoomToPoint(msiTableModel.getMessageLatLon(selectedRow));
 			}
 		});

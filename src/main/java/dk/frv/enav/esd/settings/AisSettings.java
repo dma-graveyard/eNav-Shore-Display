@@ -32,8 +32,6 @@ package dk.frv.enav.esd.settings;
 import java.io.Serializable;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import com.bbn.openmap.util.PropUtils;
 
 /**
@@ -42,7 +40,7 @@ import com.bbn.openmap.util.PropUtils;
 public class AisSettings implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	private static final Logger LOG = Logger.getLogger(AisSettings.class);
+//	private static final Logger LOG = Logger.getLogger(AisSettings.class);
 	
 	private static final String PREFIX = "ais.";
 	
