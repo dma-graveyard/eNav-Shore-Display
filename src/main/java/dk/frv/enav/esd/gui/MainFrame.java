@@ -96,6 +96,9 @@ public class MainFrame extends JFrame implements WindowListener {
 	private JSettingsWindow settingsWindow = new JSettingsWindow();
 
 	private StatusArea statusArea = new StatusArea(this);
+	private StaticImages staticImages= new StaticImages();
+	
+	
 
 	/**
 	 * Constructor
@@ -142,6 +145,13 @@ public class MainFrame extends JFrame implements WindowListener {
 		}
 		
 		return window;
+	}
+
+	
+	
+	
+	public StaticImages getStaticImages() {
+		return staticImages;
 	}
 
 	/**

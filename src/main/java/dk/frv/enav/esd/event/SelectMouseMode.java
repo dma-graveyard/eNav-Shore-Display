@@ -51,7 +51,7 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
 	private static final long serialVersionUID = 1L;
 
 	/**
-     * Mouse Mode identifier, which is "Navigation".
+     * Mouse Mode identifier, which is "Select".
      */
     public final static transient String modeID = "Select";
 
@@ -147,33 +147,34 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
     	
     	mouseSupport.fireMapMouseClicked(e);
     	
-        if(e.getClickCount() == 2 && !e.isConsumed()){
-        	e.consume();
-        	// Only center on left click
-            if (!(e.getButton() == MouseEvent.BUTTON1)) {
-            	return;
-            }
-
-            if (!(obj instanceof MapBean) || point1 == null) {
-                return;
-            }
-            
-            MapBean map = (MapBean) obj;
-            Projection projection = map.getProjection();
-            Proj p = (Proj) projection;
-            
-            LatLonPoint llp = projection.inverse(e.getPoint());
-            
-
-            // reset the points here so the point doesn't get
-            // rendered on the repaint.
-            point1 = null;
-            point2 = null;
-
-            p.setCenter(llp);
-            map.setProjection(p);
+//    	
+//        if(e.getClickCount() == 2 && !e.isConsumed()){
+//        	e.consume();
+//        	// Only center on left click
+//            if (!(e.getButton() == MouseEvent.BUTTON1)) {
+//            	return;
+//            }
+//
+//            if (!(obj instanceof MapBean) || point1 == null) {
+//                return;
+//            }
+//            
+//            MapBean map = (MapBean) obj;
+//            Projection projection = map.getProjection();
+//            Proj p = (Proj) projection;
+//            
+//            LatLonPoint llp = projection.inverse(e.getPoint());
+//            
+//
+//            // reset the points here so the point doesn't get
+//            // rendered on the repaint.
+//            point1 = null;
+//            point2 = null;
+//
+//            p.setCenter(llp);
+//            map.setProjection(p);
 //            chartPanel.manualProjChange();
-        }
+//        }
     }
 
     /**
@@ -188,21 +189,21 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
     		super.mouseDragged(e);
     		if(!mouseDragged)
     			layerMouseDrag = mouseSupport.fireMapMouseDragged(e);
-			if(!layerMouseDrag){
-		        if(!javax.swing.SwingUtilities.isLeftMouseButton(e))
-		        	return;
-		        mouseDragged = true;
-
-	            // clean up the old rectangle, since point2 has the old
-	            // value.
-	            paintRectangle((MapBean) e.getSource(), point1, point2);
-	            // paint new rectangle
-	            // point2 = e.getPoint();
-
-	            point2 = e.getPoint();
-
-	            paintRectangle((MapBean) e.getSource(), point1, point2);
-			}
+//			if(!layerMouseDrag){
+//		        if(!javax.swing.SwingUtilities.isLeftMouseButton(e))
+//		        	return;
+//		        mouseDragged = true;
+//
+//	            // clean up the old rectangle, since point2 has the old
+//	            // value.
+//	            paintRectangle((MapBean) e.getSource(), point1, point2);
+//	            // paint new rectangle
+//	            // point2 = e.getPoint();
+//
+//	            point2 = e.getPoint();
+//
+//	            paintRectangle((MapBean) e.getSource(), point1, point2);
+//			}
     	}
     }
 

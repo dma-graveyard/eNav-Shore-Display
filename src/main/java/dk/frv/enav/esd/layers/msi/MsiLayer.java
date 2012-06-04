@@ -135,7 +135,7 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 		String[] ret = new String[3];
 		ret[0] = DragMouseMode.modeID; // "DragMouseMode"
 		ret[1] = NavigationMouseMode.modeID; // "ZoomMouseMoude"
-		ret[1] = SelectMouseMode.modeID; // "SelectMouseMode"
+		ret[2] = SelectMouseMode.modeID; // "SelectMouseMode"
 		return ret;
 	}
 

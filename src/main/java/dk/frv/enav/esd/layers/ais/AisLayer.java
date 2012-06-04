@@ -100,6 +100,8 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			drawVessels();
 			repaintStatusArea(true);
 		}
+		drawnVessels.clear();
+		list.clear();
 	}
 
 	/**
@@ -274,8 +276,8 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	public String[] getMouseModeServiceList() {
 		String[] ret = new String[3];
 		ret[0] = DragMouseMode.modeID; // "DragMouseMode"
-		ret[1] = NavigationMouseMode.modeID; // "ZoomMouseMoude"
-		ret[1] = SelectMouseMode.modeID; // "SelectMouseMode"
+		ret[1] = NavigationMouseMode.modeID; // "ZoomMouseMode"
+		ret[2] = SelectMouseMode.modeID; // "SelectMouseMode"
 		return ret;
 	}
 

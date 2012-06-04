@@ -50,6 +50,7 @@ import com.bbn.openmap.proj.Projection;
 import com.bbn.openmap.util.PropUtils;
 
 import dk.frv.enav.esd.gui.ChartPanel;
+import dk.frv.enav.esd.gui.MainFrame;
 
 /**
  * Mouse mode for dragging
@@ -62,6 +63,8 @@ public class DragMouseMode extends AbstractCoordMouseMode {
      * Mouse Mode identifier, which is "Drag".
      */
     public final static transient String modeID = "Drag";    
+    
+    
     public final static String OpaquenessProperty = "opaqueness";
     public final static String LeaveShadowProperty = "leaveShadow";
     public final static String UseCursorProperty = "useCursor";
@@ -77,6 +80,8 @@ public class DragMouseMode extends AbstractCoordMouseMode {
     private boolean leaveShadow;
     private boolean useCursor;
     private ChartPanel chartPanel;
+    private MainFrame mainFrame;
+    
     
     Cursor dragCursorMouseClicked; 
     Cursor dragCursor; 
@@ -115,10 +120,15 @@ public class DragMouseMode extends AbstractCoordMouseMode {
         Image image2 = toolkit.getImage("images/toolbar/drag_on_mouse.png");
         dragCursorMouseClicked = toolkit.createCustomCursor(image2, new Point(0,0), "Drag_on_mouse");  
         
-        setModeCursor(dragCursor);
+//        setModeCursor(dragCursor);
+        
 //        setModeCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
     }
 
+    private void setCursors(){
+    	dragCursor = mainFrame.getStaticImages().getDragCursor(); 
+    }
+    
     /**
      * Instantiates new image buffers if needed.<br>
      * This method is synchronized to avoid creating the images multiple times
@@ -161,6 +171,11 @@ public class DragMouseMode extends AbstractCoordMouseMode {
     	if (someObj instanceof ChartPanel) {
            chartPanel = (ChartPanel) someObj;
         }
+    	
+    	if (someObj instanceof MainFrame) {
+            mainFrame = (MainFrame) someObj;
+            setCursors();
+         }
     	super.findAndInit(someObj);
     }
 
