@@ -340,9 +340,6 @@ public class ESD {
 		shoreServices = new ShoreServices();
 		beanHandler.add(shoreServices);
 		
-		// Create MSI handler
-		msiHandler = new MsiHandler();
-		beanHandler.add(msiHandler);
 
 		// Load settings or get defaults and add to bean context
 		if (args.length > 0) {
@@ -395,6 +392,11 @@ public class ESD {
 				createAndShowGUI();
 			}
 		});
+		
+		// Create MSI handler
+		msiHandler = new MsiHandler(getSettings().getEnavSettings());
+		beanHandler.add(msiHandler);
+
 
 	}
 

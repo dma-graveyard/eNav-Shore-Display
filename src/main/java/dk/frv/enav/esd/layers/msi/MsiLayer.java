@@ -46,6 +46,7 @@ import com.bbn.openmap.omGraphics.OMList;
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.common.xml.msi.MsiLocation;
 import dk.frv.enav.common.xml.msi.MsiMessage;
+import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.event.SelectMouseMode;
@@ -249,7 +250,7 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 		MsiLocation msiLocation = msiMessage.getLocation();
 		GeoLocation center = msiLocation.getCenter();
 		mapBean.setCenter(center.getLatitude(), center.getLongitude());
-		mapBean.setScale(80000);		
+		mapBean.setScale(ESD.getSettings().getEnavSettings().getMsiTextboxesVisibleAtScale());		
 	}	
 
 }
