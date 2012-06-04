@@ -92,6 +92,10 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 		super.activateFrame(notCenter);
 		super.activateFrame(settings);
 	}
+	
+	public void clearToFront(){
+		toFront.clear();
+	}
 
 	/**
 	 * Set an internalframe to be infront
