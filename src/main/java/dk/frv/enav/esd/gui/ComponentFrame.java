@@ -39,7 +39,6 @@ import java.beans.beancontext.BeanContextMembershipListener;
 import java.util.Iterator;
 import java.util.Properties;
 
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.SwingConstants;
 

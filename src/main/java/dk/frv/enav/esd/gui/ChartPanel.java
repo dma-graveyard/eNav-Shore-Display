@@ -37,7 +37,6 @@ import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.Properties;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 
 import org.apache.log4j.Logger;

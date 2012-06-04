@@ -1,6 +1,5 @@
 package dk.frv.enav.esd.gui.settingtabs;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 
 import javax.swing.JLabel;

@@ -11,7 +11,6 @@ import javax.swing.border.TitledBorder;
 
 import dk.frv.enav.esd.gui.JMapFrame;
 import dk.frv.enav.esd.gui.MainFrame;
-import dk.frv.enav.esd.settings.Settings;
 
 public class MapWindowSinglePanel extends JPanel{
 

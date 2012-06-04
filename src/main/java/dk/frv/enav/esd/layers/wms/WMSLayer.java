@@ -29,8 +29,6 @@
  */
 package dk.frv.enav.esd.layers.wms;
 
-import sun.awt.image.PixelConverter.Bgrx;
-
 import com.bbn.openmap.layer.OMGraphicHandlerLayer;
 import com.bbn.openmap.omGraphics.OMGraphicList;
 
