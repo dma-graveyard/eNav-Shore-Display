@@ -72,7 +72,9 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 
 		if (f instanceof JMapFrame) {
 
+			if (ESD.getMainFrame() != null){
 			ESD.getMainFrame().setActiveMapWindow((JMapFrame) f);
+			}
 			
 			if (toFront.size() == 0) {
 				super.activateFrame(f);
