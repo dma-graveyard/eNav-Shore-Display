@@ -36,6 +36,7 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.JInternalFrame;
 
+import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.gui.MainFrame;
 
 /**
@@ -107,6 +108,9 @@ public class ToolbarMoveMouseListener implements MouseListener, MouseMotionListe
 			Point new_location = new Point(newX, newY);
 			frame.setLocation(new_location);
 			
+			if (ESD.getMainFrame() != null){
+			ESD.getMainFrame().getDesktop().getManager().resizeDesktop();
+			}
 		}
 
 	}

@@ -160,7 +160,7 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 	/**
 	 * Resize desktop
 	 */
-	protected void resizeDesktop() {
+	public void resizeDesktop() {
 		int x = 0;
 		int y = 0;
 		JScrollPane scrollPane = getScrollPane();
