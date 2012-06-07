@@ -85,7 +85,7 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 					super.activateFrame(f);
 					Iterator<Map.Entry<Integer, JInternalFrame>> it = toFront.entrySet().iterator();
 					while (it.hasNext()) {
-						Map.Entry<Integer, JInternalFrame> pairs = (Map.Entry<Integer, JInternalFrame>) it.next();
+						Map.Entry<Integer, JInternalFrame> pairs = it.next();
 						super.activateFrame(pairs.getValue());
 					}
 				}
@@ -160,7 +160,7 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 	/**
 	 * Resize desktop
 	 */
-	protected void resizeDesktop() {
+	public void resizeDesktop() {
 		int x = 0;
 		int y = 0;
 		JScrollPane scrollPane = getScrollPane();

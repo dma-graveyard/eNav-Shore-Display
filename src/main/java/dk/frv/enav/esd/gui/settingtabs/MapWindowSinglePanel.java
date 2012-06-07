@@ -37,7 +37,7 @@ public class MapWindowSinglePanel extends JPanel{
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(GuiStyler.backgroundColor);
-		panel_1.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70)), "Map Window Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
+		panel_1.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70)), "Map Window Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
 		panel_1.setBounds(10, 11, 473, 122);
 		
 		add(panel_1);
@@ -67,7 +67,7 @@ public class MapWindowSinglePanel extends JPanel{
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBackground(GuiStyler.backgroundColor);
-		panel_2.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70)), "AIS Layer Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
+		panel_2.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70)), "AIS Layer Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
 
 		panel_2.setBounds(10, 144, 473, 190);
 		

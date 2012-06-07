@@ -46,7 +46,7 @@ public class ENavSettingsPanel  extends JPanel{
 
 
 		MetocPanel.setBackground(GuiStyler.backgroundColor);
-		MetocPanel.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70)), "METOC Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
+		MetocPanel.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70)), "METOC Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
 		
 		spinnerMetocTtl = new JSpinner();
 		GuiStyler.styleSpinner(spinnerMetocTtl);
@@ -75,7 +75,7 @@ public class ENavSettingsPanel  extends JPanel{
 		JPanel HttpPanel = new JPanel();
 		HttpPanel.setBounds(10, 93, 434, 135);
 		HttpPanel.setBackground(GuiStyler.backgroundColor);
-		HttpPanel.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70)), "HTTP Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
+		HttpPanel.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70)), "HTTP Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
 		
 		
 		JLabel label_3 = new JLabel("Server name:");
@@ -114,7 +114,7 @@ public class ENavSettingsPanel  extends JPanel{
 		JPanel MsiPanel = new JPanel();
 		MsiPanel.setBounds(10, 229, 434, 144);
 		MsiPanel.setBackground(GuiStyler.backgroundColor);
-		MsiPanel.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70)), "MSI Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
+		MsiPanel.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70)), "MSI Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
 		
 		
 		spinnerMsiPollInterval = new JSpinner();

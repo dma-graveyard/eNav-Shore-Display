@@ -41,14 +41,14 @@ public class ConnectionStatus extends JPanel{
 		
 		JPanel contentStatus = new JPanel();
 		contentStatus.setBackground(GuiStyler.backgroundColor);
-		contentStatus.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70)), "Connection Status", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
+		contentStatus.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70)), "Connection Status", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
 		contentStatus.setBounds(10, 11, 473, 393);
 		add(contentStatus);
 		contentStatus.setLayout(null);
 		
 		JPanel shoreServices = new JPanel();
 		shoreServices.setBackground(GuiStyler.backgroundColor);
-		shoreServices.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70)), "Shore Services", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
+		shoreServices.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70)), "Shore Services", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
 		shoreServices.setBounds(10, 30, 453, 76);
 		contentStatus.add(shoreServices);
 		shoreServices.setLayout(null);
@@ -75,7 +75,7 @@ public class ConnectionStatus extends JPanel{
 		
 		JPanel aisPanel = new JPanel();
 		aisPanel.setBackground(GuiStyler.backgroundColor);
-		aisPanel.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70)), "AIS", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
+		aisPanel.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70)), "AIS", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
 		aisPanel.setBounds(10, 117, 453, 124);
 		contentStatus.add(aisPanel);
 		aisPanel.setLayout(null);
@@ -122,7 +122,7 @@ public class ConnectionStatus extends JPanel{
 		
 		JPanel wmsPanel = new JPanel();
 		wmsPanel.setBackground(GuiStyler.backgroundColor);
-		wmsPanel.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70)), "WMS", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
+		wmsPanel.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70)), "WMS", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
 		wmsPanel.setBounds(10, 252, 453, 86);
 		contentStatus.add(wmsPanel);
 		wmsPanel.setLayout(null);
