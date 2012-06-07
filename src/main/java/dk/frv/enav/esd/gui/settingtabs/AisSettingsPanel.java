@@ -38,7 +38,7 @@ public class AisSettingsPanel extends JPanel{
 		
 		JPanel aisConnection = new JPanel();
 		aisConnection.setBackground(GuiStyler.backgroundColor);
-		aisConnection.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70)), "AIS Connection", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
+		aisConnection.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70)), "AIS Connection", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
 		
 		aisConnection.setBounds(10, 11, 473, 117);
 		add(aisConnection);
@@ -79,7 +79,7 @@ public class AisSettingsPanel extends JPanel{
 		JPanel transponderSettings = new JPanel();
 		
 		transponderSettings.setBackground(GuiStyler.backgroundColor);
-		transponderSettings.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70)), "Transponder Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
+		transponderSettings.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70)), "Transponder Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
 		transponderSettings.setBounds(10, 150, 472, 100);
 		add(transponderSettings);
 		transponderSettings.setLayout(null);

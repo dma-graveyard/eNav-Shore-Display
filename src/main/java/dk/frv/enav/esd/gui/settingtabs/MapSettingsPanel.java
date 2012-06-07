@@ -38,7 +38,7 @@ public class MapSettingsPanel extends JPanel{
 		
 		JPanel mapSettingsPanel = new JPanel();
 		mapSettingsPanel.setBackground(GuiStyler.backgroundColor);
-		mapSettingsPanel.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70)), "Map Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
+		mapSettingsPanel.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70)), "Map Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
 		mapSettingsPanel.setBounds(10, 11, 473, 161);
 		add(mapSettingsPanel);
 		mapSettingsPanel.setLayout(null);
@@ -110,7 +110,7 @@ public class MapSettingsPanel extends JPanel{
 		
 		JPanel wmsSettingsPanel = new JPanel();
 		wmsSettingsPanel.setBackground(GuiStyler.backgroundColor);
-		wmsSettingsPanel.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70)), "WMS Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
+		wmsSettingsPanel.setBorder(new TitledBorder(new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70)), "WMS Settings", TitledBorder.LEADING, TitledBorder.TOP, GuiStyler.defaultFont, GuiStyler.textColor));
 		wmsSettingsPanel.setBounds(10, 183, 473, 188);
 		add(wmsSettingsPanel);
 		wmsSettingsPanel.setLayout(null);

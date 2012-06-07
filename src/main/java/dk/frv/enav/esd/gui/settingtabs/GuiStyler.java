@@ -21,7 +21,7 @@ public class GuiStyler {
 	public static Font subTabFont = new Font("Arial", Font.PLAIN, 10);
 	public static Color textColor = new Color(237, 237, 237);
 	public static Color backgroundColor = new Color(83, 83, 83);
-	public static Border border = new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70));
+	public static Border border = new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70));
 	//Border paddingLeft = BorderFactory.createMatteBorder(0, 8, 0, 0, new Color(65, 65, 65));
 	
 	public static void styleTabButton(JLabel label){

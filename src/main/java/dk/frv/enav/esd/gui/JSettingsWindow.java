@@ -130,7 +130,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		backgroundPane.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
 		JPanel topPanel = new JPanel();
-		topPanel.setBorder(new MatteBorder(0, 0, 1, 0, (Color) new Color(70, 70, 70)));
+		topPanel.setBorder(new MatteBorder(0, 0, 1, 0, new Color(70, 70, 70)));
 		backgroundPane.add(topPanel, "1, 2, fill, fill");
 		topPanel.setLayout(null);
 		topPanel.setBackground(GuiStyler.backgroundColor);
@@ -381,7 +381,7 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 
 
 		contentPane = new JPanel();
-		contentPane.setBorder(new MatteBorder(0, 1, 0, 0, (Color) new Color(70, 70, 70)));
+		contentPane.setBorder(new MatteBorder(0, 1, 0, 0, new Color(70, 70, 70)));
 		contentPane.setBounds(140, 0, 513, 428);
 		bottomPanel.add(contentPane);
 		contentPane.setBackground(GuiStyler.backgroundColor);
