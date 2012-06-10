@@ -46,6 +46,7 @@ import com.bbn.openmap.omGraphics.OMList;
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.common.xml.msi.MsiLocation;
 import dk.frv.enav.common.xml.msi.MsiMessage;
+import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.event.SelectMouseMode;
@@ -134,7 +135,7 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 		String[] ret = new String[3];
 		ret[0] = DragMouseMode.modeID; // "DragMouseMode"
 		ret[1] = NavigationMouseMode.modeID; // "ZoomMouseMoude"
-		ret[1] = SelectMouseMode.modeID; // "SelectMouseMode"
+		ret[2] = SelectMouseMode.modeID; // "SelectMouseMode"
 		return ret;
 	}
 
@@ -194,6 +195,7 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 				
 				int x = (int) containerPoint.getX()+10;
 				int y = (int) containerPoint.getY()+10;
+				jMapFrame.getGlassPanel().setVisible(true);
 				msiInfoPanel.showMsiInfo(msiSymbolGraphic.getMsiMessage());
 				if(mapBean.getProjection().getWidth() - x < msiInfoPanel.getWidth()){
 					x -= msiInfoPanel.getWidth()+20;
@@ -248,7 +250,7 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 		MsiLocation msiLocation = msiMessage.getLocation();
 		GeoLocation center = msiLocation.getCenter();
 		mapBean.setCenter(center.getLatitude(), center.getLongitude());
-		mapBean.setScale(80000);		
+		mapBean.setScale(ESD.getSettings().getEnavSettings().getMsiTextboxesVisibleAtScale());		
 	}	
 
 }

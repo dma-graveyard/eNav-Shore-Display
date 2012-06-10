@@ -35,12 +35,13 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
+import javax.swing.JPanel;
+
 import com.bbn.openmap.MapBean;
-import com.bbn.openmap.proj.Proj;
 import com.bbn.openmap.proj.Projection;
-import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.enav.esd.gui.ChartPanel;
+import dk.frv.enav.esd.gui.JMapFrame;
 
 
 
@@ -51,12 +52,14 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
 	private static final long serialVersionUID = 1L;
 
 	/**
-     * Mouse Mode identifier, which is "Navigation".
+     * Mouse Mode identifier, which is "Select".
      */
     public final static transient String modeID = "Select";
 
     private ClickTimer clickTimer;
     protected Point point1, point2;
+    private JPanel glassFrame;
+    
 
 	private boolean mouseDragged = false;
 	boolean layerMouseDrag = false;
@@ -74,8 +77,6 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
      */
     public SelectMouseMode(boolean shouldConsumeEvents) {
         super(modeID, shouldConsumeEvents);
-        // override the default cursor
-        setModeCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
     /**
@@ -92,6 +93,12 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
 	 * Find and init bean function used in initializing other classes
 	 */
     public void findAndInit(Object someObj) {
+    	
+    	if (someObj instanceof JMapFrame) {
+    		glassFrame = ((JMapFrame) someObj).getGlassPanel();
+    		glassFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    	}
+    	
     	super.findAndInit(someObj);
     }
     
@@ -140,40 +147,41 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
      */
     public void mouseClicked(MouseEvent e) {
     	super.mouseClicked(e);
-    	Object obj = e.getSource();
+//    	Object obj = e.getSource();
     	
     	if(e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() != 2)
     		return;
     	
     	mouseSupport.fireMapMouseClicked(e);
     	
-        if(e.getClickCount() == 2 && !e.isConsumed()){
-        	e.consume();
-        	// Only center on left click
-            if (!(e.getButton() == MouseEvent.BUTTON1)) {
-            	return;
-            }
-
-            if (!(obj instanceof MapBean) || point1 == null) {
-                return;
-            }
-            
-            MapBean map = (MapBean) obj;
-            Projection projection = map.getProjection();
-            Proj p = (Proj) projection;
-            
-            LatLonPoint llp = projection.inverse(e.getPoint());
-            
-
-            // reset the points here so the point doesn't get
-            // rendered on the repaint.
-            point1 = null;
-            point2 = null;
-
-            p.setCenter(llp);
-            map.setProjection(p);
+//    	
+//        if(e.getClickCount() == 2 && !e.isConsumed()){
+//        	e.consume();
+//        	// Only center on left click
+//            if (!(e.getButton() == MouseEvent.BUTTON1)) {
+//            	return;
+//            }
+//
+//            if (!(obj instanceof MapBean) || point1 == null) {
+//                return;
+//            }
+//            
+//            MapBean map = (MapBean) obj;
+//            Projection projection = map.getProjection();
+//            Proj p = (Proj) projection;
+//            
+//            LatLonPoint llp = projection.inverse(e.getPoint());
+//            
+//
+//            // reset the points here so the point doesn't get
+//            // rendered on the repaint.
+//            point1 = null;
+//            point2 = null;
+//
+//            p.setCenter(llp);
+//            map.setProjection(p);
 //            chartPanel.manualProjChange();
-        }
+//        }
     }
 
     /**
@@ -188,21 +196,21 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
     		super.mouseDragged(e);
     		if(!mouseDragged)
     			layerMouseDrag = mouseSupport.fireMapMouseDragged(e);
-			if(!layerMouseDrag){
-		        if(!javax.swing.SwingUtilities.isLeftMouseButton(e))
-		        	return;
-		        mouseDragged = true;
-
-	            // clean up the old rectangle, since point2 has the old
-	            // value.
-	            paintRectangle((MapBean) e.getSource(), point1, point2);
-	            // paint new rectangle
-	            // point2 = e.getPoint();
-
-	            point2 = e.getPoint();
-
-	            paintRectangle((MapBean) e.getSource(), point1, point2);
-			}
+//			if(!layerMouseDrag){
+//		        if(!javax.swing.SwingUtilities.isLeftMouseButton(e))
+//		        	return;
+//		        mouseDragged = true;
+//
+//	            // clean up the old rectangle, since point2 has the old
+//	            // value.
+//	            paintRectangle((MapBean) e.getSource(), point1, point2);
+//	            // paint new rectangle
+//	            // point2 = e.getPoint();
+//
+//	            point2 = e.getPoint();
+//
+//	            paintRectangle((MapBean) e.getSource(), point1, point2);
+//			}
     	}
     }
 
@@ -217,6 +225,7 @@ public class SelectMouseMode extends AbstractCoordMouseMode {
      * @param e MouseEvent to be handled
      */
     public void mouseEntered(MouseEvent e) {
+    	glassFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         super.mouseEntered(e);
     }
 

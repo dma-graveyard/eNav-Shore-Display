@@ -189,10 +189,12 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 		// Then add all the highlighted vessel info
 		highlightPanel.removeAll();
 		JLabel highlightTitle = new JLabel(" Highlighted Vessel");
-		highlightTitle.setFont(new Font("Arial", Font.PLAIN, 11));
-		highlightTitle.setForeground(new Color(30, 30, 30));
-		if(highlightItems.size()>0)
+		highlightTitle.setFont(new Font("Arial", Font.BOLD, 11));
+		highlightTitle.setForeground(new Color(237,237,237));
+		if(highlightItems.size()>0){
+			highlightTitle.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(65, 65, 65)));
 			highlightPanel.add(highlightTitle);
+		}
 		for (Iterator<Entry<String, JLabel>> i = highlightItems.entrySet().iterator(); i.hasNext();) {
 			JLabel highlightItem = i.next().getValue();
 			highlightItem.setFont(new Font("Arial", Font.PLAIN, 11));
@@ -209,7 +211,8 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 		if(highlightItems.size()>0)
 			innerHeight2 += statusItemHeight;
 		
-		height = innerHeight+innerHeight2;
+		// find height of the two areas plus 7 for separator
+		height = innerHeight+innerHeight2+7;
 
 		if (!locked)
 			height = innerHeight + innerHeight2 + moveHandlerHeight;

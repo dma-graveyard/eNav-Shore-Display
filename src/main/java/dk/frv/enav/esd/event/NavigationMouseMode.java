@@ -31,10 +31,10 @@ package dk.frv.enav.esd.event;
 
 import java.awt.Cursor;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
+
+import javax.swing.JPanel;
 
 import com.bbn.openmap.MapBean;
 import com.bbn.openmap.proj.Proj;
@@ -43,6 +43,7 @@ import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.gui.ChartPanel;
+import dk.frv.enav.esd.gui.JMapFrame;
 
 
 
@@ -64,7 +65,7 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
 	private boolean mouseDragged = false;
 	boolean layerMouseDrag = false;
 	private int maxScale;
-    private ChartPanel chartPanel;
+    private JPanel glassFrame;
     
     Cursor navCursorMouseClicked; 
     Cursor navCursor; 
@@ -84,19 +85,24 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
 //        setModeCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         
 //      //Get the default toolkit  
-      Toolkit toolkit = Toolkit.getDefaultToolkit();  
-        
-      //Load an image for the cursor  
-      Image image = toolkit.getImage("images/toolbar/zoom_mouse.png");
-      navCursor = toolkit.createCustomCursor(image, new Point(0,0), "Zoom");
-      
-      Image image2 = toolkit.getImage("images/toolbar/zoom_on_mouse.png");
-      navCursorMouseClicked = toolkit.createCustomCursor(image2, new Point(0,0), "Zoom_on_mouse");  
-      
-      setModeCursor(navCursor);
+//      Toolkit toolkit = Toolkit.getDefaultToolkit();  
+//        
+//      //Load an image for the cursor  
+//      Image image = toolkit.getImage("images/toolbar/zoom_mouse.png");
+//      navCursor = toolkit.createCustomCursor(image, new Point(0,0), "Zoom");
+//      
+//      Image image2 = toolkit.getImage("images/toolbar/zoom_on_mouse.png");
+//      navCursorMouseClicked = toolkit.createCustomCursor(image2, new Point(0,0), "Zoom_on_mouse");  
+//      
+//      setModeCursor(navCursor);
 
     }
 
+    private void setCursors(){
+    	navCursor = ESD.getStaticImages().getNavCursor(); 
+    	navCursorMouseClicked = ESD.getStaticImages().getNavCursorMouseClicked();
+    }
+    
     /**
      * Construct a NavMouseMode. Sets the ID of the mode to the modeID, the
      * consume mode to true, and the cursor to the crosshair.
@@ -108,10 +114,16 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
         maxScale = ESD.getSettings().getMapSettings().getMaxScale();
     }
 
-    public void findAndInit(Object someObj) {
-    	if (someObj instanceof ChartPanel) {
-           chartPanel = (ChartPanel) someObj;
-        }
+	/**
+	 * Find and init bean function used in initializing other classes
+	 */
+    public void findAndInit(Object someObj) {	
+    	if (someObj instanceof JMapFrame) {
+    		setCursors();
+    		glassFrame = ((JMapFrame) someObj).getGlassPanel();
+    		glassFrame.setCursor(navCursor);
+    	}
+    	
     	super.findAndInit(someObj);
     }
     
@@ -253,6 +265,7 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
     public void mouseEntered(MouseEvent e) {
         super.mouseEntered(e);
         autoZoom = true;
+        glassFrame.setCursor(navCursor);
     }
 
     // Mouse Motion Listener events
@@ -316,7 +329,8 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
      * @param e MouseEvent to be handled
      */
     public void mouseReleased(MouseEvent e) {
-    	chartPanel.getMap().setCursor(navCursor);
+//    	chartPanel.getMap().setCursor(navCursor);
+    	
         Object obj = e.getSource();
 
         if(layerMouseDrag && (obj instanceof MapBean))
@@ -457,5 +471,5 @@ public class NavigationMouseMode extends AbstractCoordMouseMode {
     	}
     	p.setScale(newScale);
     }
-    
+
 }

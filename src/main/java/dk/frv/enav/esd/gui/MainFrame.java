@@ -96,16 +96,31 @@ public class MainFrame extends JFrame implements WindowListener {
 	private JSettingsWindow settingsWindow = new JSettingsWindow();
 
 	private StatusArea statusArea = new StatusArea(this);
+	private JMapFrame activeMapWindow = null;
 
 	/**
 	 * Constructor
 	 */
 	public MainFrame() {
 		super();
-		System.out.println("before init gui");
+//		System.out.println("before init gui");
 		initGUI();
 
 	}
+
+	
+	
+	public JMapFrame getActiveMapWindow() {
+		return activeMapWindow;
+	}
+
+
+
+	public void setActiveMapWindow(JMapFrame activeMapWindow) {
+		this.activeMapWindow = activeMapWindow;
+	}
+
+
 
 	/**
 	 * Create and add a new map window
@@ -123,11 +138,11 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		topMenu.addMap(window, false, false);
 		if (!wmsLayerEnabled){
-			System.out.println("wmslayer is not enabled");
+//			System.out.println("wmslayer is not enabled");
 			window.getChartPanel().getWmsLayer().setVisible(false);
 			window.getChartPanel().getBgLayer().setVisible(true);
 		}else{
-			System.out.println("wmslayer is enabled");
+//			System.out.println("wmslayer is enabled");
 			window.getChartPanel().getWmsLayer().setVisible(true);
 			window.getChartPanel().getBgLayer().setVisible(false);
 		}
@@ -135,6 +150,10 @@ public class MainFrame extends JFrame implements WindowListener {
 		if (!msiLayerEnabled){
 			window.getChartPanel().getMsiLayer().setVisible(false);
 		
+		}
+		
+		if (windowCount == 1){
+			beanHandler.add(window.getChartPanel().getWmsLayer().getWmsService());
 		}
 		
 		return window;
@@ -153,6 +172,8 @@ public class MainFrame extends JFrame implements WindowListener {
 	 */
 	public JMapFrame addMapWindow(boolean workspace, boolean locked, boolean alwaysInFront, Point2D center, float scale) {
 		windowCount++;
+		
+		
 		JMapFrame window = new JMapFrame(windowCount, this, center, scale);
 		desktop.add(window, workspace);
 		mapWindows.add(window);
@@ -166,6 +187,10 @@ public class MainFrame extends JFrame implements WindowListener {
 			window.getChartPanel().getBgLayer().setVisible(true);
 		}else{
 			window.getChartPanel().getBgLayer().setVisible(false);
+		}
+		
+		if (windowCount == 1){
+			beanHandler.add(window.getChartPanel().getWmsLayer().getWmsService());
 		}
 		
 		return window;
@@ -256,7 +281,7 @@ public class MainFrame extends JFrame implements WindowListener {
 		// Get settings
 		GuiSettings guiSettings = ESD.getSettings().getGuiSettings();
 
-		System.out.println("Setting wmslayer enabled to:" + guiSettings.useWMS());
+//		System.out.println("Setting wmslayer enabled to:" + guiSettings.useWMS());
 		wmsLayerEnabled = guiSettings.useWMS();
 		
 		Workspace workspace = ESD.getSettings().getWorkspace();
@@ -339,11 +364,11 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	/**
-	 * Load and setup a nwe workspace from a file
+	 * Load and setup a new workspace from a file
 	 * @param parent
 	 * @param filename
 	 */
-	public void loadNewWorkspace(String parent, String filename) {
+	public void loadNewWorkspace(String parent, String filename) {		
 		Workspace workspace = ESD.getSettings().loadWorkspace(parent, filename);
 		setWorkSpace(workspace);
 	}
@@ -364,6 +389,23 @@ public class MainFrame extends JFrame implements WindowListener {
 	public void renameMapWindow(JMapFrame window) {
 		topMenu.renameMapMenu(window);
 	}
+	
+	/**
+	 * Lock a window in the top menu bar
+	 * @param window the window
+	 */
+	public void lockMapWindow(JMapFrame window, boolean locked) {
+		topMenu.lockMapMenu(window, locked);
+	}
+	
+	/**
+	 * Set a window always on top in top menu
+	 * @param window the window
+	 */
+	public void onTopMapWindow(JMapFrame window, boolean locked) {
+		topMenu.onTopMapMenu(window, locked);
+	}
+
 
 	/**
 	 * Save the window settings
@@ -405,6 +447,8 @@ public class MainFrame extends JFrame implements WindowListener {
 	 * @param workspace
 	 */
 	public void setWorkSpace(Workspace workspace) {
+		
+		getDesktop().getManager().clearToFront();
 
 		while (mapWindows.size() != 0) {
 			try {
@@ -422,6 +466,7 @@ public class MainFrame extends JFrame implements WindowListener {
 			for (int i = 0; i < workspace.getName().size(); i++) {
 				JMapFrame window = addMapWindow(true, workspace.isLocked().get(i), workspace.getAlwaysInFront().get(i),
 						workspace.getCenter().get(i), workspace.getScale().get(i));
+				
 				window.setTitle(workspace.getName().get(i));
 				topMenu.renameMapMenu(window);
 				window.setSize(workspace.getSize().get(i));
@@ -429,12 +474,21 @@ public class MainFrame extends JFrame implements WindowListener {
 				toolbar.setLocation(workspace.getToolbarPosition());
 				notificationArea.setLocation(workspace.getNotificationAreaPosition());
 				statusArea.setLocation(workspace.getStatusPosition());
-				try {
-					window.setMaximum(workspace.isMaximized().get(i));
-				} catch (PropertyVetoException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				
+				
+				
+				if (workspace.isMaximized().get(i)){
+					window.setSize(600, 600);
+					window.setMaximizedIcon();
+					try {
+						window.setMaximum(workspace.isMaximized().get(i));
+					} catch (PropertyVetoException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
+
+		
 
 				if (workspace.isLocked().get(i)) {
 					window.lockUnlockWindow();
@@ -446,7 +500,6 @@ public class MainFrame extends JFrame implements WindowListener {
 
 				// window.getChartPanel().getMap().setScale(0.001f);
 				// window.getChartPanel().getMap().setCenter(workspace.getCenter().get(i));
-
 			}
 
 		}
@@ -459,6 +512,8 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	/**
 	 * Toggle the toolbars as locked
+	 * 
+	 * This function is never called in the current version.
 	 */
 	public void toggleBarsLock() {
 		toolbarsLocked = !toolbarsLocked;

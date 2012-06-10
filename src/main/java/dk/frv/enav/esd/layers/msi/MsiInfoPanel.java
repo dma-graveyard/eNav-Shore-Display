@@ -52,6 +52,9 @@ public class MsiInfoPanel extends InfoPanel {
 	 */
 	public void showMsiInfo(MsiMessage message) {
 		String encText = message.getEncText();
+		if (encText == null){
+			encText = "No MSI Message attached";
+		}
 		showText(encText);
 	}
 }

@@ -74,12 +74,12 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	private int id;
 	private final MainFrame mainFrame;
 	private JPanel glassPanel;
-	private JPanel loadingPanel;
-	private JPanel highlightPanel;
-	private JPanel aisPanel;
 	private JLabel moveHandler;
 	private JPanel mapPanel;
 	private JPanel masterPanel;
+	private JLabel maximize;
+	
+	
 	private static int moveHandlerHeight = 18;
 	private boolean maximized = false;
 	public int width;
@@ -104,8 +104,6 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		this.setVisible(true);
 
 		initGlassPane();
-		initLoadingPane();
-		initHighlightPane();
 		chartPanel.initChart();
 		initGUI();
 
@@ -121,7 +119,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	public JMapFrame(int id, MainFrame mainFrame, Point2D center, float scale) {
 
 		super("New Window " + id, true, true, true, true);
-
+		
 		this.mainFrame = mainFrame;
 		this.id = id;
 		chartPanel = new ChartPanel(mainFrame, this);
@@ -129,8 +127,6 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		this.setVisible(true);
 
 		initGlassPane();
-		initLoadingPane();
-		initHighlightPane();
 		chartPanel.initChart(center, scale);
 		initGUI();
 
@@ -148,7 +144,6 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		}
 
 		mainFrame.getDesktop().getManager().addToFront(id, this);
-
 	}
 
 	/**
@@ -176,40 +171,12 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	}
 
 	/**
-	 * Function for getting the loadingPanel of the map frame
-	 * @return loadingPanel the loadingPanel of the map frame
-	 */
-	public JPanel getLoadingPanel() {
-		return loadingPanel;
-	}
-
-	public JPanel getHighlightPanel(){
-		return highlightPanel;
-	}
-
-	public JPanel getAisPanel(){
-		return aisPanel;
-	}
-
-	/**
-	 * Function for initializing the glasspane - david help
+	 * Function for initializing the glasspane
 	 */
 	private void initGlassPane() {
 		glassPanel = (JPanel) getGlassPane();
 		glassPanel.setLayout(null);
 		glassPanel.setVisible(false);
-	}
-
-	private void initHighlightPane() {
-		highlightPanel = (JPanel) getGlassPane();
-		highlightPanel.setLayout(null);
-		highlightPanel.setVisible(false);
-	}
-
-	public void initAisPane() {
-		aisPanel = (JPanel) getGlassPane();
-		aisPanel.setLayout(null);
-		aisPanel.setVisible(false);
 	}
 
 	/**
@@ -277,7 +244,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
         minimize.setBorder(BorderFactory.createEmptyBorder(3, 0, 3, 3));
         mapToolsPanel.add(minimize);
         
-        final JLabel maximize = new JLabel(new ImageIcon("images/window/maximize.png"));
+        maximize = new JLabel(new ImageIcon("images/window/maximize.png"));
         maximize.addMouseListener(new MouseAdapter() {  
         	
 		    public void mouseReleased(MouseEvent e) { 
@@ -322,21 +289,18 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	    masterPanel = new JPanel(new BorderLayout());
 	    masterPanel.add(mapPanel, BorderLayout.NORTH);
 	    masterPanel.add(chartPanel, BorderLayout.SOUTH);
+	    masterPanel.setBackground(new Color(45, 45, 45));
 	    masterPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
         
 	    this.setContentPane(masterPanel);
 	    repaintMapWindow();
 	}
 
-	/**
-	 * Function for initializing the loading animation
-	 */
-	private void initLoadingPane() {
-		loadingPanel = (JPanel) getGlassPane();
-		loadingPanel.setLayout(null);
-		loadingPanel.setVisible(false);
+	public void setMaximizedIcon(){
+		maximized = true;
+		maximize.setIcon(new ImageIcon("images/window/restore.png"));
 	}
-
+	
 	/**
 	 * Function for getting the status of map frame in terms of in front
 	 * @return
@@ -358,14 +322,20 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	 */
 	public void lockUnlockWindow(){
 
+		
+		
 		if(locked) {
 
+			this.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
 			masterPanel.add(mapPanel, BorderLayout.NORTH);
+			masterPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
 			locked = false;
 			mapFrame.setResizable(true);
+			
 
 		} else {
-
+			setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(45, 45, 45)));
+			masterPanel.setBorder(null);
 			masterPanel.remove(mapPanel);
 			locked = true;
 			mapFrame.setResizable(false);
@@ -491,9 +461,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 			this.setTitle(title);
 			mainFrame.renameMapWindow(this);
 			moveHandler.setText(title);
-
 		}
-
 	}
 
 	/**
@@ -515,6 +483,12 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 		this.revalidate();
 		this.repaint();
 
+	}
+	
+	@Override
+	public void setTitle(String title){
+		super.setTitle(title);
+		moveHandler.setText(title);
 	}
 
 }

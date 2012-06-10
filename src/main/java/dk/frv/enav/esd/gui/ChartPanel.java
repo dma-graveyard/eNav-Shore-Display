@@ -37,7 +37,6 @@ import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.Properties;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 
 import org.apache.log4j.Logger;
@@ -125,7 +124,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		// setLayout(new BorderLayout());
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		// Set border
-		setBorder(BorderFactory.createLineBorder(Color.GRAY));
+//		setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		// Max scale
 		this.maxScale = ESD.getSettings().getMapSettings().getMaxScale();
 
@@ -414,7 +413,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		msiLayer.doUpdate();
 
 		if (wmsLayer.isVisible()) {
-			System.out.println("wms is visible");
+//			System.out.println("wms is visible");
 			bgLayer.setVisible(false);
 		}
 

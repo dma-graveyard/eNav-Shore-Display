@@ -239,6 +239,7 @@ public class ToolBar extends JInternalFrame {
 
 		toolItemGroups.add(layerToolItems);
 
+		/*
 		// Tool group: Route tools
 		final ToolItemGroup routeToolItems = new ToolItemGroup();
 
@@ -270,7 +271,7 @@ public class ToolBar extends JInternalFrame {
 				 * NavigationMouseMode.modeID) {
 				 * mainFrame.getChartPanel().editMode(true); } else {
 				 * mainFrame.getChartPanel().editMode(false); }
-				 */
+				 *//*
 				setActiveToolItem(newRoute, routeToolItems);
 				System.out.println("New route clicked");
 			}
@@ -282,7 +283,8 @@ public class ToolBar extends JInternalFrame {
 		routeToolItems.setSingleEnable(false);
 
 		toolItemGroups.add(routeToolItems);
-
+		*/
+		
 		// Create the masterpanel for aligning
 		masterPanel = new JPanel(new BorderLayout());
 		masterPanel.add(moveHandler, BorderLayout.NORTH);
@@ -406,6 +408,7 @@ public class ToolBar extends JInternalFrame {
 			if (i < toolItemGroups.size() - 1) {
 				JSeparator sep = new JSeparator();
 				sep.setForeground(new Color(65, 65, 65));
+				sep.setBackground(new Color(83, 83, 83));
 				buttonPanel.add(sep);
 
 				height = height + 7;

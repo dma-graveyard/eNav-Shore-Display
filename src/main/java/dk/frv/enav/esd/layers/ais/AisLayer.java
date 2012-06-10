@@ -53,12 +53,9 @@ import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.gui.ChartPanel;
 import dk.frv.enav.esd.gui.JMapFrame;
 import dk.frv.enav.esd.gui.StatusArea;
-import dk.frv.enav.esd.layers.msi.MsiDirectionalIcon;
-import dk.frv.enav.esd.layers.msi.MsiSymbolGraphic;
 import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.ins.ais.VesselPositionData;
 import dk.frv.enav.ins.ais.VesselTarget;
-import dk.frv.enav.ins.gui.MainFrame;
 
 /**
  * The class AisLayer is the layer containing all AIS targets. The class handles
@@ -76,14 +73,16 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private AisInfoPanel aisInfoPanel = null;
 	private StatusArea statusArea;
 	private JMapFrame jMapFrame;
-
 	private HashMap<Long, Vessel> drawnVessels = new HashMap<Long, Vessel>();
 	private Vessel vesselComponent;
 	private VesselPositionData location;
-	private MainFrame mainFrame;
 	volatile boolean shouldRun = true;
 	private float mapScale = 0;
 	private Point2D xy;
+	private int offsetUnlockedX = 23;
+	private int offsetUnlockedY = 6;
+	private int offsetLockedX = 23;
+	private int offsetLockedY = 33;
 
 	private OMGraphic highlighted;
 	private VesselLayer highlightedVessel;
@@ -95,11 +94,14 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	 */
 	@Override
 	public void run() {
+		
 		while (shouldRun) {
 			ESD.sleep(1000);
 			drawVessels();
 			repaintStatusArea(true);
 		}
+		drawnVessels.clear();
+		list.clear();
 	}
 
 	/**
@@ -190,7 +192,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 						.forward(highlightedVessel.getLat(), highlightedVessel.getLon());
 				if (xy != newXY) {
 					xy = newXY;
-					highlightInfoPanel.displayHighlight((int) xy.getX() - 23, (int) xy.getY() - 6);
+					if(jMapFrame.isLocked())
+						highlightInfoPanel.displayHighlight((int) xy.getX() - offsetLockedX, (int) xy.getY() - offsetLockedY);
+					else
+						highlightInfoPanel.displayHighlight((int) xy.getX() - offsetUnlockedX, (int) xy.getY() - offsetUnlockedY);
 				}
 			}
 		}
@@ -202,6 +207,9 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 				return;
 			HashMap<String, String> info = new HashMap<String, String>();
 			Vessel vessel = this.drawnVessels.get(this.highlightedMMSI);
+			if (vessel!= null){
+				
+			
 			info.put("MMSI", Long.toString(vessel.getMMSI()));
 			info.put("Name", vessel.getName());
 			info.put("COG", vessel.getHeading());
@@ -213,6 +221,9 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			info.put("DST", vessel.getDest());
 			info.put("Type", vessel.getShipType());
 			statusArea.receiveHighlight(info, vessel.getMMSI());
+			}else{
+				statusArea.removeHighlight();
+			}
 		} else {
 			statusArea.removeHighlight();
 		}
@@ -242,11 +253,11 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		if (obj instanceof JMapFrame) {
 			jMapFrame = (JMapFrame) obj;
 			highlightInfoPanel = new HighlightInfoPanel();
-			jMapFrame.getLoadingPanel().add(highlightInfoPanel);
+			jMapFrame.getGlassPanel().add(highlightInfoPanel);
 			aisInfoPanel = new AisInfoPanel();
-			jMapFrame.getLoadingPanel().add(aisInfoPanel);
+			jMapFrame.getGlassPanel().add(aisInfoPanel);
+			jMapFrame.getGlassPanel().setVisible(true);
 		}
-
 	}
 
 	@Override
@@ -265,8 +276,8 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	public String[] getMouseModeServiceList() {
 		String[] ret = new String[3];
 		ret[0] = DragMouseMode.modeID; // "DragMouseMode"
-		ret[1] = NavigationMouseMode.modeID; // "ZoomMouseMoude"
-		ret[1] = SelectMouseMode.modeID; // "SelectMouseMode"
+		ret[1] = NavigationMouseMode.modeID; // "ZoomMouseMode"
+		ret[2] = SelectMouseMode.modeID; // "SelectMouseMode"
 		return ret;
 	}
 
@@ -295,14 +306,17 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			return false;
 		}
 
-		if (newClosest != highlighted) {
+		if (newClosest != highlighted && newClosest != null) {
 			highlighted = newClosest;
 			highlightedVessel = (VesselLayer) newClosest;
 			highlightedMMSI = highlightedVessel.getMMSI();
 			xy = chartPanel.getMap().getProjection().forward(highlightedVessel.getLat(), highlightedVessel.getLon());
 			// MOVE AND SHOW GLASS PANE
 			statusArea.setHighlightedVesselMMSI(highlightedVessel.getMMSI());
-			highlightInfoPanel.displayHighlight((int) xy.getX() - 23, (int) xy.getY() - 6);
+			if(jMapFrame.isLocked())
+				highlightInfoPanel.displayHighlight((int) xy.getX() - offsetLockedX, (int) xy.getY() - offsetLockedY);
+			else
+				highlightInfoPanel.displayHighlight((int) xy.getX() - offsetUnlockedX, (int) xy.getY() - offsetUnlockedY);
 			highlightInfoPanel.setVisible(true);
 		} else {
 			// HIDE GLASS PANE

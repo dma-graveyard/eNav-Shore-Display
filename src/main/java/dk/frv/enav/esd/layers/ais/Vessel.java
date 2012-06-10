@@ -83,6 +83,7 @@ public class Vessel extends OMGraphicList {
 	 * 
 	 * @param MMSI
 	 *            Key of vessel
+	 * @param staticImages 
 	 */
 	public Vessel(long MMSI) {
 		super();

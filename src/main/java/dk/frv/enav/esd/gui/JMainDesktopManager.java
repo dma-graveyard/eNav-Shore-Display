@@ -41,6 +41,8 @@ import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
+import dk.frv.enav.esd.ESD;
+
 public class JMainDesktopManager extends DefaultDesktopManager {
 	/**
 	 * Desktopmanager used in controlling windows
@@ -70,6 +72,10 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 
 		if (f instanceof JMapFrame) {
 
+			if (ESD.getMainFrame() != null){
+			ESD.getMainFrame().setActiveMapWindow((JMapFrame) f);
+			}
+			
 			if (toFront.size() == 0) {
 				super.activateFrame(f);
 			} else {
@@ -79,7 +85,7 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 					super.activateFrame(f);
 					Iterator<Map.Entry<Integer, JInternalFrame>> it = toFront.entrySet().iterator();
 					while (it.hasNext()) {
-						Map.Entry<Integer, JInternalFrame> pairs = (Map.Entry<Integer, JInternalFrame>) it.next();
+						Map.Entry<Integer, JInternalFrame> pairs = it.next();
 						super.activateFrame(pairs.getValue());
 					}
 				}
@@ -91,6 +97,10 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 		super.activateFrame(toolbar);
 		super.activateFrame(notCenter);
 		super.activateFrame(settings);
+	}
+	
+	public void clearToFront(){
+		toFront.clear();
 	}
 
 	/**
@@ -150,7 +160,7 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 	/**
 	 * Resize desktop
 	 */
-	protected void resizeDesktop() {
+	public void resizeDesktop() {
 		int x = 0;
 		int y = 0;
 		JScrollPane scrollPane = getScrollPane();

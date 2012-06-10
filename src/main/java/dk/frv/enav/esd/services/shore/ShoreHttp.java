@@ -47,6 +47,8 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.log4j.Logger;
 
+import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.settings.EnavSettings;
 import dk.frv.enav.ins.common.util.Compressor;
 
 
@@ -77,14 +79,12 @@ public class ShoreHttp {
 
 	public ShoreHttp(String uri) {
 		this();
-//		this.host = enavSettings.getServerName();
-//		this.port = enavSettings.getHttpPort();
-//		this.connectionTimeout = enavSettings.getConnectTimeout();
-//		this.readTimeout = enavSettings.getReadTimeout();
-		this.host = "service.e-navigation.net";
-		this.port = 80;
-		this.connectionTimeout = 30000;
-		this.readTimeout = 60000;
+		EnavSettings enavSettings = ESD.getSettings().getEnavSettings();
+		
+		this.host = enavSettings.getServerName();
+		this.port = enavSettings.getHttpPort();
+		this.connectionTimeout = enavSettings.getConnectTimeout();
+		this.readTimeout = enavSettings.getReadTimeout();
 
 		setUri(uri);
 	}

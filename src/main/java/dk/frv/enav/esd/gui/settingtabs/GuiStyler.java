@@ -7,19 +7,21 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.MatteBorder;
 
 public class GuiStyler {
 	
 	public static Font defaultFont = new Font("Arial", Font.PLAIN, 11);
+	public static Font subTabFont = new Font("Arial", Font.PLAIN, 10);
 	public static Color textColor = new Color(237, 237, 237);
 	public static Color backgroundColor = new Color(83, 83, 83);
-	public static Border border = new MatteBorder(1, 1, 1, 1, (Color) new Color(70, 70, 70));
+	public static Border border = new MatteBorder(1, 1, 1, 1, new Color(70, 70, 70));
 	//Border paddingLeft = BorderFactory.createMatteBorder(0, 8, 0, 0, new Color(65, 65, 65));
 	
 	public static void styleTabButton(JLabel label){
@@ -30,6 +32,54 @@ public class GuiStyler {
 		label.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 5));
 		label.setBackground(new Color(65, 65, 65));
 		label.setOpaque(true);
+	}
+	
+	public static void styleSubTab(JLabel label){
+		label.setPreferredSize(new Dimension(124, 25));
+//		generalSettings.setSize(new Dimension(76, 30));
+//		label.setFont(subTabFont);
+		label.setFont(subTabFont);
+		label.setForeground(textColor);
+		label.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 5));
+		label.setBackground(new Color(75, 75, 75));
+		label.setOpaque(true);
+	}
+	
+	public static void styleDropDown(JComboBox comboBox){
+		
+//		comboBox.setBackground(backgroundColor);
+//		comboBox.setFont(defaultFont);
+//		comboBox.setForeground(textColor);
+//		comboBox.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 5));
+//		
+//		comboBox.setOpaque(true);
+		
+//		ComboBoxEditor test = comboBox.getEditor();
+//		
+//		test.getEditorComponent().setBackground(backgroundColor);
+		
+//		JTextField txtField = (JTextField) comboBox.getEditor().getEditorComponent();
+//		styleTextFields(txtField);
+//		
+//		JComboBox.DefaultEditor editor = (JComboBox.DefaultEditor)comboBox.getEditor();
+//        editor.getTextField().setBackground(GuiStyler.backgroundColor);
+//        editor.getTextField().setForeground(GuiStyler.textColor);
+//        editor.getTextField().setFont(GuiStyler.defaultFont);
+//        editor.getTextField().setCaretColor(GuiStyler.textColor);
+		
+	}
+	
+	public static void styleCheckbox(JCheckBox checkbox){
+		
+//		generalSettings.setSize(new Dimension(76, 30));
+//		label.setFont(subTabFont);
+		
+		
+		checkbox.setFont(subTabFont);
+		checkbox.setForeground(textColor);
+		checkbox.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 5));
+		checkbox.setBackground(backgroundColor);
+		checkbox.setOpaque(true);
 	}
 	
 	public static void styleActiveTabButton(JLabel label){
@@ -94,5 +144,6 @@ public class GuiStyler {
 		jtextField.setForeground(GuiStyler.textColor);
 		jtextField.setFont(GuiStyler.defaultFont);
 		jtextField.setCaretColor(GuiStyler.textColor);
+		jtextField.setBorder(GuiStyler.border);
 	}
 }

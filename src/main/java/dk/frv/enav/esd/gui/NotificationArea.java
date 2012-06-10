@@ -143,26 +143,6 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 
 		});
 
-		// Notification: AIS
-		final JPanel ais = new JPanel();
-		notifications.put("ais", ais);
-		services.put("ais", "AIS");
-
-		ais.addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent e) {
-				ais.setBorder(notificationPaddingPressed);
-				ais.setBackground(new Color(45, 45, 45));
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				ais.setBorder(notificationPadding);
-				ais.setBackground(new Color(65, 65, 65));
-				mainFrame.toggleNotificationCenter();
-			}
-
-		});
-
 		// Create the masterpanel for aligning
 		masterPanel = new JPanel(new BorderLayout());
 		masterPanel.add(moveHandler, BorderLayout.NORTH);

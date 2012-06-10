@@ -208,9 +208,9 @@ public class JMenuWorkspaceBar extends JMenuBar {
 	    
 	    lockAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!mainFrame.isToolbarsLocked()){
-					mainFrame.toggleBarsLock();
-				}
+				//if(!mainFrame.isToolbarsLocked()){
+				//	mainFrame.toggleBarsLock();
+				//}
 				
 				lockAll();
 			}
@@ -219,9 +219,9 @@ public class JMenuWorkspaceBar extends JMenuBar {
 	    unlockAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				unLockAll();
-				if(mainFrame.isToolbarsLocked()){
-					mainFrame.toggleBarsLock();
-				}
+				//if(mainFrame.isToolbarsLocked()){
+				//	mainFrame.toggleBarsLock();
+				//}
 			}
 		});
 	    
@@ -250,7 +250,7 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		
 		JMenuItem windowSettings = new JMenuItem("Settings");
 		mapWindow.add(windowSettings);
-		windowSettings.setEnabled(false);
+//		windowSettings.setEnabled(false);
 		
 		JCheckBoxMenuItem alwaysFront = new JCheckBoxMenuItem("Always on top");
 		mapWindow.add(alwaysFront);	
@@ -292,7 +292,13 @@ public class JMenuWorkspaceBar extends JMenuBar {
 				window.alwaysFront();
 			}
 		});		
-
+		
+		
+		windowSettings.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mainFrame.getSettingsWindow().toggleVisibility();
+			}
+		});		
 	}
 	
 	/**
@@ -322,6 +328,19 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		JMenu menuItem = mapMenus.get(window.getId());
 		maps.remove(menuItem);
 	}
+	
+	public void lockMapMenu(final JMapFrame window, boolean locked) {
+		JMenu menuItem = mapMenus.get(window.getId());
+
+		menuItem.getItem(0).setSelected(locked);
+	}
+	
+	public void onTopMapMenu(final JMapFrame window, boolean locked) {
+		JMenu menuItem = mapMenus.get(window.getId());
+
+		menuItem.getItem(2).setSelected(locked);
+	}
+
 
 	/**
 	 * Rename a mapwindow in the toolbar

@@ -53,10 +53,12 @@ import dk.frv.ais.message.AisMessage6;
 import dk.frv.ais.message.AisPositionMessage;
 import dk.frv.ais.message.binary.AddressedRouteInformation;
 import dk.frv.ais.message.binary.AisApplicationMessage;
+import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.settings.Settings;
-import dk.frv.enav.ins.EeINS;
+import dk.frv.enav.esd.status.AisStatus;
+import dk.frv.enav.esd.status.ComponentStatus;
 import dk.frv.enav.ins.ais.AisAdressedRouteSuggestion;
 import dk.frv.enav.ins.ais.IAisRouteSuggestionListener;
 import dk.frv.enav.ins.ais.VesselPositionData;
@@ -84,22 +86,19 @@ public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 	protected NmeaSensor nmeaSensor = null;
 	protected Settings settings;
 	protected List<IAisRouteSuggestionListener> suggestionListeners = new ArrayList<IAisRouteSuggestionListener>();
+	private AisStatus aisStatus = new AisStatus();
 
 	/**
 	 * Constructor for VesselsAisHandler
 	 * @param settings
 	 */
 	public VesselAisHandler(Settings settings) {
-		super(settings.getAisSettings().isShowIntendedRouteByDefault(), settings.getAisSettings().isStrict());
+		super(true, settings.getAisSettings().isStrict());
 		this.settings = settings;
-		if (settings.getSensorSettings().isSimulateGps() && settings.getSensorSettings().getAisSensorRange() == 0) {
-			aisRange = SIMULATED_AIS_RANGE;
-			ownShip.setMmsi(settings.getSensorSettings().getSimulatedOwnShip());
-		} else {
-			aisRange = settings.getSensorSettings().getAisSensorRange();
-		}
+			aisRange = settings.getAisSettings().getAisSensorRange();
+		
 		sartMmsiPrefix = settings.getAisSettings().getSartPrefix();
-		EeINS.startThread(this, "AisHandler");
+		ESD.startThread(this, "AisHandler");
 	}
 
 	/**
@@ -218,9 +217,8 @@ public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 		if (gpsData.isBadPosition()) {
 			// If simulation we will not accept targets before own pos is known
 			// once
-			if (settings.getSensorSettings().isSimulateGps() && vesselTargets.size() == 0) {
 				return false;
-			}
+			
 		}
 
 		double distance = gpsData.getPosition().getRhumbLineDistance(pos) / 1852.0;
@@ -279,6 +277,10 @@ public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 	@Override
 	public synchronized void receive(AisMessage aisMessage) {
 		super.receive(aisMessage);
+		
+		// Mark successful reception 
+		aisStatus.markAisReception();
+		
 		// Look for route suggestion
 		if (aisMessage instanceof AisBinaryMessage) {
 			AisBinaryMessage binaryMessage = (AisBinaryMessage) aisMessage;
@@ -413,4 +415,19 @@ public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 		super.updatePos(mmsi, positionData, aisClass);
 	}
 
+	/**
+	 * Return the aisStatus
+	 * @return - aisStatus
+	 */
+	public AisStatus getAisStatus() {
+		return aisStatus;
+	}
+
+	/**
+	 * get aisstatus as a Component status type
+	 */
+	@Override
+	public ComponentStatus getStatus() {
+		return aisStatus;
+	}
 }
