@@ -42,8 +42,8 @@ import com.bbn.openmap.proj.Projection;
 import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.enav.esd.ESD;
-import dk.frv.enav.esd.gui.ChartPanel;
-import dk.frv.enav.esd.gui.JMapFrame;
+import dk.frv.enav.esd.gui.views.ChartPanel;
+import dk.frv.enav.esd.gui.views.JMapFrame;
 
 
 

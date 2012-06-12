@@ -50,7 +50,7 @@ import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.event.SelectMouseMode;
-import dk.frv.enav.esd.gui.JMapFrame;
+import dk.frv.enav.esd.gui.views.JMapFrame;
 import dk.frv.enav.esd.msi.MsiHandler;
 import dk.frv.enav.ins.gps.GnssTime;
 

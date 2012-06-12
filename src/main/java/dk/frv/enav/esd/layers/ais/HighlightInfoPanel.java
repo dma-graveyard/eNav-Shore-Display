@@ -1,7 +1,7 @@
 package dk.frv.enav.esd.layers.ais;
 
 import dk.frv.enav.esd.ESD;
-import dk.frv.enav.esd.gui.InfoPanel;
+import dk.frv.enav.esd.gui.utils.InfoPanel;
 
 /**
  * MSI mouse over info

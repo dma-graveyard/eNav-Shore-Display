@@ -31,7 +31,7 @@ package dk.frv.enav.esd.layers.wms;
 
 import javax.swing.ImageIcon;
 
-import dk.frv.enav.esd.gui.InfoPanel;
+import dk.frv.enav.esd.gui.utils.InfoPanel;
 
 /**
  * MSI mouse over info

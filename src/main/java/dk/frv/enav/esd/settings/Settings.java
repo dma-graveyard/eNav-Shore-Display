@@ -42,7 +42,7 @@ import org.apache.log4j.Logger;
 
 import com.bbn.openmap.util.PropUtils;
 
-import dk.frv.enav.esd.gui.JMapFrame;
+import dk.frv.enav.esd.gui.views.JMapFrame;
 
 /**
  * Settings class

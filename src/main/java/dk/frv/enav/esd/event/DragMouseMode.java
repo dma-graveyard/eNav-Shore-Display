@@ -48,7 +48,7 @@ import com.bbn.openmap.proj.Projection;
 import com.bbn.openmap.util.PropUtils;
 
 import dk.frv.enav.esd.ESD;
-import dk.frv.enav.esd.gui.JMapFrame;
+import dk.frv.enav.esd.gui.views.JMapFrame;
 
 /**
  * Mouse mode for dragging

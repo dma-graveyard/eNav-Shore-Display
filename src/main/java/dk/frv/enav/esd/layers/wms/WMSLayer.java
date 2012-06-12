@@ -33,9 +33,9 @@ import com.bbn.openmap.layer.OMGraphicHandlerLayer;
 import com.bbn.openmap.omGraphics.OMGraphicList;
 
 import dk.frv.enav.esd.ESD;
-import dk.frv.enav.esd.gui.ChartPanel;
-import dk.frv.enav.esd.gui.JMapFrame;
-import dk.frv.enav.esd.gui.MainFrame;
+import dk.frv.enav.esd.gui.views.ChartPanel;
+import dk.frv.enav.esd.gui.views.JMapFrame;
+import dk.frv.enav.esd.gui.views.MainFrame;
 
 /**
  * Layer handling all WMS data and displaying of it

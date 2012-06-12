@@ -9,7 +9,7 @@
  *  even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU Lesser General Public License for more details at gnu.org.
  */
-package dk.frv.enav.esd.gui;
+package dk.frv.enav.esd.gui.utils;
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics;

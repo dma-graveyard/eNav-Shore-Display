@@ -37,7 +37,7 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.JInternalFrame;
 
 import dk.frv.enav.esd.ESD;
-import dk.frv.enav.esd.gui.MainFrame;
+import dk.frv.enav.esd.gui.views.MainFrame;
 
 /**
  * Class for setting up a component to use for dragging the frame

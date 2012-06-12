@@ -9,8 +9,8 @@ import javax.swing.JTextField;
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 
-import dk.frv.enav.esd.gui.JMapFrame;
-import dk.frv.enav.esd.gui.MainFrame;
+import dk.frv.enav.esd.gui.views.JMapFrame;
+import dk.frv.enav.esd.gui.views.MainFrame;
 
 public class MapWindowSinglePanel extends JPanel{
 

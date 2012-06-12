@@ -27,7 +27,7 @@
  * either expressed or implied, of Danish Maritime Authority.
  * 
  */
-package dk.frv.enav.esd.gui;
+package dk.frv.enav.esd.gui.views;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -51,6 +51,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
+import dk.frv.enav.esd.gui.utils.ComponentFrame;
 import dk.frv.enav.esd.msi.IMsiUpdateListener;
 import dk.frv.enav.esd.msi.MsiHandler;
 

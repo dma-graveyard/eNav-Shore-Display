@@ -27,7 +27,7 @@
  * either expressed or implied, of Danish Maritime Authority.
  * 
  */
-package dk.frv.enav.esd.gui;
+package dk.frv.enav.esd.gui.utils;
 
 import java.awt.Dimension;
 import java.awt.Insets;
@@ -42,6 +42,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
 import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.gui.views.JMainDesktopPane;
+import dk.frv.enav.esd.gui.views.JMapFrame;
+import dk.frv.enav.esd.gui.views.JSettingsWindow;
+import dk.frv.enav.esd.gui.views.NotificationArea;
+import dk.frv.enav.esd.gui.views.NotificationCenter;
+import dk.frv.enav.esd.gui.views.StatusArea;
+import dk.frv.enav.esd.gui.views.ToolBar;
 
 public class JMainDesktopManager extends DefaultDesktopManager {
 	/**

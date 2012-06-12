@@ -7,7 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 
-import dk.frv.enav.esd.gui.MainFrame;
+import dk.frv.enav.esd.gui.views.MainFrame;
 import dk.frv.enav.esd.settings.Settings;
 
 public class MapWindowsPanel extends JPanel{

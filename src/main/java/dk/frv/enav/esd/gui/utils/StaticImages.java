@@ -1,4 +1,4 @@
-package dk.frv.enav.esd.gui;
+package dk.frv.enav.esd.gui.utils;
 
 import java.awt.Cursor;
 import java.awt.Image;

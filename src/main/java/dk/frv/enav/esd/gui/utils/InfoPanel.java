@@ -27,7 +27,7 @@
  * either expressed or implied, of Danish Maritime Authority.
  * 
  */
-package dk.frv.enav.esd.gui;
+package dk.frv.enav.esd.gui.utils;
 
 import java.awt.Color;
 import java.awt.Dimension;

@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 
-import dk.frv.enav.esd.gui.MainFrame;
+import dk.frv.enav.esd.gui.views.MainFrame;
 import dk.frv.enav.esd.status.AisStatus;
 import dk.frv.enav.esd.status.ComponentStatus;
 import dk.frv.enav.esd.status.IStatusComponent;

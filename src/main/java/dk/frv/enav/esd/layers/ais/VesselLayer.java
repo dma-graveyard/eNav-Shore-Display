@@ -32,7 +32,7 @@ package dk.frv.enav.esd.layers.ais;
 import javax.swing.ImageIcon;
 
 import dk.frv.enav.esd.ESD;
-import dk.frv.enav.esd.gui.StaticImages;
+import dk.frv.enav.esd.gui.utils.StaticImages;
 import dk.frv.enav.ins.common.graphics.CenterRaster;
 
 /**

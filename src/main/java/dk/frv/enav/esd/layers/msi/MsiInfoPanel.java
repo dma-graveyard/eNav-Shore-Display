@@ -30,7 +30,7 @@
 package dk.frv.enav.esd.layers.msi;
 
 import dk.frv.enav.common.xml.msi.MsiMessage;
-import dk.frv.enav.esd.gui.InfoPanel;
+import dk.frv.enav.esd.gui.utils.InfoPanel;
 
 /**
  * MSI mouse over info

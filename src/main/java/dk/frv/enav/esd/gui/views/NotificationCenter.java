@@ -1,4 +1,4 @@
-package dk.frv.enav.esd.gui;
+package dk.frv.enav.esd.gui.views;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -40,6 +40,7 @@ import dk.frv.enav.common.xml.msi.MsiMessage;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 import dk.frv.enav.esd.gui.msi.MsiTableModel;
 import dk.frv.enav.esd.gui.settingtabs.GuiStyler;
+import dk.frv.enav.esd.gui.utils.ComponentFrame;
 import dk.frv.enav.esd.msi.IMsiUpdateListener;
 import dk.frv.enav.esd.msi.MsiHandler;
 

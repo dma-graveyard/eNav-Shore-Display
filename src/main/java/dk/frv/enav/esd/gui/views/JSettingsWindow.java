@@ -1,4 +1,4 @@
-package dk.frv.enav.esd.gui;
+package dk.frv.enav.esd.gui.views;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -40,6 +40,7 @@ import dk.frv.enav.esd.gui.settingtabs.GuiStyler;
 import dk.frv.enav.esd.gui.settingtabs.MapSettingsPanel;
 import dk.frv.enav.esd.gui.settingtabs.MapWindowSinglePanel;
 import dk.frv.enav.esd.gui.settingtabs.MapWindowsPanel;
+import dk.frv.enav.esd.gui.utils.ComponentFrame;
 import dk.frv.enav.esd.layers.wms.WMSService;
 import dk.frv.enav.esd.services.shore.ShoreServices;
 import dk.frv.enav.esd.settings.Settings;

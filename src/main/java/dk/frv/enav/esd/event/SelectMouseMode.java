@@ -40,8 +40,8 @@ import javax.swing.JPanel;
 import com.bbn.openmap.MapBean;
 import com.bbn.openmap.proj.Projection;
 
-import dk.frv.enav.esd.gui.ChartPanel;
-import dk.frv.enav.esd.gui.JMapFrame;
+import dk.frv.enav.esd.gui.views.ChartPanel;
+import dk.frv.enav.esd.gui.views.JMapFrame;
 
 
 

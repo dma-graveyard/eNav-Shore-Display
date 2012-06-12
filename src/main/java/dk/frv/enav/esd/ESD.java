@@ -46,8 +46,8 @@ import com.bbn.openmap.PropertyConsumer;
 
 import dk.frv.enav.esd.ais.AisHandler;
 import dk.frv.enav.esd.ais.VesselAisHandler;
-import dk.frv.enav.esd.gui.MainFrame;
-import dk.frv.enav.esd.gui.StaticImages;
+import dk.frv.enav.esd.gui.utils.StaticImages;
+import dk.frv.enav.esd.gui.views.MainFrame;
 import dk.frv.enav.esd.msi.MsiHandler;
 import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.nmea.NmeaTcpSensor;
