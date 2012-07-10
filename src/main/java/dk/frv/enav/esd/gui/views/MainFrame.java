@@ -357,6 +357,8 @@ public class MainFrame extends JFrame implements WindowListener {
 		desktop.add(routeManagerDialog, true);
 		routeManagerDialog.setVisible(true);
 		
+		notificationCenter.showMiddleTable(0);
+		
 		setWorkSpace(workspace);
 
 	}

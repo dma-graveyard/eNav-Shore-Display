@@ -84,6 +84,8 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	private DefaultListSelectionModel values;
 	private JPanel headerPanel;
 	
+	private int currentService = -1;
+	
 	public NotificationCenter() {
 		super("NOTCENTER", false, true, false, false);
 
@@ -421,9 +423,6 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		label.setOpaque(true);
 	}
 
-	public void styleText(JLabel label) {
-	}
-
 	public void addMouseListeners() {
 
 		msiPanel.addMouseListener(new MouseAdapter() {
@@ -447,11 +446,16 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 			public void mouseClicked(MouseEvent e) {
 				if(selectedService == 0) { // MSI
 					int rowAfter = selectedRow;
+					
+					
+					
 					MsiMessage msiMessage = msiHandler.getMessageList().get(selectedRow).msiMessage;
 					msiHandler.setAcknowledged(msiMessage);
 					msiUpdate();
 					showMiddleTable(0);
 					table.changeSelection(rowAfter, 0, false, false);
+					
+					
 				}
 			}
 		});
@@ -471,6 +475,9 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		but_delete.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if(selectedService == 0) { // MSI
+					
+					
+					
 					MsiMessage msiMessage = msiHandler.getMessageList().get(selectedRow).msiMessage;
 					msiHandler.deleteMessage(msiMessage);
 					msiUpdate();
@@ -481,9 +488,15 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	}
 
 	public void showMiddleTable(int service) {
+		
+		if (service ==currentService){
+			return;
+		}
+		
 		switch (service) {
 		case 0:
 			// MSI
+			
 			selectedService = service;
 			msiTableModel = new MsiTableModel(msiHandler);
 			table.setModel(msiTableModel);
@@ -497,6 +510,9 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 			headerPanel.add(createHeaderColumn(msiTableModel.getColumnName(1), 60));
 			headerPanel.add(createHeaderColumn(msiTableModel.getColumnName(2), 90));
 			headerPanel.add(createHeaderColumn(msiTableModel.getColumnName(3), 155));
+			currentService = service;
+			
+			initialMsg();
 			break;
 		default:
 			break;
@@ -523,24 +539,68 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		return container;
 	}
 
+	
+	public void initialMsg(){
+		
+		
+//		values = (DefaultListSelectionModel) table.getModel().get;
+//		values = (DefaultListSelectionModel) msiTableModel.getValueAt(0, 0);
+		
+
+		
+		// Show buttons and area in right pane
+		pane_3.setVisible(true);
+		scrollPane_1.setVisible(true);
+		
+		
+		
+		selectedRow = 0;
+		if(msiTableModel.isAwk(selectedRow)){
+			but_read.setVisible(false);
+		} else {
+			but_read.setVisible(true);
+		}
+		
+		
+		// Update area
+		doc.delete(0, doc.length());
+		doc.append("<font size=\"2\" face=\"times, serif\" color=\"white\">");
+		for (int i = 0; i < ((MsiTableModel) table.getModel()).areaGetColumnCount(); i++) {
+
+			doc.append("<u><b>" + ((MsiTableModel) table.getModel()).areaGetColumnName(i) + ":</b></u><br />"
+					+ ((MsiTableModel) table.getModel()).areaGetValueAt(0, i)
+					+ "<br /><br />");
+		}
+		doc.append("</font>");
+		area.setText(doc.toString());
+	}
+	
 	private class MSIRowListener implements ListSelectionListener {
 
 		public void valueChanged(ListSelectionEvent event) {
+			
 			if (event.getValueIsAdjusting()) {
 				return;
 			}
 
 			values = (DefaultListSelectionModel) event.getSource();
-
+			
+			
+			
 			// Show buttons and area in right pane
 			pane_3.setVisible(true);
 			scrollPane_1.setVisible(true);
+			
+			
+			
 			selectedRow = values.getAnchorSelectionIndex();
 			if(msiTableModel.isAwk(selectedRow)){
 				but_read.setVisible(false);
 			} else {
 				but_read.setVisible(true);
 			}
+			
+			
 			// Update area
 			doc.delete(0, doc.length());
 			doc.append("<font size=\"2\" face=\"times, serif\" color=\"white\">");
@@ -555,6 +615,9 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 			}
 			doc.append("</font>");
 			area.setText(doc.toString());
+			
+			
+
 		}
 	}
 
