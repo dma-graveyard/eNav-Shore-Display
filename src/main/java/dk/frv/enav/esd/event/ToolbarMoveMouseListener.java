@@ -36,7 +36,8 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.JInternalFrame;
 
-import dk.frv.enav.esd.gui.MainFrame;
+import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.gui.views.MainFrame;
 
 /**
  * Class for setting up a component to use for dragging the frame
@@ -79,28 +80,38 @@ public class ToolbarMoveMouseListener implements MouseListener, MouseMotionListe
 	public void mouseDragged(MouseEvent e) {
 		
 		// This should be tested in multiple OS or be avoided.
-		int offset_x = 16;
-		int offset_y = 59;
+		//int offset_x = 16;
+		//int offset_y = 59;
 		
-		int frameWidth = frame.getSize().width;
-		int frameHeight = frame.getSize().height;
+		//int frameWidth = frame.getSize().width;
+		//int frameHeight = frame.getSize().height;
 		
 		Point current = this.getScreenLocation(e);
-		Point offset = new Point(
-				(int) current.getX() - (int) start_drag.getX(),
-				(int) current.getY() - (int) start_drag.getY());
-		JInternalFrame frame = target;
 		
-		int newX = (int) (this.start_loc.getX() + offset.getX());
-		int newY = (int) (this.start_loc.getY() + offset.getY());
+		if(current != null) {
 		
-		if(newX < 0) newX = 0;
-		if((newX + target.getSize().width + offset_x) > frameWidth) newX = frameWidth - target.getSize().width - offset_x;
-		if(newY < 0) newY = 0;
-		if((newY + target.getSize().height + offset_y) > frameHeight) newY = frameHeight - target.getSize().height - offset_y;
-		
-		Point new_location = new Point(newX, newY);
-		frame.setLocation(new_location);
+			Point offset = new Point(
+					(int) current.getX() - (int) start_drag.getX(),
+					(int) current.getY() - (int) start_drag.getY());
+			JInternalFrame frame = target;
+			
+			int newX = (int) (this.start_loc.getX() + offset.getX());
+			int newY = (int) (this.start_loc.getY() + offset.getY());
+			
+			/*
+			if(newX < 0) newX = 0;
+			if((newX + target.getSize().width + offset_x) > frameWidth) newX = frameWidth - target.getSize().width - offset_x;
+			if(newY < 0) newY = 0;
+			if((newY + target.getSize().height + offset_y) > frameHeight) newY = frameHeight - target.getSize().height - offset_y;
+			*/
+			
+			Point new_location = new Point(newX, newY);
+			frame.setLocation(new_location);
+			
+			if (ESD.getMainFrame() != null){
+			ESD.getMainFrame().getDesktop().getManager().resizeDesktop();
+			}
+		}
 
 	}
 

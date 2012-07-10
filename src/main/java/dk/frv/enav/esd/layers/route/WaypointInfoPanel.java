@@ -33,7 +33,7 @@ import java.util.Date;
 
 import dk.frv.enav.ins.common.text.Formatter;
 import dk.frv.enav.ins.gps.GnssTime;
-import dk.frv.enav.esd.gui.InfoPanel;
+import dk.frv.enav.esd.gui.utils.InfoPanel;
 import dk.frv.enav.esd.route.ActiveRoute;
 import dk.frv.enav.esd.route.Route;
 import dk.frv.enav.esd.route.RouteWaypoint;

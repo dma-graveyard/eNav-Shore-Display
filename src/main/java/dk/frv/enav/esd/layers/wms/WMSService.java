@@ -41,10 +41,13 @@ import com.bbn.openmap.plugin.wms.WMSPlugIn;
 import com.bbn.openmap.proj.Projection;
 
 import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.status.ComponentStatus;
+import dk.frv.enav.esd.status.IStatusComponent;
+import dk.frv.enav.esd.status.WMSStatus;
 import dk.frv.enav.ins.common.graphics.CenterRaster;
 
 
-public class WMSService extends WMSPlugIn implements ImageServerConstants {
+public class WMSService extends WMSPlugIn implements ImageServerConstants, IStatusComponent {
 
 	private OMGraphicList wmsList = new OMGraphicList();
 	private String wmsQuery = "";
@@ -60,6 +63,8 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 //	private Double deltaX = 0.00;
 //	private Double deltaY = 0.00;
 	private boolean wmsImage;
+	private WMSStatus status = new WMSStatus();
+	private float zoomLevel = -1;
 	
 	/**
 	 * Constructor for the WMS Service - loads the WMS server from the settings file
@@ -73,7 +78,9 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 		this.wmsQuery = wmsString;
 	}
 	
-	
+	public void setZoomLevel(float zoom){
+		zoomLevel = zoom;
+	}
 	/**
 	 * Set the position of the WMS image and what area we wish to display
 	 * @param ullon
@@ -105,14 +112,66 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 	 * @return
 	 */
 	public String getQueryString(){	
-		String queryString = wmsQuery
-				+ "&BBOX="+bbox				
-				+ "&WIDTH=" + width 
-				+ "&HEIGHT=" + height;
-				
-			
+		String queryString = "";
 		
-		System.out.println(queryString);
+		
+		if (wmsQuery.indexOf("kortforsyningen.kms.dk/soe_enc_primar") > 0){
+			
+			String[] splittedUrl = wmsQuery.split("&");
+			String newUrl = "";
+			
+			String styleReplacer = "";
+			
+			//3428460
+			//Do style 244
+			if (zoomLevel > 727875){
+				styleReplacer = "STYLES=style-id-244";
+			}
+			
+			//Do style 200
+			if (zoomLevel <= 727875){
+				styleReplacer = "STYLES=style-id-200";
+			}
+			
+			//Do style 246
+			if (zoomLevel <= 363937){
+				styleReplacer = "STYLES=style-id-246";
+			}
+			
+			//Do style 245
+			if (zoomLevel <= 181968){
+				styleReplacer = "STYLES=style-id-245";
+			}
+			
+
+			
+			for (int i = 0; i < splittedUrl.length; i++) {
+				
+				if (splittedUrl[i].startsWith("STYLES=")){
+					splittedUrl[i] = styleReplacer;
+				}
+				
+				if (i != splittedUrl.length-1){
+					
+				newUrl = newUrl + splittedUrl[i] + "&";
+				}else{
+					newUrl = newUrl + splittedUrl[i];	
+				}
+				
+			}
+			queryString = newUrl
+					+ "&BBOX="+bbox				
+					+ "&WIDTH=" + width 
+					+ "&HEIGHT=" + height;
+		}else{
+			queryString = wmsQuery
+					+ "&BBOX="+bbox				
+					+ "&WIDTH=" + width 
+					+ "&HEIGHT=" + height;
+		}
+		
+
+//		System.out.println(queryString);
 		
 		return queryString;
 	}
@@ -147,6 +206,7 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 				wmsList.add(new CenterRaster(this.wmsullat, this.wmsullon, this.wmsWidth, this.wmsHeight, noImageIcon));
 				wmsImage = false;
 			}else{
+				status.markContactSuccess();
 				wmsList.add(new CenterRaster(this.wmsullat, this.wmsullon, this.wmsWidth, this.wmsHeight, wmsImg));
 				wmsImage = true;
 			}
@@ -158,9 +218,11 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 			//If iconHeight or width == -1 no WMS available
 			
 		} catch (java.net.MalformedURLException murle) {
+			status.markContactError(murle);
 			System.out.println("Bad URL!");
 		} catch (java.io.IOException ioe) {
 			System.out.println("IO Exception");
+			status.markContactError(ioe);
 		}
 		return wmsList;
 	}
@@ -179,6 +241,11 @@ public class WMSService extends WMSPlugIn implements ImageServerConstants {
 	public String getServerName() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public ComponentStatus getStatus() {
+		return status;
 	}
 
 }

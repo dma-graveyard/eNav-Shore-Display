@@ -42,8 +42,7 @@ import org.apache.log4j.Logger;
 
 import com.bbn.openmap.util.PropUtils;
 
-import dk.frv.enav.esd.gui.JMapFrame;
-import dk.frv.enav.ins.settings.AisSettings;
+import dk.frv.enav.esd.gui.views.JMapFrame;
 import dk.frv.enav.ins.settings.SensorSettings;
 
 /**
@@ -94,7 +93,6 @@ public class Settings implements Serializable {
 		navSettings.readProperties(props);
 		sensorSettings.readProperties(props);
 		
-		
 		workspaceFile = guiSettings.getWorkspace();
 		
 		if (workspaceFile != null){
@@ -135,13 +133,16 @@ public class Settings implements Serializable {
 	 */
 	public void saveToFile() {
 		Properties props = new Properties();
-//		aisSettings.setProperties(props);
+
+		aisSettings.setProperties(props);
 		enavSettings.setProperties(props);
 		guiSettings.setProperties(props);
 		mapSettings.setProperties(props);
-
 		navSettings.setProperties(props);
 //		sensorSettings.setProperties(props);
+
+//		navSettings.setProperties(props);
+
 		
 		try {
 			FileWriter outFile = new FileWriter(settingsFile);
@@ -202,10 +203,6 @@ public class Settings implements Serializable {
 		return settingsFile;
 	}
 
-	public SensorSettings getSensorSettings() {
-		return sensorSettings;
-	}
-	
 	public AisSettings getAisSettings() {
 		return aisSettings;
 	}
@@ -213,12 +210,14 @@ public class Settings implements Serializable {
 	public Workspace getWorkspace(){
 		return workspace;
 	}
-	
+
 	public EnavSettings getEnavSettings() {
 		return enavSettings;
 	}
 	
+
 	public NavSettings getNavSettings() {
 		return navSettings;
 	}
+
 }

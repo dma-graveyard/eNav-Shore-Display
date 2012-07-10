@@ -32,6 +32,7 @@ package dk.frv.enav.esd.layers.ais;
 import javax.swing.ImageIcon;
 
 import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.gui.utils.StaticImages;
 import dk.frv.enav.ins.common.graphics.CenterRaster;
 
 /**
@@ -48,13 +49,15 @@ public class VesselLayer extends CenterRaster {
 	private double lon;
 	private double trueHeading;
 	private String shipType;
+	private StaticImages staticImages;
 
 	/**
 	 * Initialize a vessel with default icon
 	 * @param MMSI Key of vessel
 	 */
 	public VesselLayer(long MMSI) {
-		super(0, 0, 24, 24, new ImageIcon(ESD.class.getResource("/images/vesselIcons/white1_90.png")));
+		super(0, 0, 24, 24, ESD.getStaticImages().getVesselWhite());
+		this.staticImages = ESD.getStaticImages();
 		this.MMSI = MMSI;
 	}
 
@@ -91,6 +94,38 @@ public class VesselLayer extends CenterRaster {
 		if(this.shipType != shipType) {	
 			this.shipType = shipType;
 			if (shipType.startsWith("Passenger"))
+				vesselIcon = staticImages.getVesselBlue();
+			else if (shipType.startsWith("Cargo"))
+				vesselIcon = staticImages.getVesselLightgreen();
+			else if (shipType.startsWith("Tug"))
+				vesselIcon = staticImages.getVesselCyan();
+			else if (shipType.startsWith("Tanker"))
+				vesselIcon = staticImages.getVesselRed();
+			else if (shipType.startsWith("Port"))
+				vesselIcon = staticImages.getVesselCyan();
+			else if (shipType.startsWith("Dredging"))
+				vesselIcon = staticImages.getVesselWhite0();
+			else if (shipType.startsWith("Sailing"))
+				vesselIcon = staticImages.getVesselBrown();
+			else if (shipType.startsWith("Pleasure"))
+				vesselIcon = staticImages.getVesselMagenta();
+			else if (shipType.startsWith("Sar"))
+				vesselIcon = staticImages.getVesselCyan();
+			else if (shipType.startsWith("Fishing"))
+				vesselIcon = staticImages.getVesselBrown();
+			else if (shipType.startsWith("Diving"))
+				vesselIcon = staticImages.getVesselCyan();
+			else if (shipType.startsWith("Pilot"))
+				vesselIcon = staticImages.getVesselCyan();
+			else if (shipType.startsWith("Undefined"))
+				vesselIcon = staticImages.getVesselLightgray();
+			else if (shipType.startsWith("Unknown"))
+				vesselIcon = staticImages.getVesselLightgray();
+			else {
+				vesselIcon = staticImages.getVesselLightgray();
+			}
+			/*
+			if (shipType.startsWith("Passenger"))
 				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/blue1_90.png"));
 			else if (shipType.startsWith("Cargo"))
 				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/lightgreen1_90.png"));
@@ -121,6 +156,7 @@ public class VesselLayer extends CenterRaster {
 			else {
 				vesselIcon = new ImageIcon(ESD.class.getResource("/images/vesselIcons/lightgray1_90.png"));
 			}
+			*/
 			this.setImageIcon(vesselIcon);
 		}
 	}

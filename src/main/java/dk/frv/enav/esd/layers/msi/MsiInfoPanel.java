@@ -30,7 +30,7 @@
 package dk.frv.enav.esd.layers.msi;
 
 import dk.frv.enav.common.xml.msi.MsiMessage;
-import dk.frv.enav.esd.gui.InfoPanel;
+import dk.frv.enav.esd.gui.utils.InfoPanel;
 
 /**
  * MSI mouse over info
@@ -52,6 +52,9 @@ public class MsiInfoPanel extends InfoPanel {
 	 */
 	public void showMsiInfo(MsiMessage message) {
 		String encText = message.getEncText();
+		if (encText == null){
+			encText = "No MSI Message attached";
+		}
 		showText(encText);
 	}
 }

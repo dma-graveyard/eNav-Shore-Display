@@ -76,13 +76,14 @@ public class Vessel extends OMGraphicList {
 	private String vesselDest = "N/A";
 	private String vesselEta = "N/A";
 	private String vesselShiptype = "N/A";
-			
 
 	/**
 	 * Vessel initialization with icon, circle, heading, speedvector, callsign
 	 * and name/mmsi.
 	 * 
-	 * @param MMSI Key of vessel
+	 * @param MMSI
+	 *            Key of vessel
+	 * @param staticImages 
 	 */
 	public Vessel(long MMSI) {
 		super();
@@ -123,23 +124,30 @@ public class Vessel extends OMGraphicList {
 	 * Updates all the vessel layers with position, data and heading where
 	 * needed. Shows them on the map depending on mapScale.
 	 * 
-	 * @param trueHeading Direction of vessel icon
-	 * @param lat Latitude position of vessel
-	 * @param lon Longitude position of vessel
-	 * @param staticData Static information of vessel
-	 * @param sog Speed over ground
-	 * @param cogR Course over ground in radians
-	 * @param mapScale Scale of the chartMap
+	 * @param trueHeading
+	 *            Direction of vessel icon
+	 * @param lat
+	 *            Latitude position of vessel
+	 * @param lon
+	 *            Longitude position of vessel
+	 * @param staticData
+	 *            Static information of vessel
+	 * @param sog
+	 *            Speed over ground
+	 * @param cogR
+	 *            Course over ground in radians
+	 * @param mapScale
+	 *            Scale of the chartMap
 	 */
 	public void updateLayers(double trueHeading, double lat, double lon, VesselStaticData staticData, double sog,
 			double cogR, float mapScale) {
-		
+
 		vessel.setLocation(lat, lon);
 		vessel.setHeading(trueHeading);
 
 		heading.setLocation(lat, lon, OMGraphic.DECIMAL_DEGREES, Math.toRadians(trueHeading));
-		vesselHeading = Integer.toString((int) Math.round(trueHeading))+"°";
-			
+		vesselHeading = Integer.toString((int) Math.round(trueHeading)) + "°";
+
 		vesselName = "ID:" + this.MMSI;
 		if (staticData != null) {
 			vessel.setImageIcon(staticData.getShipType().toString());
@@ -149,18 +157,18 @@ public class Vessel extends OMGraphicList {
 			vesselDest = staticData.getDestination();
 			vesselEta = Long.toString(staticData.getEta());
 			vesselShiptype = staticData.getShipType().toString();
-			
+
 		}
 		nameMMSI.setData(vesselName);
-		
+
 		if (this.lat != lat || this.lon != lon || this.sog != sog || this.cogR != cogR
-				|| this.trueHeading != trueHeading) {			
+				|| this.trueHeading != trueHeading) {
 			this.lat = lat;
 			this.lon = lon;
 			this.sog = sog;
 			this.cogR = cogR;
 			this.trueHeading = trueHeading;
-			
+
 			vesCirc.setLatLon(lat, lon);
 
 			callSign.setLat(lat);
@@ -188,17 +196,16 @@ public class Vessel extends OMGraphicList {
 			} else {
 				nameMMSI.setY(20);
 			}
-			
-			
+
 		}
-		
+
 		// Scale for text-labels
 		boolean b1 = mapScale < 750000;
 		showHeading(b1);
 		showSpeedVector(b1);
 		showCallSign(b1);
 		showName(b1);
-		// Scale for ship icons 
+		// Scale for ship icons
 		boolean b2 = mapScale < 1500000;
 		showVesselIcon(b2);
 		showVesselCirc(!b2);
@@ -206,7 +213,9 @@ public class Vessel extends OMGraphicList {
 
 	/**
 	 * Toggle visibility of vessel icon on map
-	 * @param b Boolean that tells if layer should be shown or not
+	 * 
+	 * @param b
+	 *            Boolean that tells if layer should be shown or not
 	 */
 	public void showVesselIcon(boolean b) {
 		vessel.setVisible(b);
@@ -214,7 +223,9 @@ public class Vessel extends OMGraphicList {
 
 	/**
 	 * Toggle visibility of vessel circle on map
-	 * @param b Boolean that tells if layer should be shown or not
+	 * 
+	 * @param b
+	 *            Boolean that tells if layer should be shown or not
 	 */
 	public void showVesselCirc(boolean b) {
 		vesCirc.setVisible(b);
@@ -222,7 +233,9 @@ public class Vessel extends OMGraphicList {
 
 	/**
 	 * Toggle visibility of heading vector on map
-	 * @param b Boolean that tells if layer should be shown or not
+	 * 
+	 * @param b
+	 *            Boolean that tells if layer should be shown or not
 	 */
 	public void showHeading(boolean b) {
 		heading.setVisible(b);
@@ -230,7 +243,9 @@ public class Vessel extends OMGraphicList {
 
 	/**
 	 * Toggle visibility of speed vector on map
-	 * @param b Boolean that tells if layer should be shown or not
+	 * 
+	 * @param b
+	 *            Boolean that tells if layer should be shown or not
 	 */
 	public void showSpeedVector(boolean b) {
 		speedVector.setVisible(b);
@@ -238,7 +253,9 @@ public class Vessel extends OMGraphicList {
 
 	/**
 	 * Toggle visibility of call sign label on map
-	 * @param b Boolean that tells if layer should be shown or not
+	 * 
+	 * @param b
+	 *            Boolean that tells if layer should be shown or not
 	 */
 	public void showCallSign(boolean b) {
 		callSign.setVisible(b);
@@ -246,20 +263,22 @@ public class Vessel extends OMGraphicList {
 
 	/**
 	 * Toggle visibility of name label on map
-	 * @param b Boolean that tells if layer should be shown or not
+	 * 
+	 * @param b
+	 *            Boolean that tells if layer should be shown or not
 	 */
 	public void showName(boolean b) {
 		nameMMSI.setVisible(b);
 	}
-	
-	public long getMMSI(){
+
+	public long getMMSI() {
 		return this.MMSI;
 	}
-	
-	public String getName(){
-		if (vesselName.startsWith("ID"))
+
+	public String getName() {
+		if (vesselName != null && vesselName.startsWith("ID"))
 			return "N/A";
-		else 
+		else
 			return vesselName;
 	}
 
@@ -280,9 +299,9 @@ public class Vessel extends OMGraphicList {
 	}
 
 	public String getSog() {
-		return Integer.toString((int) Math.round(sog))+" kn";
+		return Integer.toString((int) Math.round(sog)) + " kn";
 	}
-	
+
 	public String getEta() {
 		return vesselEta;
 	}

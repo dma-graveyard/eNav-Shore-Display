@@ -40,7 +40,7 @@ import java.util.Properties;
 import com.bbn.openmap.proj.coords.LatLonPoint;
 import com.bbn.openmap.util.PropUtils;
 
-import dk.frv.enav.esd.gui.JMapFrame;
+import dk.frv.enav.esd.gui.views.JMapFrame;
 
 /**
  * Map/chart settings
@@ -183,7 +183,7 @@ public class Workspace implements Serializable {
 
 			validWorkspace = true;
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+//			System.out.println(e.getMessage());
 		}
 
 	}

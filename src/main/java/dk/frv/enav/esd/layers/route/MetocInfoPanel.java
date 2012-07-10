@@ -34,7 +34,8 @@ import java.util.Date;
 import dk.frv.enav.common.xml.metoc.MetocDataTypes;
 import dk.frv.enav.common.xml.metoc.MetocForecastPoint;
 import dk.frv.enav.ins.common.text.Formatter;
-import dk.frv.enav.esd.gui.InfoPanel;
+
+import dk.frv.enav.esd.gui.utils.InfoPanel;
 import dk.frv.enav.esd.route.RouteMetocSettings;
 
 /**

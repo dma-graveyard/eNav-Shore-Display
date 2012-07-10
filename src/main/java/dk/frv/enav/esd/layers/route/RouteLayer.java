@@ -54,8 +54,9 @@ import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
 import dk.frv.enav.ins.common.math.Vector2D;
 import dk.frv.enav.esd.event.NavigationMouseMode;
-import dk.frv.enav.esd.gui.JMapFrame;
-import dk.frv.enav.esd.gui.MainFrame;
+import dk.frv.enav.esd.gui.views.JMapFrame;
+import dk.frv.enav.esd.gui.views.MainFrame;
+
 import dk.frv.enav.esd.layers.msi.MsiInfoPanel;
 //import dk.frv.enav.ins.gui.MapMenu;
 import dk.frv.enav.esd.route.ActiveRoute;

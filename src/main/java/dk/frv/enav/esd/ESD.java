@@ -46,7 +46,8 @@ import com.bbn.openmap.PropertyConsumer;
 
 import dk.frv.enav.esd.ais.AisHandler;
 import dk.frv.enav.esd.ais.VesselAisHandler;
-import dk.frv.enav.esd.gui.MainFrame;
+import dk.frv.enav.esd.gui.utils.StaticImages;
+import dk.frv.enav.esd.gui.views.MainFrame;
 import dk.frv.enav.esd.msi.MsiHandler;
 import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.nmea.NmeaTcpSensor;
@@ -57,8 +58,13 @@ import dk.frv.enav.esd.util.OneInstanceGuard;
 import dk.frv.enav.ins.gps.GnssTime;
 import dk.frv.enav.ins.gps.GpsHandler;
 import dk.frv.enav.ins.nmea.SensorType;
+import dk.frv.enav.esd.settings.AisSettings;
+
 import dk.frv.enav.esd.services.ais.AisServices;
 import dk.frv.enav.ins.settings.SensorSettings;
+
+
+
 
 /**
  * Main class with main method.
@@ -84,8 +90,13 @@ public class ESD {
 	private static NmeaSensor gpsSensor;
 	private static GpsHandler gpsHandler;
 	private static ShoreServices shoreServices;
+	private static StaticImages staticImages;
+	
 	private static AisServices aisServices;
 	private static RouteManager routeManager;
+
+
+
 
 	private static ExceptionHandler exceptionHandler = new ExceptionHandler();
 
@@ -322,7 +333,7 @@ public class ESD {
 		// Set default exception handler
 		Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
 
-		VERSION = "2.0 Sprint 2";
+		VERSION = "5.0 Sprint 5";
 		LOG.info("Starting ESD version " + VERSION);
 		LOG.info("Copyright (C) 2012 Danish Maritime Safety Administration");
 		LOG.info("This program comes with ABSOLUTELY NO WARRANTY.");
@@ -348,13 +359,10 @@ public class ESD {
 		shoreServices = new ShoreServices();
 		beanHandler.add(shoreServices);
 		
+
         // Create AIS services
         aisServices = new AisServices();
         beanHandler.add(aisServices);
-		
-		// Create MSI handler
-		msiHandler = new MsiHandler();
-		beanHandler.add(msiHandler);
 
 		// Load settings or get defaults and add to bean context
 		if (args.length > 0) {
@@ -383,6 +391,10 @@ public class ESD {
 		aisHandler = new VesselAisHandler(settings);
 		// aisHandler.loadView();
 		beanHandler.add(aisHandler);
+		
+		// Add StaticImages handler
+		staticImages = new StaticImages();
+		beanHandler.add(staticImages);
 
 
         // Load routeManager and register as GPS data listener
@@ -410,7 +422,16 @@ public class ESD {
 				createAndShowGUI();
 			}
 		});
+		
+		// Create MSI handler
+		msiHandler = new MsiHandler(getSettings().getEnavSettings());
+		beanHandler.add(msiHandler);
 
+
+	}
+	
+	public static StaticImages getStaticImages(){
+		return staticImages;
 	}
 
 	/**
@@ -429,12 +450,20 @@ public class ESD {
 	 * Starts the needed sensors such as the AIS TCP connection
 	 */
 	private static void startSensors() {
-		SensorSettings sensorSettings = settings.getSensorSettings();
-		switch (sensorSettings.getAisConnectionType()) {
+		AisSettings sensorSettings = settings.getAisSettings();
+        switch (sensorSettings.getAisConnectionType()) {
+		case NONE:
+//			aisSensor = new NmeaStdinSensor();
+			break;
 		case TCP:
-			aisSensor = new NmeaTcpSensor("10.0.60.16", 10000);
-			// aisSensor = new NmeaTcpSensor("192.168.10.250", 4001);
-			//aisSensor = new NmeaTcpSensor("localhost", 4001);
+			aisSensor = new NmeaTcpSensor(sensorSettings.getAisHostOrSerialPort(), sensorSettings.getAisTcpPort()); 
+			break;
+		case SERIAL:
+//			aisSensor = new NmeaSerialSensor(sensorSettings.getAisHostOrSerialPort());
+			break;		
+		case FILE:
+//			aisSensor = new NmeaFileSensor(sensorSettings.getAisFilename(), sensorSettings);
+
 			break;
 		default:
 			LOG.error("Unknown sensor connection type: " + sensorSettings.getAisConnectionType());
@@ -444,31 +473,23 @@ public class ESD {
 			aisSensor.addSensorType(SensorType.AIS);
 		}
 
-		switch (sensorSettings.getGpsConnectionType()) {
-		case TCP:
-			gpsSensor = new NmeaTcpSensor(sensorSettings.getGpsHostOrSerialPort(), sensorSettings.getGpsTcpPort());
-			break;
-		default:
-			LOG.error("Unknown sensor connection type: " + sensorSettings.getAisConnectionType());
-		}
-
 		if (gpsSensor != null) {
 			gpsSensor.addSensorType(SensorType.GPS);
 		}
 		if (aisSensor != null) {
-			aisSensor.setSimulateGps(sensorSettings.isSimulateGps());
-			aisSensor.setSimulatedOwnShip(sensorSettings.getSimulatedOwnShip());
+			aisSensor.setSimulateGps(false);
+//			aisSensor.setSimulatedOwnShip(false);
 			aisSensor.start();
 			// Add ais sensor to bean context
 			beanHandler.add(aisSensor);
 		}
-		if (gpsSensor != null && gpsSensor != aisSensor) {
-			gpsSensor.setSimulateGps(sensorSettings.isSimulateGps());
-			gpsSensor.setSimulatedOwnShip(sensorSettings.getSimulatedOwnShip());
-			gpsSensor.start();
-			// Add gps sensor to bean context
-			beanHandler.add(gpsSensor);
-		}
+//		if (gpsSensor != null && gpsSensor != aisSensor) {
+//			gpsSensor.setSimulateGps(sensorSettings.isSimulateGps());
+//			gpsSensor.setSimulatedOwnShip(sensorSettings.getSimulatedOwnShip());
+//			gpsSensor.start();
+//			// Add gps sensor to bean context
+//			beanHandler.add(gpsSensor);
+//		}
 
 	}
 
