@@ -51,6 +51,7 @@ import dk.frv.enav.esd.gui.views.MainFrame;
 import dk.frv.enav.esd.msi.MsiHandler;
 import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.nmea.NmeaTcpSensor;
+import dk.frv.enav.esd.route.RouteManager;
 import dk.frv.enav.esd.services.shore.ShoreServices;
 import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.esd.util.OneInstanceGuard;
@@ -58,6 +59,12 @@ import dk.frv.enav.ins.gps.GnssTime;
 import dk.frv.enav.ins.gps.GpsHandler;
 import dk.frv.enav.ins.nmea.SensorType;
 import dk.frv.enav.esd.settings.AisSettings;
+
+import dk.frv.enav.esd.services.ais.AisServices;
+import dk.frv.enav.ins.settings.SensorSettings;
+
+
+
 
 /**
  * Main class with main method.
@@ -84,6 +91,15 @@ public class ESD {
 	private static GpsHandler gpsHandler;
 	private static ShoreServices shoreServices;
 	private static StaticImages staticImages;
+
+
+	
+	private static AisServices aisServices;
+	private static RouteManager routeManager;
+
+
+
+
 
 	private static ExceptionHandler exceptionHandler = new ExceptionHandler();
 
@@ -116,7 +132,7 @@ public class ESD {
 
 		// GuiSettings
 		// Handler settings
-		// routeManager.saveToFile();
+		 routeManager.saveToFile();
 		// msiHandler.saveToFile();
 		// aisHandler.saveView();
 
@@ -216,6 +232,10 @@ public class ESD {
 	 */
 	public static MainFrame getMainFrame() {
 		return mainFrame;
+	}
+	
+	public static RouteManager getRouteManager() {
+		return routeManager;
 	}
 
 	/**
@@ -341,7 +361,11 @@ public class ESD {
 		// Create shore services
 		shoreServices = new ShoreServices();
 		beanHandler.add(shoreServices);
-		
+
+        // Create AIS services
+        aisServices = new AisServices();
+        beanHandler.add(aisServices);
+
 
 		// Load settings or get defaults and add to bean context
 		if (args.length > 0) {
@@ -376,6 +400,9 @@ public class ESD {
 		beanHandler.add(staticImages);
 
 
+        // Load routeManager and register as GPS data listener
+        routeManager = RouteManager.loadRouteManager();
+        beanHandler.add(routeManager);
 		// RoundRobinAisTcpReader reader = new RoundRobinAisTcpReader();
 		// reader.setCommaseparatedHostPort("192.168.10.250:4001");
 
@@ -403,8 +430,8 @@ public class ESD {
 		msiHandler = new MsiHandler(getSettings().getEnavSettings());
 		beanHandler.add(msiHandler);
 
-
 	}
+	
 	
 	public static StaticImages getStaticImages(){
 		return staticImages;

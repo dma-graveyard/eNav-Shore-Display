@@ -52,6 +52,7 @@ import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
 
 import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.gui.route.RouteManagerDialog;
 import dk.frv.enav.esd.settings.GuiSettings;
 import dk.frv.enav.esd.settings.Workspace;
 
@@ -94,6 +95,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private NotificationArea notificationArea = new NotificationArea(this);
 	private NotificationCenter notificationCenter = new NotificationCenter();
 	private JSettingsWindow settingsWindow = new JSettingsWindow();
+	private RouteManagerDialog routeManagerDialog;
 
 	private StatusArea statusArea = new StatusArea(this);
 	private JMapFrame activeMapWindow = null;
@@ -351,6 +353,12 @@ public class MainFrame extends JFrame implements WindowListener {
 		beanHandler.add(this);
 		beanHandler.add(notificationCenter);
 
+		routeManagerDialog = new RouteManagerDialog(this);
+		desktop.add(routeManagerDialog, true);
+		routeManagerDialog.setVisible(true);
+		
+		notificationCenter.showMiddleTable(0);
+		
 		setWorkSpace(workspace);
 
 	}
