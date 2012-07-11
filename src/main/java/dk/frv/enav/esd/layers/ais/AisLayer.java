@@ -431,6 +431,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		if (newClosest != closest) {
 			Point containerPoint = SwingUtilities.convertPoint(chartPanel, e.getPoint(), jMapFrame);
 			if (newClosest instanceof OMGraphic) {
+				jMapFrame.getGlassPane().setVisible(true);
 				closest = newClosest;
 				VesselLayer vessel = (VesselLayer) newClosest;
 				int x = (int) containerPoint.getX() + 10;
@@ -444,6 +445,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 				}
 				aisInfoPanel.setPos(x, y);
 				aisInfoPanel.setVisible(true);
+				
 				return true;
 			}
 		}

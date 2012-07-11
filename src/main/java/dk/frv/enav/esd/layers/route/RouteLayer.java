@@ -52,7 +52,9 @@ import dk.frv.enav.common.xml.metoc.MetocForecast;
 import dk.frv.enav.common.xml.metoc.MetocForecastPoint;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
+import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
+import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.gui.views.JMapFrame;
 import dk.frv.enav.esd.gui.views.MainFrame;
 
@@ -324,12 +326,15 @@ public class RouteLayer extends OMGraphicHandlerLayer implements IRoutesUpdateLi
 	public MapMouseListener getMapMouseListener() {
         return this;
     }
+
 	@Override
 	public String[] getMouseModeServiceList() {
-        String[] ret = new String[1];
-        ret[0] = NavigationMouseMode.modeID; // "Gestures"
-        return ret;
-    }
+		String[] ret = new String[3];
+		ret[0] = DragMouseMode.modeID; // "DragMouseMode"
+		ret[1] = NavigationMouseMode.modeID; // "ZoomMouseMode"
+		ret[2] = SelectMouseMode.modeID; // "SelectMouseMode"
+		return ret;
+	}
 
 	@Override
 	public boolean mouseClicked(MouseEvent e) {
