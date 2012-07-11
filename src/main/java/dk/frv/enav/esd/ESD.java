@@ -52,16 +52,14 @@ import dk.frv.enav.esd.msi.MsiHandler;
 import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.nmea.NmeaTcpSensor;
 import dk.frv.enav.esd.route.RouteManager;
+import dk.frv.enav.esd.services.ais.AisServices;
 import dk.frv.enav.esd.services.shore.ShoreServices;
+import dk.frv.enav.esd.settings.AisSettings;
 import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.esd.util.OneInstanceGuard;
 import dk.frv.enav.ins.gps.GnssTime;
 import dk.frv.enav.ins.gps.GpsHandler;
 import dk.frv.enav.ins.nmea.SensorType;
-import dk.frv.enav.esd.settings.AisSettings;
-
-import dk.frv.enav.esd.services.ais.AisServices;
-import dk.frv.enav.ins.settings.SensorSettings;
 
 
 

@@ -106,7 +106,7 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 
 		setSize(600, 400);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//		setLocationRelativeTo(parent);
+		setLocation(10, 10);
 
 		propertiesBtn = new JButton("Properties");
 		propertiesBtn.addActionListener(this);

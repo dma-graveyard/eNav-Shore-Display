@@ -42,6 +42,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
 import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.gui.route.RouteManagerDialog;
 import dk.frv.enav.esd.gui.views.JMainDesktopPane;
 import dk.frv.enav.esd.gui.views.JMapFrame;
 import dk.frv.enav.esd.gui.views.JSettingsWindow;
@@ -62,6 +63,7 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 	private NotificationArea notificationArea;
 	private StatusArea statusArea;
 	private JSettingsWindow settings;
+	private RouteManagerDialog routeManager;
 	
 	/**
 	 * Constructor for desktopmanager
@@ -104,6 +106,7 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 		super.activateFrame(toolbar);
 		super.activateFrame(notCenter);
 		super.activateFrame(settings);
+		super.activateFrame(routeManager);
 	}
 	
 	public void clearToFront(){
@@ -236,6 +239,14 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 	 */
 	public void setSettings(JSettingsWindow settings) {
 		this.settings = settings;
+	}
+	
+	/**
+	 * Set RouteManager Window
+	 * @param notCenter
+	 */
+	public void setRouteManager(RouteManagerDialog routeManager) {
+		this.routeManager = routeManager;
 	}
 
 	/**

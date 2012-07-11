@@ -136,6 +136,16 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		JMenuItem saveWorkspace = new JMenuItem("Save workspace");
 		workspace.add(saveWorkspace);
 				
+		// Route
+		JMenu route = new JMenu("Route");
+		this.add(route);
+		
+		JMenuItem routeManager = new JMenuItem("Route Manager");
+		route.add(routeManager);
+		
+		JMenuItem newRoute = new JMenuItem("New Route");
+		route.add(newRoute);
+		
 		//Action listeners
 		
 		loadWorkspace.addActionListener(new ActionListener() {
@@ -234,6 +244,13 @@ public class JMenuWorkspaceBar extends JMenuBar {
 //			}
 //		});
 
+		routeManager.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mainFrame.getRouteManagerDialog().setVisible(!mainFrame.getRouteManagerDialog().isVisible());
+			}
+		});
+
+	    
 	}
 	
 	/**
