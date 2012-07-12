@@ -42,8 +42,11 @@ import com.bbn.openmap.proj.Length;
 import com.bbn.openmap.proj.coords.LatLonPoint;
 
 import dk.frv.ais.message.AisMessage;
+import dk.frv.enav.ins.ais.AisIntendedRoute;
 import dk.frv.enav.ins.ais.VesselStaticData;
+import dk.frv.enav.ins.ais.VesselTarget;
 import dk.frv.enav.ins.common.text.Formatter;
+import dk.frv.enav.esd.layers.ais.IntendedRouteGraphic;
 
 /**
  * Vessel class that maintains all the components in a vessel
@@ -76,6 +79,7 @@ public class Vessel extends OMGraphicList {
 	private String vesselDest = "N/A";
 	private String vesselEta = "N/A";
 	private String vesselShiptype = "N/A";
+	private IntendedRouteGraphic routeGraphic = new IntendedRouteGraphic();
 
 	/**
 	 * Vessel initialization with icon, circle, heading, speedvector, callsign
@@ -118,6 +122,8 @@ public class Vessel extends OMGraphicList {
 		this.add(speedVector);
 		this.add(callSign);
 		this.add(nameMMSI);
+		
+		this.add(routeGraphic);
 	}
 
 	/**
@@ -138,9 +144,10 @@ public class Vessel extends OMGraphicList {
 	 *            Course over ground in radians
 	 * @param mapScale
 	 *            Scale of the chartMap
+	 * @param vesselTarget 
 	 */
 	public void updateLayers(double trueHeading, double lat, double lon, VesselStaticData staticData, double sog,
-			double cogR, float mapScale) {
+			double cogR, float mapScale, VesselTarget vesselTarget) {
 
 		vessel.setLocation(lat, lon);
 		vessel.setHeading(trueHeading);
@@ -196,6 +203,10 @@ public class Vessel extends OMGraphicList {
 			} else {
 				nameMMSI.setY(20);
 			}
+			
+			
+			AisIntendedRoute aisIntendedRoute = vesselTarget.getAisRouteData();
+			routeGraphic.update(vesselName, aisIntendedRoute, vesselTarget.getPositionData().getPos(), vesselTarget);
 
 		}
 

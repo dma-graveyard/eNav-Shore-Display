@@ -57,12 +57,12 @@ import dk.frv.enav.esd.gui.views.StatusArea;
 import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.ins.ais.VesselPositionData;
 import dk.frv.enav.ins.ais.VesselTarget;
+import dk.frv.enav.esd.layers.ais.IntendedRouteWpCircle;
+import dk.frv.enav.esd.layers.ais.IntendedRouteInfoPanel;
 
 /**
  * The class AisLayer is the layer containing all AIS targets. The class handles
  * the drawing of vessels on the chartPanel.
- * 
- * @author Claes N. Ladefoged, claesnl@gmail.com
  */
 public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVesselAisListener, MapMouseListener {
 	private static final long serialVersionUID = 1L;
@@ -80,6 +80,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	volatile boolean shouldRun = true;
 	private float mapScale = 0;
 	private boolean selectionOnScreen = false;
+	private IntendedRouteInfoPanel intendedRouteInfoPanel = new IntendedRouteInfoPanel();
 
 
 	// private OMGraphic highlighted;
@@ -201,7 +202,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					}
 					drawnVessels.get(vessel.MMSI).updateLayers(trueHeading, location.getPos().getLatitude(),
 							location.getPos().getLongitude(), vesselTarget.getStaticData(), location.getSog(),
-							Math.toRadians(location.getCog()), mapScale);
+							Math.toRadians(location.getCog()), mapScale, vesselTarget);
 
 					if (vesselTarget.getMmsi() == mainFrame.getSelectedMMSI()) {
 						aisTargetGraphic.moveSymbol(vesselTarget.getPositionData().getPos().getLatitude(), vesselTarget
@@ -265,6 +266,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			// jMapFrame.getGlassPanel().add(highlightInfoPanel);
 			aisInfoPanel = new AisInfoPanel();
 			jMapFrame.getGlassPanel().add(aisInfoPanel);
+			jMapFrame.getGlassPanel().add(intendedRouteInfoPanel);
 			jMapFrame.getGlassPanel().setVisible(true);
 		}
 		if (obj instanceof MainFrame) {
@@ -416,21 +418,30 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		OMGraphic newClosest = null;
 		OMList<OMGraphic> allClosest = list.findAll(e.getX(), e.getY(), 3.0f);
 		for (OMGraphic omGraphic : allClosest) {
-			if (omGraphic instanceof VesselLayer) {
-				newClosest = omGraphic;
-				break;
-			}
+			newClosest = omGraphic;
+			break;
 		}
 
 		if (allClosest.size() == 0) {
 			aisInfoPanel.setVisible(false);
+			intendedRouteInfoPanel.setVisible(false);
 			closest = null;
 			return false;
 		}
 
 		if (newClosest != closest) {
 			Point containerPoint = SwingUtilities.convertPoint(chartPanel, e.getPoint(), jMapFrame);
-			if (newClosest instanceof OMGraphic) {
+			
+			if (newClosest instanceof IntendedRouteWpCircle) {
+				System.out.println("hi?");
+				closest = newClosest;
+				IntendedRouteWpCircle wpCircle = (IntendedRouteWpCircle) newClosest;
+				intendedRouteInfoPanel.setPos((int) containerPoint.getX(),
+						(int) containerPoint.getY() - 10);
+				intendedRouteInfoPanel.showWpInfo(wpCircle);
+			}
+			
+			if (newClosest instanceof VesselLayer) {
 				jMapFrame.getGlassPane().setVisible(true);
 				closest = newClosest;
 				VesselLayer vessel = (VesselLayer) newClosest;

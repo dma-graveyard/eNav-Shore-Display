@@ -29,47 +29,61 @@
  */
 package dk.frv.enav.esd.layers.ais;
 
-import javax.swing.ImageIcon;
+import java.awt.BasicStroke;
+import java.awt.Color;
 
-import com.bbn.openmap.omGraphics.OMGraphicList;
+import com.bbn.openmap.omGraphics.OMArrowHead;
+import com.bbn.openmap.omGraphics.OMLine;
 
-import dk.frv.enav.esd.ESD;
-import dk.frv.enav.ins.common.graphics.CenterRaster;
+import dk.frv.ais.geo.GeoLocation;
 
-public class AisTargetGraphic extends OMGraphicList {
+/**
+ * Graphic for intended route leg graphic
+ */
+public class IntendedRouteLegGraphic extends OMLine {
+	
 	private static final long serialVersionUID = 1L;
-	CenterRaster selectionGraphics;
-	ImageIcon targetImage;
-	int imageWidth;
-	int imageHeight;
+	
+	private IntendedRouteGraphic intendedRouteGraphic;
+	private OMArrowHead arrow = new OMArrowHead(OMArrowHead.ARROWHEAD_DIRECTION_FORWARD, 55, 5, 15);
+	private int index;
 
-	public AisTargetGraphic() {
-		super();
-
-		createGraphics();
-
-	}
-
-	private void createGraphics() {
-
-		targetImage = ESD.getStaticImages().getHighlightIcon();
-		imageWidth = targetImage.getIconWidth();
-		imageHeight = targetImage.getIconHeight();
-
-		selectionGraphics = new CenterRaster(0, 0, imageWidth, imageHeight,
-				targetImage);
-	}
-
-	public void moveSymbol(double latitude, double longitude) {
-		remove(selectionGraphics);
-		selectionGraphics = new CenterRaster(latitude,
-				longitude, imageWidth, imageHeight, targetImage);
-		add(selectionGraphics);
+	public IntendedRouteLegGraphic(int index, IntendedRouteGraphic intendedRouteGraphic, boolean activeWaypoint, GeoLocation start,
+			GeoLocation end, Color legColor) {
 		
+		super(start.getLatitude(), start.getLongitude(), end.getLatitude(), end.getLongitude(), LINETYPE_RHUMB);
+		this.index = index;
+		this.intendedRouteGraphic = intendedRouteGraphic;
+		if(activeWaypoint){
+			setStroke(new BasicStroke(2.0f, // Width
+					BasicStroke.CAP_SQUARE, // End cap
+					BasicStroke.JOIN_MITER, // Join style
+					10.0f, // Miter limit
+					new float[] { 3.0f, 10.0f }, // Dash pattern
+					0.0f)); // Dash phase)
+		} else {
+			setStroke(new BasicStroke(3.0f, // Width
+					BasicStroke.CAP_SQUARE, // End cap
+					BasicStroke.JOIN_MITER, // Join style
+					10.0f, // Miter limit
+					new float[] { 10.0f, 8.0f }, // Dash pattern
+					0.0f)); // Dash phase)
+		}
+		setLinePaint(legColor);		
 	}
 
-	public void removeSymbol() {
-		remove(selectionGraphics);
+	public IntendedRouteGraphic getIntendedRouteGraphic() {
+		return intendedRouteGraphic;
 	}
-
+	
+	public int getIndex() {
+		return index;
+	}
+	
+	public void setArrows(boolean arrowsVisible){
+		if(!arrowsVisible)
+			this.setArrowHead(null);
+		else
+			this.setArrowHead(arrow);
+	}
 }

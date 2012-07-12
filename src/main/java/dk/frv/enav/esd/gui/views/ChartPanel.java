@@ -508,8 +508,6 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	 * @param mode 0 for NavMode, 1 for DragMode, 2 for SelectMode
 	 */
 	public void setMouseMode(int mode) {
-		System.out.println("modE?" + mode);
-		
 		// Mode0 is mapNavMouseMode
 		if (mode == 0) {
 			mouseDelegator.setActive(mapNavMouseMode);

@@ -44,19 +44,17 @@ import dk.frv.ais.message.AisPosition;
 import dk.frv.ais.message.binary.AddressedRouteInformation;
 import dk.frv.ais.message.binary.AsmAcknowledge;
 import dk.frv.ais.message.binary.BroadcastIntendedRoute;
-import dk.frv.ais.message.binary.RouteInformation;
-import dk.frv.ais.message.binary.RouteMessage;
-import dk.frv.ais.message.binary.RouteSuggestionReply;
 import dk.frv.ais.message.binary.RouteSuggestion;
+import dk.frv.ais.message.binary.RouteSuggestionReply;
 import dk.frv.ais.reader.SendRequest;
 import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
+import dk.frv.enav.esd.nmea.NmeaSensor;
+import dk.frv.enav.esd.route.Route;
 import dk.frv.enav.ins.ais.AisHandler;
 import dk.frv.enav.ins.gps.GnssTime;
-import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.ins.route.ActiveRoute;
 import dk.frv.enav.ins.settings.AisSettings;
 import dk.frv.enav.ins.settings.Settings;
-import dk.frv.enav.esd.route.Route;
 
 /**
  * AIS service component providing an AIS link interface.

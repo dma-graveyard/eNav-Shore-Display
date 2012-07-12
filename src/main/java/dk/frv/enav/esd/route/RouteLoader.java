@@ -46,12 +46,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import dk.frv.ais.geo.GeoLocation;
-import dk.frv.enav.common.FormatException;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.settings.NavSettings;
+import dk.frv.enav.ins.common.Heading;
 import dk.frv.enav.ins.common.text.Formatter;
 import dk.frv.enav.ins.common.util.ParseUtils;
-import dk.frv.enav.ins.common.Heading;
 
 /**
  * Utility class for loading routes in different file formats

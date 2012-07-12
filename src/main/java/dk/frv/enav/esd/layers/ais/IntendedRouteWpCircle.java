@@ -29,47 +29,29 @@
  */
 package dk.frv.enav.esd.layers.ais;
 
-import javax.swing.ImageIcon;
+import dk.frv.enav.ins.layers.common.WpCircle;
 
-import com.bbn.openmap.omGraphics.OMGraphicList;
-
-import dk.frv.enav.esd.ESD;
-import dk.frv.enav.ins.common.graphics.CenterRaster;
-
-public class AisTargetGraphic extends OMGraphicList {
+/**
+ * Graphic for intended route WP circle
+ */
+public class IntendedRouteWpCircle extends WpCircle {
 	private static final long serialVersionUID = 1L;
-	CenterRaster selectionGraphics;
-	ImageIcon targetImage;
-	int imageWidth;
-	int imageHeight;
 
-	public AisTargetGraphic() {
-		super();
+	private IntendedRouteGraphic intendedRouteGraphic;
+	private int index;
 
-		createGraphics();
-
+	public IntendedRouteWpCircle(IntendedRouteGraphic intendedRouteGraphic, int index, double latitude, double longitude, int offX1, int offY1, int w, int h) {
+		super(latitude, longitude, offX1, offY1, w, h);
+		this.index = index;
+		this.intendedRouteGraphic = intendedRouteGraphic;
 	}
 
-	private void createGraphics() {
-
-		targetImage = ESD.getStaticImages().getHighlightIcon();
-		imageWidth = targetImage.getIconWidth();
-		imageHeight = targetImage.getIconHeight();
-
-		selectionGraphics = new CenterRaster(0, 0, imageWidth, imageHeight,
-				targetImage);
+	public int getIndex() {
+		return index;
 	}
 
-	public void moveSymbol(double latitude, double longitude) {
-		remove(selectionGraphics);
-		selectionGraphics = new CenterRaster(latitude,
-				longitude, imageWidth, imageHeight, targetImage);
-		add(selectionGraphics);
-		
+	public IntendedRouteGraphic getIntendedRouteGraphic() {
+		return intendedRouteGraphic;
 	}
-
-	public void removeSymbol() {
-		remove(selectionGraphics);
-	}
-
+	
 }
