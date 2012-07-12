@@ -100,12 +100,11 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 
 	public RouteManagerDialog(JFrame parent) {
 		super("Route Manager", true);
-		System.out.println("Route manager created");
 		this.parent = parent;
 		routeManager = ESD.getRouteManager();
 
 		setSize(600, 400);
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		setLocation(10, 10);
 
 		propertiesBtn = new JButton("Properties");
@@ -269,7 +268,7 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 	}
 
 	private void close() {
-		dispose();
+		this.setVisible(false);
 	}
 
 	private void activateRoute() {
@@ -490,4 +489,6 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 	public void mouseReleased(MouseEvent e) {
 
 	}
+	
+	
 }

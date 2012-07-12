@@ -39,6 +39,7 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -56,6 +57,11 @@ import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 //import dk.frv.enav.esd.gui.route.RouteManagerDialog;
 //import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.gui.utils.ToolItemGroup;
+import dk.frv.enav.esd.layers.routeEdit.NewRouteContainerLayer;
+import dk.frv.enav.ins.common.Heading;
+import dk.frv.enav.esd.route.Route;
+import dk.frv.enav.esd.route.RouteLeg;
+import dk.frv.enav.esd.route.RouteWaypoint;
 
 /**
  * Class for setting up the toolbar of the application
@@ -81,6 +87,8 @@ public class ToolBar extends JInternalFrame {
 	private Border toolPaddingBorder = BorderFactory.createMatteBorder(3, 3, 3, 3, new Color(83, 83, 83));
 	private Border toolInnerEtchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED,
 			new Color(37, 37, 37), new Color(52, 52, 52));
+	
+	private boolean routeCreation = false;
 
 	// private MouseDelegator mouseDelegator;
 
@@ -239,8 +247,9 @@ public class ToolBar extends JInternalFrame {
 		setActiveToolItem(msi, layerToolItems);
 
 		toolItemGroups.add(layerToolItems);
+		
 
-		/*
+
 		// Tool group: Route tools
 		final ToolItemGroup routeToolItems = new ToolItemGroup();
 
@@ -254,29 +263,66 @@ public class ToolBar extends JInternalFrame {
 
 			public void mouseReleased(MouseEvent e) {
 				setInactiveToolItem(routes);
-				System.out.println("Routes clicked");
-
-				// RouteManagerDialog routeManagerDialog = new
-				// RouteManagerDialog(mainFrame);
-				// routeManagerDialog.setVisible(true);
+				mainFrame.getRouteManagerDialog().setVisible(!mainFrame.getRouteManagerDialog().isVisible());
 			}
 		});
 		routeToolItems.addToolItem(routes);
 
+		
+
 		// Tool: New route
 		final JLabel newRoute = new JLabel(toolbarIcon("images/toolbar/routes_new.png"));
 		newRoute.addMouseListener(new MouseAdapter() {
+			
+			public void mousePressed(MouseEvent e) {
+				if (routeCreation){
+					setInactiveToolItem(newRoute);
+				}else{
+					setActiveToolItem(newRoute, routeToolItems);
+				}
+			}
+			
 			public void mouseReleased(MouseEvent e) {
-				/*
-				 * if (mouseDelegator.getActiveMouseModeID() ==
-				 * NavigationMouseMode.modeID) {
-				 * mainFrame.getChartPanel().editMode(true); } else {
-				 * mainFrame.getChartPanel().editMode(false); }
-				 *//*
-				setActiveToolItem(newRoute, routeToolItems);
-				System.out.println("New route clicked");
+				
+				if (routeCreation){
+					
+					//Deactivate 
+					routeCreation = false;
+					
+					for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
+						mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(mainFrame.getMouseMode());
+					}
+					
+					//Save route?
+					endRoute();
+					
+					//Re activate the tool options
+					
+					for (int j = 0; j < mapToolItems.getToolItems().size(); j++) {
+						JLabel label = mapToolItems.getToolItems().get(j);
+						label.setEnabled(true);
+					}
+					
+				}else{
+					routeCreation = true;
+					
+					for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
+						mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(3);
+					}
+					
+					//Deactivate other map tools
+					
+					for (int j = 0; j < mapToolItems.getToolItems().size(); j++) {
+						JLabel label = mapToolItems.getToolItems().get(j);
+						label.setEnabled(false);
+					}
+
+				}
+
 			}
 		});
+		
+		
 		routeToolItems.addToolItem(newRoute);
 
 		// Set that the layer tools can have more than 1 active tool item at a
@@ -284,7 +330,7 @@ public class ToolBar extends JInternalFrame {
 		routeToolItems.setSingleEnable(false);
 
 		toolItemGroups.add(routeToolItems);
-		*/
+		
 		
 		// Create the masterpanel for aligning
 		masterPanel = new JPanel(new BorderLayout());
@@ -296,6 +342,52 @@ public class ToolBar extends JInternalFrame {
 
 		// And finally refresh the toolbar
 		repaintToolbar();
+
+	}
+	
+	
+	public void endRoute(){
+		
+		NewRouteContainerLayer newRouteLayer = ESD.getMainFrame().getMapWindows().get(0).getChartPanel().getNewRouteContainerLayer();
+		
+		
+		//Route saved
+		if (newRouteLayer.getRoute().getWaypoints().size() > 1) {
+			Route route = new Route(newRouteLayer.getRoute());
+			route.setName("New route");
+			int i = 1;
+			LinkedList<RouteWaypoint> waypoints = route.getWaypoints();
+			for (RouteWaypoint routeWaypoint : waypoints) {
+				if (routeWaypoint.getOutLeg() != null) {
+					RouteLeg outLeg = routeWaypoint.getOutLeg();
+					
+					double xtd = ESD.getSettings().getNavSettings().getDefaultXtd();
+					outLeg.setXtdPort(xtd);
+					outLeg.setXtdStarboard(xtd);
+					outLeg.setHeading(Heading.RL);
+					outLeg.setSpeed(ESD.getSettings().getNavSettings().getDefaultSpeed());
+				}
+				routeWaypoint.setTurnRad(ESD.getSettings().getNavSettings().getDefaultTurnRad());
+				routeWaypoint.setName(String.format("WP_%03d", i));
+				i++;
+			}
+			route.calcValues(true);
+			
+			
+			ESD.getMainFrame().getRouteManagerDialog().getRouteManager().addRoute(route);
+			ESD.getMainFrame().getRouteManagerDialog().getRouteManager().notifyListeners(null);
+		}
+		
+		
+		
+
+		for (int i = 0; i < ESD.getMainFrame().getMapWindows().size(); i++) {
+			ESD.getMainFrame().getMapWindows().get(i).getChartPanel().getRouteEditLayer().doPrepare();
+			ESD.getMainFrame().getMapWindows().get(i).getChartPanel().getNewRouteContainerLayer().getWaypoints().clear();
+			ESD.getMainFrame().getMapWindows().get(i).getChartPanel().getNewRouteContainerLayer().getRouteGraphics().clear();
+			ESD.getMainFrame().getMapWindows().get(i).getChartPanel().getNewRouteContainerLayer().doPrepare();
+		}
+		
 
 	}
 

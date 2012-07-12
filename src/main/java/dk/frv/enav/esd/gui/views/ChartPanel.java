@@ -58,6 +58,7 @@ import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
+import dk.frv.enav.esd.event.RouteEditMouseMode;
 import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.layers.ais.AisLayer;
 import dk.frv.enav.esd.layers.msi.MsiLayer;
@@ -66,6 +67,8 @@ import dk.frv.enav.esd.layers.wms.WMSLayer;
 import dk.frv.enav.esd.msi.MsiHandler;
 import dk.frv.enav.esd.route.RoutesUpdateEvent;
 import dk.frv.enav.esd.settings.MapSettings;
+import dk.frv.enav.esd.layers.routeEdit.NewRouteContainerLayer;
+import dk.frv.enav.esd.layers.routeEdit.RouteEditLayer;
 
 /**
  * The panel with chart. Initializes all layers to be shown on the map.
@@ -86,6 +89,8 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	private NavigationMouseMode mapNavMouseMode;
 	private DragMouseMode dragMouseMode;
 	private SelectMouseMode selectMouseMode;
+	
+	private RouteEditMouseMode routeEditMouseMode;
 
 	private MouseDelegator mouseDelegator;
 	public int maxScale = 5000;
@@ -93,6 +98,9 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	private MsiLayer msiLayer;
 	private WMSLayer wmsLayer;
 	private RouteLayer routeLayer;
+	private RouteEditLayer routeEditLayer;
+	private NewRouteContainerLayer newRouteContainerLayer;
+	
 	private MainFrame mainFrame;
 	private Color background = new Color(168, 228, 255);
 	// private Point2D center;
@@ -361,11 +369,13 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		mapNavMouseMode = new NavigationMouseMode(this);
 		dragMouseMode = new DragMouseMode();
 		selectMouseMode = new SelectMouseMode(this);
+		routeEditMouseMode = new RouteEditMouseMode();
 
 		mouseDelegator.addMouseMode(mapNavMouseMode);
 		mouseDelegator.addMouseMode(dragMouseMode);
 		mouseDelegator.addMouseMode(selectMouseMode);
-
+		mouseDelegator.addMouseMode(routeEditMouseMode);
+		
 		setMouseMode(mainFrame.getMouseMode());
 
 		mapHandler.add(dragMouseMode);
@@ -402,6 +412,15 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		routeLayer.setVisible(true);
 		mapHandler.add(routeLayer);
 
+		// Create route editing layer
+		newRouteContainerLayer = new NewRouteContainerLayer();
+		newRouteContainerLayer.setVisible(true);
+		mapHandler.add(newRouteContainerLayer);
+		routeEditLayer = new RouteEditLayer();
+		routeEditLayer.setVisible(true);
+		mapHandler.add(routeEditLayer);
+
+		
 		// Create MSI handler
 		msiHandler = ESD.getMsiHandler();
 		mapHandler.add(msiHandler);
@@ -489,6 +508,8 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	 * @param mode 0 for NavMode, 1 for DragMode, 2 for SelectMode
 	 */
 	public void setMouseMode(int mode) {
+		System.out.println("modE?" + mode);
+		
 		// Mode0 is mapNavMouseMode
 		if (mode == 0) {
 			mouseDelegator.setActive(mapNavMouseMode);
@@ -498,9 +519,13 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		if (mode == 1) {
 			mouseDelegator.setActive(dragMouseMode);
 		}
-		// Mode1 is Select
+		// Mode2 is Select
 		if (mode == 2) {
 			mouseDelegator.setActive(selectMouseMode);
+		}
+		// Mode3 is Route Edit
+		if (mode == 3) {
+			mouseDelegator.setActive(routeEditMouseMode);
 		}
 
 	}
@@ -557,6 +582,18 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	 */
 	public MsiLayer getMsiLayer() {
 		return msiLayer;
+	}
+
+	public RouteLayer getRouteLayer() {
+		return routeLayer;
+	}
+
+	public RouteEditLayer getRouteEditLayer() {
+		return routeEditLayer;
+	}
+
+	public NewRouteContainerLayer getNewRouteContainerLayer() {
+		return newRouteContainerLayer;
 	}
 
 
