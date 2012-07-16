@@ -53,9 +53,9 @@ import dk.frv.ais.message.AisMessage6;
 import dk.frv.ais.message.AisPositionMessage;
 import dk.frv.ais.message.binary.AddressedRouteInformation;
 import dk.frv.ais.message.binary.AisApplicationMessage;
+import dk.frv.ais.reader.AisReader;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.nmea.IVesselAisListener;
-import dk.frv.enav.esd.nmea.NmeaSensor;
 import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.esd.status.AisStatus;
 import dk.frv.enav.esd.status.ComponentStatus;
@@ -67,7 +67,6 @@ import dk.frv.enav.ins.ais.VesselTarget;
 import dk.frv.enav.ins.common.util.Converter;
 import dk.frv.enav.ins.gps.GpsData;
 import dk.frv.enav.ins.gps.GpsHandler;
-import dk.frv.enav.ins.nmea.SensorType;
 
 /**
  * AisHandler for Vessels
@@ -83,7 +82,8 @@ public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 	protected GpsHandler gpsHandler = null;
 	protected double aisRange = 0;
 	protected VesselTarget ownShip = new VesselTarget();
-	protected NmeaSensor nmeaSensor = null;
+//	protected NmeaSensor nmeaSensor = null;
+	protected AisReader aisReader = null;
 	protected Settings settings;
 	protected List<IAisRouteSuggestionListener> suggestionListeners = new ArrayList<IAisRouteSuggestionListener>();
 	private AisStatus aisStatus = new AisStatus();
@@ -117,24 +117,14 @@ public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 		if (obj instanceof GpsHandler) {
 			gpsHandler = (GpsHandler) obj;
 		}
-		if (nmeaSensor == null && obj instanceof NmeaSensor) {			
-			NmeaSensor sensor = (NmeaSensor)obj;
-			if (sensor.isSensorType(SensorType.AIS)) {
-				LOG.info("Found AIS sensor");
-				nmeaSensor = sensor;
-				nmeaSensor.addAisListener(this);
-			}
+		if (aisReader == null && obj instanceof AisReader) {			
+			aisReader = (AisReader)obj;
+			aisReader.registerHandler(this);
+			LOG.info("Found AIS sensor");
 		}
 		super.findAndInit(obj);
 	}
 
-
-	@Override
-	public void findAndUndo(Object obj) {
-		if (obj == nmeaSensor) {
-			nmeaSensor.removeAisListener(this);
-		}
-	}
 
 	/**
 	 * Get range of AIS
@@ -173,16 +163,17 @@ public class VesselAisHandler extends AisHandler implements IVesselAisListener {
 				if (currentTarget.getStaticData() != null) {
 					name = " " + AisMessage.trimText(this.getVesselTargets().get(key).getStaticData().getName());
 				}
-				if (!gpsHandler.getCurrentData().isBadPosition()) {
-					ownPosition = gpsHandler.getCurrentData().getPosition();
+				
 
 					if (currentTarget.getPositionData().getPos() != null) {
 						targetPosition = this.getVesselTargets().get(key).getPositionData().getPos();
 						NumberFormat nf = NumberFormat.getInstance();
 						nf.setMaximumFractionDigits(2);
-						dst = nf.format(Converter.metersToNm(ownPosition.getRhumbLineDistance(targetPosition))) + " NM";
+//						dst = nf.format(Converter.metersToNm(ownPosition.getRhumbLineDistance(targetPosition))) + " NM";
 					}
-				}
+				
+				
+				
 				hdg = currentTarget.getPositionData().getCog();
 
 				// System.out.println("Key: " + key + ", Value: " +

@@ -49,22 +49,21 @@ import org.apache.log4j.Logger;
 import com.bbn.openmap.MapHandlerChild;
 
 import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
+import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion.Status;
+import dk.frv.enav.esd.ais.AisBroadcastRouteSuggestion;
 import dk.frv.enav.esd.ais.AisHandler;
+import dk.frv.enav.esd.ais.AisRouteData;
+import dk.frv.enav.esd.ais.IAisRouteSuggestionListener;
 import dk.frv.enav.esd.gui.route.RouteSuggestionDialog;
 import dk.frv.enav.esd.route.ActiveRoute.ActiveWpSelectionResult;
 import dk.frv.enav.esd.services.shore.ShoreServiceException;
 import dk.frv.enav.esd.services.shore.ShoreServices;
 import dk.frv.enav.esd.settings.EnavSettings;
-import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
-import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion.Status;
-import dk.frv.enav.esd.ais.AisBroadcastRouteSuggestion;
-import dk.frv.enav.esd.ais.AisRouteData;
-import dk.frv.enav.esd.ais.IAisRouteSuggestionListener;
 import dk.frv.enav.ins.gps.GnssTime;
 import dk.frv.enav.ins.gps.GpsData;
 import dk.frv.enav.ins.gps.GpsHandler;
 import dk.frv.enav.ins.gps.IGpsDataListener;
-import dk.frv.enav.esd.services.ais.AisServices;
 
 
 /**
@@ -81,7 +80,7 @@ public class RouteManager extends MapHandlerChild implements Runnable, Serializa
 	private ActiveRoute activeRoute = null;
 	private int activeRouteIndex = -1;
 	private GpsHandler gpsHandler = null;
-	private AisServices aisServices = null;
+//	private AisServices aisServices = null;
 	private ShoreServices shoreServices = null;
 	private AisHandler aisHandler = null;
 	private RouteSuggestionDialog routeSuggestionDialog = null;
@@ -558,10 +557,10 @@ public class RouteManager extends MapHandlerChild implements Runnable, Serializa
 		if (obj instanceof RouteSuggestionDialog) {
 			routeSuggestionDialog = (RouteSuggestionDialog)obj;
 		}
-		if (obj instanceof AisServices) {
-			System.out.println("Ais Services set");
-			aisServices = (AisServices)obj;
-		}
+//		if (obj instanceof AisServices) {
+//			System.out.println("Ais Services set");
+//			aisServices = (AisServices)obj;
+//		}
 	}
 
 	@Override
@@ -617,15 +616,15 @@ public class RouteManager extends MapHandlerChild implements Runnable, Serializa
 		switch (status) {
 		case ACCEPTED:					
 			routeSuggestion.setStatus(Status.ACCEPTED);
-			aisServices.routeSuggestionReply(routeSuggestion);
+//			aisServices.routeSuggestionReply(routeSuggestion);
 			break;
 		case REJECTED:
 			routeSuggestion.setStatus(Status.REJECTED);
-			aisServices.routeSuggestionReply(routeSuggestion);
+//			aisServices.routeSuggestionReply(routeSuggestion);
 			break;
 		case NOTED:			
 			routeSuggestion.setStatus(Status.NOTED);
-			aisServices.routeSuggestionReply(routeSuggestion);
+//			aisServices.routeSuggestionReply(routeSuggestion);
 			break;
 		default:
 			break;
@@ -660,10 +659,10 @@ public class RouteManager extends MapHandlerChild implements Runnable, Serializa
 		}
 		
 	}
-	
-	// Hack method for getting AisServices
-	public AisServices getAisServices() {
-		return aisServices;
-	}
+//	
+//	// Hack method for getting AisServices
+//	public AisServices getAisServices() {
+//		return aisServices;
+//	}
 
 }

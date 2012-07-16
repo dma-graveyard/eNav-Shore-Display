@@ -84,7 +84,6 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 	private JButton exportBtn;
 	private JButton importBtn;
 	private JButton closeBtn;
-	private JButton activateBtn;
 
 	private JScrollPane routeScrollPane;
 	private JTable routeTable;
@@ -109,8 +108,6 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 
 		propertiesBtn = new JButton("Properties");
 		propertiesBtn.addActionListener(this);
-		activateBtn = new JButton("Activate");
-		activateBtn.addActionListener(this);
 		zoomToBtn = new JButton("Zoom to");
 		zoomToBtn.addActionListener(this);
 		reverseCopyBtn = new JButton("Reverse copy");
@@ -165,7 +162,6 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
 							.addComponent(closeBtn, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 							.addComponent(zoomToBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(activateBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 							.addComponent(propertiesBtn, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
 							.addComponent(copyBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
@@ -185,7 +181,7 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(propertiesBtn)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(activateBtn)
+
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(zoomToBtn)
 							.addPreferredGap(ComponentPlacement.RELATED)
@@ -236,16 +232,6 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 		// LOG.info("activeRoute: " + routeManager.getActiveRouteIndex());
 		// LOG.info("\n\n");
 
-		activateBtn.setEnabled(routeSelected);
-		activateBtn.setText(activeSelected ? "Deactivate" : "Activate");
-
-		if (routeSelected) {
-			if (routeManager.isRouteActive()) {
-				activateBtn.setEnabled(activeSelected);
-			} else {
-				activateBtn.setEnabled(true);
-			}
-		}
 
 		propertiesBtn.setEnabled(routeSelected);
 		zoomToBtn.setEnabled(routeSelected);
@@ -420,8 +406,6 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 			close();
 		} else if (e.getSource() == propertiesBtn) {
 			properties();
-		} else if (e.getSource() == activateBtn) {
-			activateRoute();
 		} else if (e.getSource() == zoomToBtn) {
 			zoomTo();
 		} else if (e.getSource() == copyBtn) {
