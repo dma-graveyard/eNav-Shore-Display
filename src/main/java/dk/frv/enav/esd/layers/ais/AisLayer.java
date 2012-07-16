@@ -46,7 +46,7 @@ import com.bbn.openmap.omGraphics.OMList;
 import dk.frv.ais.message.AisMessage;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.ais.AisHandler.AisMessageExtended;
-import dk.frv.enav.esd.ais.VesselAisHandler;
+import dk.frv.enav.esd.ais.AisHandler;
 import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.event.SelectMouseMode;
@@ -67,7 +67,7 @@ import dk.frv.enav.esd.layers.ais.IntendedRouteInfoPanel;
 public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVesselAisListener, MapMouseListener {
 	private static final long serialVersionUID = 1L;
 	private OMGraphicList list = new OMGraphicList();
-	private VesselAisHandler aisHandler;
+	private AisHandler aisHandler;
 	private List<AisMessageExtended> shipList;
 	private ChartPanel chartPanel;
 	// private HighlightInfoPanel highlightInfoPanel = null;
@@ -251,8 +251,8 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 
 	@Override
 	public void findAndInit(Object obj) {
-		if (obj instanceof VesselAisHandler) {
-			aisHandler = (VesselAisHandler) obj;
+		if (obj instanceof AisHandler) {
+			aisHandler = (AisHandler) obj;
 		}
 		if (obj instanceof ChartPanel) {
 			chartPanel = (ChartPanel) obj;

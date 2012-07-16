@@ -31,7 +31,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 import dk.frv.enav.esd.ESD;
-import dk.frv.enav.esd.ais.VesselAisHandler;
+import dk.frv.enav.esd.ais.AisHandler;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 import dk.frv.enav.esd.gui.settingtabs.AisSettingsPanel;
 import dk.frv.enav.esd.gui.settingtabs.ConnectionStatus;
@@ -598,9 +598,9 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 			initGUI();
 		}
 
-		if (obj instanceof VesselAisHandler) {
+		if (obj instanceof AisHandler) {
 			// aisHandler = (AisHandler) obj;
-			statusComponents.add((VesselAisHandler) obj);
+			statusComponents.add((AisHandler) obj);
 		}
 			if (obj instanceof ShoreServices) {
 //			shoreServices = (ShoreServices) obj;

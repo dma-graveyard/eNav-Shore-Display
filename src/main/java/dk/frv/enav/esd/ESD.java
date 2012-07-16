@@ -47,7 +47,6 @@ import com.bbn.openmap.PropertyConsumer;
 import dk.frv.ais.reader.AisReader;
 import dk.frv.ais.reader.RoundRobinAisTcpReader;
 import dk.frv.enav.esd.ais.AisHandler;
-import dk.frv.enav.esd.ais.VesselAisHandler;
 import dk.frv.enav.esd.gui.utils.StaticImages;
 import dk.frv.enav.esd.gui.views.MainFrame;
 import dk.frv.enav.esd.msi.MsiHandler;
@@ -75,9 +74,11 @@ public class ESD {
 	private static Settings settings;
 	private static Properties properties = new Properties();
 
-	// private static AisHandler aisHandler;
-	private static VesselAisHandler aisHandler;
+	 private static AisHandler aisHandler;
+//	private static VesselAisHandler aisHandler;
 	private static MsiHandler msiHandler;
+	
+	
 	// private static NmeaSensor aisSensor;
 	// private static NmeaSensor gpsSensor;
 
@@ -405,7 +406,7 @@ public class ESD {
 		
 		
 		// aisHandler = new AisHandler();
-		aisHandler = new VesselAisHandler(settings);
+		aisHandler = new AisHandler(settings);
 		
 		// aisHandler.loadView();
 		beanHandler.add(aisHandler);

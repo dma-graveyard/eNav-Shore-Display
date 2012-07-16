@@ -218,6 +218,8 @@ public class JMenuWorkspaceBar extends JMenuBar {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Send Route");
 				
+				int mmsiTarget = 219230000;
+//				int mmsiTarget = 219015063;
 				
 				// Create intended route ASM
 				RouteSuggestion routeSuggestion = new RouteSuggestion();
@@ -245,12 +247,12 @@ public class JMenuWorkspaceBar extends JMenuBar {
 				msg6.setAppMessage(routeSuggestion);
 				
 				msg6.setRetransmit(0);
-				msg6.setDestination(219230000);
+				msg6.setDestination(mmsiTarget);
 				
 					
 				// Send
 				try {
-					Abk abk = ESD.getAisReader().send(msg6, 1, 219230000);
+					Abk abk = ESD.getAisReader().send(msg6, 1, mmsiTarget);
 					System.out.println(abk);
 				} catch (SendException e1) {
 					// TODO Auto-generated catch block

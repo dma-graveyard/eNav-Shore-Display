@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -48,6 +49,7 @@ import org.apache.log4j.Logger;
 import com.bbn.openmap.MapHandlerChild;
 
 import dk.frv.ais.binary.SixbitException;
+import dk.frv.ais.geo.GeoLocation;
 import dk.frv.ais.handler.IAisHandler;
 import dk.frv.ais.message.AisBinaryMessage;
 import dk.frv.ais.message.AisMessage;
@@ -55,12 +57,18 @@ import dk.frv.ais.message.AisMessage18;
 import dk.frv.ais.message.AisMessage21;
 import dk.frv.ais.message.AisMessage24;
 import dk.frv.ais.message.AisMessage5;
+import dk.frv.ais.message.AisMessage6;
 import dk.frv.ais.message.AisPositionMessage;
+import dk.frv.ais.message.binary.AddressedRouteInformation;
 import dk.frv.ais.message.binary.AisApplicationMessage;
 import dk.frv.ais.message.binary.BroadcastIntendedRoute;
+import dk.frv.ais.message.binary.RouteSuggestionReply;
+import dk.frv.ais.reader.AisReader;
+import dk.frv.enav.ins.ais.AisAdressedRouteSuggestion;
 import dk.frv.enav.ins.ais.AisIntendedRoute;
 import dk.frv.enav.ins.ais.AisTarget;
 import dk.frv.enav.ins.ais.AtoNTarget;
+import dk.frv.enav.ins.ais.IAisRouteSuggestionListener;
 import dk.frv.enav.ins.ais.IAisTargetListener;
 import dk.frv.enav.ins.ais.SarTarget;
 import dk.frv.enav.ins.ais.VesselPositionData;
@@ -68,8 +76,10 @@ import dk.frv.enav.ins.ais.VesselStaticData;
 import dk.frv.enav.ins.ais.VesselTarget;
 import dk.frv.enav.ins.ais.VesselTargetSettings;
 import dk.frv.enav.ins.gps.GnssTime;
+import dk.frv.enav.ins.gps.GpsHandler;
 import dk.frv.enav.ins.services.ais.AisServices;
 import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.esd.status.AisStatus;
 import dk.frv.enav.esd.status.ComponentStatus;
 import dk.frv.enav.esd.status.IStatusComponent;
@@ -78,12 +88,11 @@ import dk.frv.enav.esd.status.IStatusComponent;
  * Class for handling incoming AIS messages on a vessel and maintainer of AIS
  * target tables
  */
-public class AisHandler extends MapHandlerChild implements IAisHandler,
-		IStatusComponent, Runnable {
+public class AisHandler extends MapHandlerChild implements IAisHandler, IStatusComponent, Runnable {
 
 	/**
 	 * AisMessageExtended class used in storing messages from the AisTransponder
-	 *
+	 * 
 	 */
 	public class AisMessageExtended {
 		public String name;
@@ -93,10 +102,15 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 
 		/**
 		 * Datastructure for the extended ais messages
-		 * @param name - name of ship
-		 * @param key - mmsi of ship
-		 * @param hdg - heading of ship
-		 * @param dst - distance to ship
+		 * 
+		 * @param name
+		 *            - name of ship
+		 * @param key
+		 *            - mmsi of ship
+		 * @param hdg
+		 *            - heading of ship
+		 * @param dst
+		 *            - distance to ship
 		 */
 		public AisMessageExtended(String name, Long key, double hdg, String dst) {
 			this.name = name;
@@ -123,26 +137,56 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	protected boolean showIntendedRouteDefault = false;
 	protected boolean strictAisMode = true;
 
+	protected static final double SIMULATED_AIS_RANGE = 20;
+
+	protected double aisRange = 0;
+
+	protected AisReader aisReader = null;
+	protected Settings settings;
+	protected List<IAisRouteSuggestionListener> suggestionListeners = new ArrayList<IAisRouteSuggestionListener>();
+
 	/**
 	 * Empty constructor not used
 	 */
-	public AisHandler() {
+	public AisHandler(Settings settings) {
 
+		this.settings = settings;
+		aisRange = settings.getAisSettings().getAisSensorRange();
+
+		sartMmsiPrefix = settings.getAisSettings().getSartPrefix();
+
+		this.showIntendedRouteDefault = true;
+		this.strictAisMode = settings.getAisSettings().isStrict();
+
+		ESD.startThread(this, "AisHandler");
+	}
+
+	/**
+	 * Add a route suggestion
+	 * 
+	 * @param routeSuggestionListener
+	 */
+	public void addRouteSuggestionListener(IAisRouteSuggestionListener routeSuggestionListener) {
+		suggestionListeners.add(routeSuggestionListener);
 	}
 
 	/**
 	 * Constructor used in connection with routes
-	 * @param showIntendedRouteDefault - show the ships intended routs be displays
-	 * @param strictAisMode - use strict Ais Mode
+	 * 
+	 * @param showIntendedRouteDefault
+	 *            - show the ships intended routs be displays
+	 * @param strictAisMode
+	 *            - use strict Ais Mode
 	 */
 	public AisHandler(boolean showIntendedRouteDefault, boolean strictAisMode) {
-		this.showIntendedRouteDefault = showIntendedRouteDefault;
-		this.strictAisMode = strictAisMode;
+
 	}
 
 	/**
 	 * Add listener to AisHandler
-	 * @param targetListener - class that is added to listeners
+	 * 
+	 * @param targetListener
+	 *            - class that is added to listeners
 	 */
 	public synchronized void addListener(IAisTargetListener targetListener) {
 		listeners.add(targetListener);
@@ -153,13 +197,61 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	 */
 	@Override
 	public void findAndInit(Object obj) {
-		if (obj instanceof AisServices) {
-			aisServices = (AisServices) obj;
+
+		if (aisReader == null && obj instanceof AisReader) {
+			aisReader = (AisReader) obj;
+			aisReader.registerHandler(this);
+			LOG.info("Found AIS sensor");
 		}
+		super.findAndInit(obj);
+	}
+
+	/**
+	 * Get list of all ships
+	 * 
+	 * @return
+	 */
+	public synchronized List<AisMessageExtended> getShipList() {
+		List<AisMessageExtended> list = new ArrayList<AisMessageExtended>();
+
+		if (this.getVesselTargets() != null) {
+			double hdg = -1;
+
+			for (Long key : this.getVesselTargets().keySet()) {
+				String name = " N/A";
+				String dst = "N/A";
+				VesselTarget currentTarget = this.getVesselTargets().get(key);
+
+				if (currentTarget.getStaticData() != null) {
+					name = " " + AisMessage.trimText(this.getVesselTargets().get(key).getStaticData().getName());
+				}
+
+				hdg = currentTarget.getPositionData().getCog();
+
+				// System.out.println("Key: " + key + ", Value: " +
+				// this.getVesselTargets().get(key));
+				AisMessageExtended newEntry = new AisMessageExtended(name, key, hdg, dst);
+
+				if (!this.getVesselTargets().get(key).isGone()) {
+					list.add(newEntry);
+				}
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * Get range of AIS
+	 * 
+	 * @return
+	 */
+	public double getAisRange() {
+		return aisRange;
 	}
 
 	/**
 	 * Return the aisStatus
+	 * 
 	 * @return - aisStatus
 	 */
 	public AisStatus getAisStatus() {
@@ -193,6 +285,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 
 	/**
 	 * Return list of vessels
+	 * 
 	 * @return vesseltargets
 	 */
 	public Map<Long, VesselTarget> getVesselTargets() {
@@ -204,10 +297,8 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	 */
 	public synchronized void hideAllIntendedRoutes() {
 		for (VesselTarget vesselTarget : vesselTargets.values()) {
-			VesselTargetSettings vesselTargetSettings = vesselTarget
-					.getSettings();
-			if (vesselTargetSettings.isShowRoute()
-					&& vesselTarget.hasIntendedRoute()) {
+			VesselTargetSettings vesselTargetSettings = vesselTarget.getSettings();
+			if (vesselTargetSettings.isShowRoute() && vesselTarget.hasIntendedRoute()) {
 				vesselTargetSettings.setShowRoute(false);
 				publishUpdate(vesselTarget);
 			}
@@ -262,9 +353,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 			sarTargets = aisStore.getSarTargets();
 		}
 
-		LOG.info("AIS handler loaded total targets: "
-				+ (vesselTargets.size() + atonTargets.size() + sarTargets
-						.size()));
+		LOG.info("AIS handler loaded total targets: " + (vesselTargets.size() + atonTargets.size() + sarTargets.size()));
 
 		// Update status to update old and gone (twice for old and gone)
 		updateStatus();
@@ -283,7 +372,9 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 
 	/**
 	 * Publish a specific collection
-	 * @param targets collection to be published
+	 * 
+	 * @param targets
+	 *            collection to be published
 	 */
 	protected synchronized void publishAll(Collection<?> targets) {
 		for (Object aisTarget : targets) {
@@ -309,27 +400,23 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	public synchronized void receive(AisMessage aisMessage) {
 		// Mark successful reception
 		aisStatus.markAisReception();
-		
-		//System.out.println("AIS Received: " + aisMessage.getMsgId());
+
+		// System.out.println("AIS Received: " + aisMessage.getMsgId());
 
 		if (aisMessage instanceof AisPositionMessage) {
 			AisPositionMessage aisPositionMessage = (AisPositionMessage) aisMessage;
 			// Create PositionData
-			VesselPositionData vesselPositionData = new VesselPositionData(
-					aisPositionMessage);
+			VesselPositionData vesselPositionData = new VesselPositionData(aisPositionMessage);
 			// Update or create entry
 			if (vesselPositionData.hasPos()) {
-				updatePos(aisPositionMessage.getUserId(), vesselPositionData,
-						VesselTarget.AisClass.A);
+				updatePos(aisPositionMessage.getUserId(), vesselPositionData, VesselTarget.AisClass.A);
 			}
 		} else if (aisMessage instanceof AisMessage18) {
 			AisMessage18 posMessage = (AisMessage18) aisMessage;
-			VesselPositionData vesselPositionData = new VesselPositionData(
-					posMessage);
+			VesselPositionData vesselPositionData = new VesselPositionData(posMessage);
 			// Update or create entry
 			if (vesselPositionData.hasPos()) {
-				updatePos(posMessage.getUserId(), vesselPositionData,
-						VesselTarget.AisClass.B);
+				updatePos(posMessage.getUserId(), vesselPositionData, VesselTarget.AisClass.B);
 			}
 		} else if (aisMessage instanceof AisMessage21) {
 			AisMessage21 msg21 = (AisMessage21) aisMessage;
@@ -342,30 +429,82 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 			AisMessage24 msg24 = (AisMessage24) aisMessage;
 			updateClassBStatics(msg24);
 		} else if (aisMessage instanceof AisBinaryMessage) {
-						
+
 			AisBinaryMessage binaryMessage = (AisBinaryMessage) aisMessage;
 			AisApplicationMessage appMessage;
 			try {
 				appMessage = binaryMessage.getApplicationMessage();
 			} catch (SixbitException e) {
-				LOG.error("Failed to get application specific message: "
-						+ e.getMessage());
+				LOG.error("Failed to get application specific message: " + e.getMessage());
 				return;
 			}
+			
 			// Handle broadcast messages
 			if (aisMessage.getMsgId() == 8 && appMessage != null) {
 				// Handle route information
 				if (appMessage.getDac() == BroadcastIntendedRoute.DAC
 						&& appMessage.getFi() == BroadcastIntendedRoute.FI) {
-					
-					System.out.println("ROUTE RECEIVED!!!!");
-					
+
 					BroadcastIntendedRoute intendedRoute = (BroadcastIntendedRoute) appMessage;
 					// LOG.info("BroadcastRouteInformation: " +
 					// routeInformation);
 					// Handle intended route
-					updateIntendedRoute(aisMessage.getUserId(),
-							new AisIntendedRoute(intendedRoute));
+					updateIntendedRoute(aisMessage.getUserId(), new AisIntendedRoute(intendedRoute));
+				}
+			}
+
+			if (aisMessage.getMsgId() == 6 && appMessage != null) {
+
+				AisMessage6 msg6 = (AisMessage6) aisMessage;
+				
+				System.out.println("Application specific msg to me? sent to: " + msg6.getDestination());
+
+//				long meMMSI = 992199003;
+				long meMMSI = 219622000;
+				
+				// Check if for us
+				if (meMMSI != msg6.getDestination()) {
+					return;
+				}
+
+				
+				try {
+					AisApplicationMessage message = msg6.getApplicationMessage();
+					
+					if (message instanceof RouteSuggestionReply){
+						System.out.println("Route suggestion reply");
+						
+						RouteSuggestionReply reply = (RouteSuggestionReply) message;
+						
+						System.out.println(reply.getResponse());
+						
+					}
+					
+					System.out.println(message.getClass());
+					
+					
+				} catch (SixbitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				System.out.println("Yes");
+				
+				
+				// Handle adressed route information
+				if (appMessage.getDac() == 1 && appMessage.getFi() == 28) {
+					AddressedRouteInformation routeInformation = (AddressedRouteInformation) appMessage;
+					LOG.info("AddressedRouteInformation: " + routeInformation);
+					AisAdressedRouteSuggestion addressedRouteSuggestion = new AisAdressedRouteSuggestion(
+							routeInformation);
+					addressedRouteSuggestion.setSender(aisMessage.getUserId());
+					for (IAisRouteSuggestionListener suggestionListener : suggestionListeners) {
+						suggestionListener.receiveRouteSuggestion(addressedRouteSuggestion);
+					}
+					// Acknowledge the reception
+					if (suggestionListeners.size() > 0) {
+						aisServices.acknowledgeRouteSuggestion(msg6, routeInformation);
+					}
 				}
 			}
 		}
@@ -373,7 +512,9 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 
 	/**
 	 * Remove a class from being a listener
-	 * @param targetListener target to be removed
+	 * 
+	 * @param targetListener
+	 *            target to be removed
 	 */
 	public synchronized void removeListener(IAisTargetListener targetListener) {
 		listeners.remove(targetListener);
@@ -384,7 +525,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	 */
 	@Override
 	public void run() {
-		
+
 		// Publish loaded targets
 		ESD.sleep(2000);
 		publishAll();
@@ -394,14 +535,14 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 			// Update status on targets
 			updateStatus();
 
-//			List<AisMessageExtended> shipList = getShipList();
-//
-//			System.out.println("Recieving AIS:");
-//			for (int i = 0; i < shipList.size(); i++) {
-//				System.out.println("ID " + shipList.get(i).MMSI + " : "
-//						+ shipList.get(i).name);
-//			}
-//			System.out.println("AIS Recieved");
+			// List<AisMessageExtended> shipList = getShipList();
+			//
+			// System.out.println("Recieving AIS:");
+			// for (int i = 0; i < shipList.size(); i++) {
+			// System.out.println("ID " + shipList.get(i).MMSI + " : "
+			// + shipList.get(i).name);
+			// }
+			// System.out.println("AIS Recieved");
 
 		}
 	}
@@ -432,10 +573,8 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	 */
 	public synchronized void showAllIntendedRoutes() {
 		for (VesselTarget vesselTarget : vesselTargets.values()) {
-			VesselTargetSettings vesselTargetSettings = vesselTarget
-					.getSettings();
-			if (!vesselTargetSettings.isShowRoute()
-					&& vesselTarget.hasIntendedRoute()) {
+			VesselTargetSettings vesselTargetSettings = vesselTarget.getSettings();
+			if (!vesselTargetSettings.isShowRoute() && vesselTarget.hasIntendedRoute()) {
 				vesselTargetSettings.setShowRoute(true);
 				publishUpdate(vesselTarget);
 			}
@@ -495,8 +634,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	 * @param mmsi
 	 * @param routeData
 	 */
-	protected synchronized void updateIntendedRoute(long mmsi,
-			AisIntendedRoute routeData) {
+	protected synchronized void updateIntendedRoute(long mmsi, AisIntendedRoute routeData) {
 		// Try to find exiting target
 		VesselTarget vesselTarget = vesselTargets.get(mmsi);
 		// If not exists, wait for it to be created by position report
@@ -515,8 +653,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	 * @param positionData
 	 * @param aisClass
 	 */
-	protected synchronized void updatePos(long mmsi,
-			VesselPositionData positionData, VesselTarget.AisClass aisClass) {
+	protected synchronized void updatePos(long mmsi, VesselPositionData positionData, VesselTarget.AisClass aisClass) {
 		// Determine if this is SART
 		if (isSarTarget(mmsi)) {
 			updateSartPos(mmsi, positionData);
@@ -551,8 +688,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	 * @param mmsi
 	 * @param positionData
 	 */
-	protected synchronized void updateSartPos(long mmsi,
-			VesselPositionData positionData) {
+	protected synchronized void updateSartPos(long mmsi, VesselPositionData positionData) {
 		Date now = GnssTime.getInstance().getDate();
 		// Try to find target
 		SarTarget sarTarget = sarTargets.get(mmsi);
@@ -581,8 +717,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	 * @param mmsi
 	 * @param staticData
 	 */
-	protected synchronized void updateSartStatics(long mmsi,
-			VesselStaticData staticData) {
+	protected synchronized void updateSartStatics(long mmsi, VesselStaticData staticData) {
 		// Try to find exiting target
 		SarTarget sarTarget = sarTargets.get(mmsi);
 		// If not exists, wait for it to be created by position report
@@ -599,8 +734,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 	 * @param mmsi
 	 * @param staticData
 	 */
-	protected synchronized void updateStatics(long mmsi,
-			VesselStaticData staticData) {
+	protected synchronized void updateStatics(long mmsi, VesselStaticData staticData) {
 		// Determine if this is SART
 		if (isSarTarget(mmsi)) {
 			updateSartStatics(mmsi, staticData);
@@ -688,13 +822,13 @@ public class AisHandler extends MapHandlerChild implements IAisHandler,
 			}
 			return false;
 		}
-		
+
 		if (aisTarget.hasGone(now, ESD.getSettings().getAisSettings().isStrict())) {
 			aisTarget.setStatus(AisTarget.Status.GONE);
 			publishUpdate(aisTarget);
 			return false;
 		}
-		
+
 		if (aisTarget.hasGone(now, strictAisMode)) {
 			aisTarget.setStatus(AisTarget.Status.GONE);
 			publishUpdate(aisTarget);
