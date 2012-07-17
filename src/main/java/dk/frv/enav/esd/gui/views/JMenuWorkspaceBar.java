@@ -38,8 +38,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
@@ -48,10 +48,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import dk.frv.ais.geo.GeoLocation;
-import dk.frv.ais.message.AisMessage12;
 import dk.frv.ais.message.AisMessage6;
 import dk.frv.ais.message.AisPosition;
-import dk.frv.ais.message.binary.BroadcastIntendedRoute;
 import dk.frv.ais.message.binary.RouteSuggestion;
 import dk.frv.ais.message.binary.RouteSuggestion.RouteType;
 import dk.frv.ais.reader.SendException;
@@ -228,8 +226,10 @@ public class JMenuWorkspaceBar extends JMenuBar {
 				routeSuggestion.addWaypoint(new AisPosition(new GeoLocation(55, 13)));
 				
 				routeSuggestion.setDuration(10);
-				routeSuggestion.setMsgLinkId(1);
+				routeSuggestion.setMsgLinkId(359);
 				routeSuggestion.setRouteType(RouteType.RECOMMENDED.getType());
+
+				
 				
 				Date start = new Date();
 				// Set start time

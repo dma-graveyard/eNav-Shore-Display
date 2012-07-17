@@ -56,10 +56,7 @@ import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.gui.views.JMapFrame;
-import dk.frv.enav.esd.gui.views.MainFrame;
-
-import dk.frv.enav.esd.layers.msi.MsiInfoPanel;
-//import dk.frv.enav.ins.gui.MapMenu;
+import dk.frv.enav.esd.gui.views.MapMenu;
 import dk.frv.enav.esd.route.ActiveRoute;
 import dk.frv.enav.esd.route.IRoutesUpdateListener;
 import dk.frv.enav.esd.route.Route;
@@ -67,6 +64,7 @@ import dk.frv.enav.esd.route.RouteManager;
 import dk.frv.enav.esd.route.RouteWaypoint;
 import dk.frv.enav.esd.route.RoutesUpdateEvent;
 import dk.frv.enav.ins.common.math.Vector2D;
+//import dk.frv.enav.ins.gui.MapMenu;
 
 /**
  * Layer for showing routes
@@ -89,8 +87,9 @@ public class RouteLayer extends OMGraphicHandlerLayer implements IRoutesUpdateLi
 	private MetocGraphic routeMetoc;
 	private SuggestedRouteGraphic suggestedRoute;
 	private JMapFrame jMapFrame = null;
-//	private MapMenu routeMenu;
+	private MapMenu routeMenu;
 	private boolean dragging = false;
+	
 	
 	public RouteLayer() {
 		routeManager = ESD.getRouteManager();
@@ -309,10 +308,9 @@ public class RouteLayer extends OMGraphicHandlerLayer implements IRoutesUpdateLi
 		if (obj instanceof MapBean){
 			mapBean = (MapBean)obj;
 		}
-		//Right click shit
-//		if(obj instanceof MapMenu){
-//			routeMenu = (MapMenu) obj;
-//		}
+		if(obj instanceof MapMenu){
+			routeMenu = (MapMenu) obj;
+		}
 
 	}
 	
@@ -351,34 +349,23 @@ public class RouteLayer extends OMGraphicHandlerLayer implements IRoutesUpdateLi
 			}
 		}
 		
-//		if(selectedGraphic instanceof SuggestedRouteGraphic){
-//			mainFrame.getGlassPane().setVisible(false);
-//			waypointInfoPanel.setVisible(false);
-//			SuggestedRouteGraphic suggestedRoute = (SuggestedRouteGraphic) selectedGraphic;
-//			AisAdressedRouteSuggestion aisSuggestedRoute = suggestedRoute.getRouteSuggestion();
-//			routeMenu.suggestedRouteMenu(aisSuggestedRoute);
-//			routeMenu.setVisible(true);
-//			routeMenu.show(this, e.getX()-2, e.getY()-2);
-//			return true;
-//		}
-//		if(selectedGraphic instanceof WaypointCircle){
-//			WaypointCircle wpc = (WaypointCircle) selectedGraphic;
-//			mainFrame.getGlassPane().setVisible(false);
-//			waypointInfoPanel.setVisible(false);
-//			routeMenu.routeWaypointMenu(wpc.getRouteIndex(), wpc.getWpIndex());
-//			routeMenu.setVisible(true);
-//			routeMenu.show(this, e.getX()-2, e.getY()-2);
-//			return true;
-//		}
-//		if(selectedGraphic instanceof RouteLegGraphic){
-//			RouteLegGraphic rlg = (RouteLegGraphic) selectedGraphic;
-//			mainFrame.getGlassPane().setVisible(false);
-//			waypointInfoPanel.setVisible(false);
-//			routeMenu.routeLegMenu(rlg.getRouteIndex(), rlg.getRouteLeg(), e.getPoint());
-//			routeMenu.setVisible(true);
-//			routeMenu.show(this, e.getX()-2, e.getY()-2);
-//			return true;
-//		}
+
+		if(selectedGraphic instanceof WaypointCircle){
+			WaypointCircle wpc = (WaypointCircle) selectedGraphic;
+			waypointInfoPanel.setVisible(false);
+			routeMenu.routeWaypointMenu(wpc.getRouteIndex(), wpc.getWpIndex());
+			routeMenu.setVisible(true);
+			routeMenu.show(this, e.getX()-2, e.getY()-2);
+			return true;
+		}
+		if(selectedGraphic instanceof RouteLegGraphic){
+			RouteLegGraphic rlg = (RouteLegGraphic) selectedGraphic;
+			waypointInfoPanel.setVisible(false);
+			routeMenu.routeLegMenu(rlg.getRouteIndex(), rlg.getRouteLeg(), e.getPoint());
+			routeMenu.setVisible(true);
+			routeMenu.show(this, e.getX()-2, e.getY()-2);
+			return true;
+		}
 //		
 		return false;
 	}

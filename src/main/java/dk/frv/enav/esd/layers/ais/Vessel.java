@@ -45,6 +45,7 @@ import dk.frv.ais.message.AisMessage;
 import dk.frv.enav.ins.ais.AisIntendedRoute;
 import dk.frv.enav.ins.ais.VesselStaticData;
 import dk.frv.enav.ins.ais.VesselTarget;
+import dk.frv.enav.ins.ais.VesselTargetSettings;
 import dk.frv.enav.ins.common.text.Formatter;
 import dk.frv.enav.esd.layers.ais.IntendedRouteGraphic;
 
@@ -80,6 +81,7 @@ public class Vessel extends OMGraphicList {
 	private String vesselEta = "N/A";
 	private String vesselShiptype = "N/A";
 	private IntendedRouteGraphic routeGraphic = new IntendedRouteGraphic();
+	private VesselTarget vesselTarget;
 
 	/**
 	 * Vessel initialization with icon, circle, heading, speedvector, callsign
@@ -94,7 +96,7 @@ public class Vessel extends OMGraphicList {
 		this.MMSI = MMSI;
 
 		// Vessel layer
-		vessel = new VesselLayer(MMSI);
+		vessel = new VesselLayer(MMSI, this);
 
 		// Vessel circle layer
 		vesCirc = new OMCircle(0, 0, 0.01);
@@ -149,6 +151,10 @@ public class Vessel extends OMGraphicList {
 	public void updateLayers(double trueHeading, double lat, double lon, VesselStaticData staticData, double sog,
 			double cogR, float mapScale, VesselTarget vesselTarget) {
 
+		VesselTargetSettings targetSettings = vesselTarget.getSettings();
+		
+		this.vesselTarget = vesselTarget;
+		
 		vessel.setLocation(lat, lon);
 		vessel.setHeading(trueHeading);
 
@@ -206,7 +212,15 @@ public class Vessel extends OMGraphicList {
 			
 			
 			AisIntendedRoute aisIntendedRoute = vesselTarget.getAisRouteData();
+			
+			
+			// Intended route graphic
 			routeGraphic.update(vesselName, aisIntendedRoute, vesselTarget.getPositionData().getPos(), vesselTarget);
+			if (!targetSettings.isShowRoute()) {
+				routeGraphic.setVisible(false);
+			}
+			
+			
 
 		}
 
@@ -325,4 +339,10 @@ public class Vessel extends OMGraphicList {
 		return vesselShiptype;
 	}
 
+	public VesselTarget getVesselTarget() {
+		return vesselTarget;
+	}
+
+	
+	
 }

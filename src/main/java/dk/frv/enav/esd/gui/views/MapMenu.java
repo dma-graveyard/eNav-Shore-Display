@@ -52,13 +52,32 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import com.bbn.openmap.BufferedLayerMapBean;
 import com.bbn.openmap.LightMapHandlerChild;
 import com.bbn.openmap.MapBean;
-import com.bbn.openmap.MouseDelegator;
 
-import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
+import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.ais.AisHandler;
-import dk.frv.enav.esd.gui.views.menuitems.*;
+import dk.frv.enav.esd.gui.views.menuitems.AisIntendedRouteToggle;
+import dk.frv.enav.esd.gui.views.menuitems.GeneralHideIntendedRoutes;
+import dk.frv.enav.esd.gui.views.menuitems.GeneralNewRoute;
+import dk.frv.enav.esd.gui.views.menuitems.GeneralShowIntendedRoutes;
+import dk.frv.enav.esd.gui.views.menuitems.MsiAcknowledge;
+import dk.frv.enav.esd.gui.views.menuitems.MsiDetails;
+import dk.frv.enav.esd.gui.views.menuitems.MsiZoomTo;
+import dk.frv.enav.esd.gui.views.menuitems.RouteAppendWaypoint;
+import dk.frv.enav.esd.gui.views.menuitems.RouteCopy;
+import dk.frv.enav.esd.gui.views.menuitems.RouteDelete;
+import dk.frv.enav.esd.gui.views.menuitems.RouteEditEndRoute;
+import dk.frv.enav.esd.gui.views.menuitems.RouteHide;
+import dk.frv.enav.esd.gui.views.menuitems.RouteLegInsertWaypoint;
+import dk.frv.enav.esd.gui.views.menuitems.RouteMetocProperties;
+import dk.frv.enav.esd.gui.views.menuitems.RouteProperties;
+import dk.frv.enav.esd.gui.views.menuitems.RouteRequestMetoc;
+import dk.frv.enav.esd.gui.views.menuitems.RouteReverse;
+import dk.frv.enav.esd.gui.views.menuitems.RouteShowMetocToggle;
+import dk.frv.enav.esd.gui.views.menuitems.RouteWaypointActivateToggle;
+import dk.frv.enav.esd.gui.views.menuitems.RouteWaypointDelete;
 import dk.frv.enav.esd.layers.ais.AisLayer;
 import dk.frv.enav.esd.layers.msi.MsiDirectionalIcon;
 import dk.frv.enav.esd.layers.msi.MsiLayer;
@@ -96,7 +115,6 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	private MsiDetails msiDetails;
 	private MsiZoomTo msiZoomTo;
 	
-	private RouteActivateToggle routeActivateToggle;
 	private RouteAppendWaypoint routeAppendWaypoint;
 	private RouteHide routeHide;
 	private RouteCopy routeCopy;
@@ -116,7 +134,6 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	protected BeanContextChildSupport beanContextChildSupport = new BeanContextChildSupport(this);
 	protected boolean isolated = false;
 	private RouteManager routeManager;
-	private MainFrame mainFrame;
 	private Route route;
 	
 	//Route suggest?
@@ -130,8 +147,7 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	private AisHandler aisHandler;
 	
 //	private NogoHandler nogoHandler;
-	
-	private MouseDelegator mouseDelegator;
+
 
 	public MapMenu() {
 		super();
@@ -141,7 +157,7 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 		hideIntendedRoutes.addActionListener(this);
 		showIntendedRoutes = new GeneralShowIntendedRoutes("Show all intended routes");
 		showIntendedRoutes.addActionListener(this);
-		newRoute = new GeneralNewRoute("Add new route - Ctrl N");
+		newRoute = new GeneralNewRoute("Add new route");
 		newRoute.addActionListener(this);
 		
 		scaleMenu = new JMenu("Scale");
@@ -162,8 +178,6 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 		msiZoomTo.addActionListener(this);
 		
 		// route general items
-		routeActivateToggle = new RouteActivateToggle();
-		routeActivateToggle.addActionListener(this);
 		routeHide = new RouteHide("Hide route");
 		routeHide.addActionListener(this);
 
@@ -210,6 +224,7 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	 * @param alone TODO
 	 */
 	public void generalMenu(boolean alone){
+		
 		scaleMenu.removeAll();
 		
 		// clear previous map scales
@@ -248,13 +263,10 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 		hideIntendedRoutes.setAisHandler(aisHandler);
 		showIntendedRoutes.setAisHandler(aisHandler);
 		
-		newRoute.setMouseDelegator(mouseDelegator);
-		newRoute.setMainFrame(mainFrame);
+		newRoute.setToolBar(ESD.getMainFrame().getToolbar());
 		
-//		nogoRequest.setNogoHandler(nogoHandler);
-//		nogoRequest.setMainFrame(mainFrame);
-//		nogoRequest.setAisHandler(aisHandler);
-//		
+//		newRoute.setMouseDelegator(mouseDelegator);
+//		newRoute.setMainFrame(mainFrame);
 		
 		if(alone){
 			removeAll();
@@ -297,6 +309,8 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 		}
 		add(aisIntendedRouteToggle);
 		
+		
+		
 		generalMenu(false);
 	}
 	
@@ -333,6 +347,8 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 		removeAll();
 		
 		msiDetails.setMsiMessage(selectedGraphic.getMsiMessage());
+		msiDetails.setNotCenter(ESD.getMainFrame().getNotificationCenter());
+		
 		add(msiDetails);
 		
 		Boolean isAcknowledged = msiHandler.isAcknowledged(selectedGraphic.getMsiMessage().getMessageId());
@@ -358,29 +374,14 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	}
 	
 	public void generalRouteMenu(int routeIndex){		
-		if(routeManager.getActiveRouteIndex() == routeIndex){
-			routeActivateToggle.setText("Deactivate route");
-			routeHide.setEnabled(false);
-			routeDelete.setEnabled(false);
-			routeAppendWaypoint.setEnabled(false);
-			
-			
-		} else {
-			routeActivateToggle.setText("Activate route");
-			routeHide.setEnabled(true);
-			routeDelete.setEnabled(true);
-			routeAppendWaypoint.setEnabled(true);
-		}
+
+		routeManager = ESD.getMainFrame().getRouteManagerDialog().getRouteManager();
 		
 		routeAppendWaypoint.setRouteManager(routeManager);
 		routeAppendWaypoint.setRouteIndex(routeIndex);
 		add(routeAppendWaypoint);
 		
 		addSeparator();
-		
-		routeActivateToggle.setRouteManager(routeManager);
-		routeActivateToggle.setRouteIndex(routeIndex);
-		add(routeActivateToggle);
 		
 		routeHide.setRouteManager(routeManager);
 		routeHide.setRouteIndex(routeIndex);
@@ -399,10 +400,6 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 		add(routeReverse);
 		
 		route = routeManager.getRoute(routeIndex);
-		if (routeManager.isActiveRoute(routeIndex)) {
-			route = routeManager.getActiveRoute();
-		}
-
 	
 		routeRequestMetoc.setRouteManager(routeManager);
 		routeRequestMetoc.setRouteIndex(routeIndex);
@@ -436,6 +433,8 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	}
 	
 	public void routeLegMenu(int routeIndex, RouteLeg routeLeg, Point point){
+		routeManager = ESD.getMainFrame().getRouteManagerDialog().getRouteManager();
+		
 		removeAll();
 		
 		if(routeManager.getActiveRouteIndex() == routeIndex){
@@ -457,20 +456,13 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	}
 	
 	public void routeWaypointMenu(int routeIndex, int routeWaypointIndex){
+		routeManager = ESD.getMainFrame().getRouteManagerDialog().getRouteManager();
+		
 		removeAll();
 		
-		routeWaypointActivateToggle.setRouteWaypointIndex(routeWaypointIndex);
-		routeWaypointActivateToggle.setRouteManager(routeManager);
+		routeWaypointDelete.setEnabled(true);
 		
-		if(routeManager.getActiveRouteIndex() == routeIndex){
-			routeWaypointActivateToggle.setEnabled(true);
-			routeWaypointDelete.setEnabled(false);
-		} else {
-			routeWaypointActivateToggle.setEnabled(false);
-			routeWaypointDelete.setEnabled(true);
-		}
 		
-		add(routeWaypointActivateToggle);
 		
 		routeWaypointDelete.setRouteWaypointIndex(routeWaypointIndex);
 		routeWaypointDelete.setRouteIndex(routeIndex);
@@ -482,8 +474,10 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	
 	public void routeEditMenu(){
 		removeAll();
-		routeEditEndRoute.setNewRouteLayer(newRouteLayer);
-		routeEditEndRoute.setRouteManager(routeManager);
+		routeManager = ESD.getMainFrame().getRouteManagerDialog().getRouteManager();
+		
+		routeEditEndRoute.setToolBar(ESD.getMainFrame().getToolbar());
+
 		add(routeEditEndRoute);
 		
 		
@@ -502,11 +496,8 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 		if(obj instanceof MsiHandler){
 			msiHandler = (MsiHandler) obj;
 		}
-		if(obj instanceof RouteManager) {
-			routeManager = (RouteManager) obj;
-		}
-		if(obj instanceof MapBean){
-			mapBean = (MapBean) obj;
+		if(obj instanceof BufferedLayerMapBean){
+			mapBean = (BufferedLayerMapBean) obj;
 		}
 		if(obj instanceof NewRouteContainerLayer){
 			newRouteLayer = (NewRouteContainerLayer) obj;
@@ -517,12 +508,7 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 		if(obj instanceof AisHandler){
 			aisHandler = (AisHandler) obj;
 		}
-		if (obj instanceof MainFrame) {
-			mainFrame = (MainFrame)obj;			
-		}
-		if (obj instanceof MouseDelegator) {
-			mouseDelegator = (MouseDelegator)obj;
-		}
+		
 	}
 	
 	public void findAndInit(Iterator<?> it) {

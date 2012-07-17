@@ -69,6 +69,7 @@ import dk.frv.enav.esd.route.RoutesUpdateEvent;
 import dk.frv.enav.esd.settings.MapSettings;
 import dk.frv.enav.esd.layers.routeEdit.NewRouteContainerLayer;
 import dk.frv.enav.esd.layers.routeEdit.RouteEditLayer;
+import dk.frv.enav.esd.layers.GeneralLayer;
 
 /**
  * The panel with chart. Initializes all layers to be shown on the map.
@@ -85,6 +86,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 	private BufferedLayerMapBean map;
 	private Layer encLayer;
 	private Layer bgLayer;
+	private GeneralLayer generalLayer;
 
 	private NavigationMouseMode mapNavMouseMode;
 	private DragMouseMode dragMouseMode;
@@ -397,6 +399,11 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		
 		mapHandler.add(wmsLayer);
 
+		// Create the general layer
+		generalLayer = new GeneralLayer();
+		generalLayer.setVisible(true);
+		mapHandler.add(generalLayer);
+		
 		// Add AIS Layer
 		aisLayer = new AisLayer();
 		aisLayer.setVisible(true);
@@ -424,7 +431,7 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 		// Create MSI handler
 		msiHandler = ESD.getMsiHandler();
 		mapHandler.add(msiHandler);
-
+		
 		// Create background layer
 		String layerName = "background";
 		bgLayer = new ShapeLayer();
@@ -448,6 +455,9 @@ public class ChartPanel extends OMComponentPanel implements MouseWheelListener {
 //			System.out.println("wms is visible");
 			bgLayer.setVisible(false);
 		}
+
+		
+
 
 	}
 

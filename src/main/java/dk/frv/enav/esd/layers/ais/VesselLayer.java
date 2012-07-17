@@ -50,15 +50,19 @@ public class VesselLayer extends CenterRaster {
 	private double trueHeading;
 	private String shipType;
 	private StaticImages staticImages;
+	private Vessel vessel;
 
 	/**
 	 * Initialize a vessel with default icon
 	 * @param MMSI Key of vessel
+	 * @param vessel 
 	 */
-	public VesselLayer(long MMSI) {
+	public VesselLayer(long MMSI, Vessel vessel) {
 		super(0, 0, 24, 24, ESD.getStaticImages().getVesselWhite());
 		this.staticImages = ESD.getStaticImages();
 		this.MMSI = MMSI;
+		
+		this.vessel = vessel;
 	}
 
 	/**
@@ -70,6 +74,12 @@ public class VesselLayer extends CenterRaster {
 			this.trueHeading = trueHeading;
 			this.setRotationAngle(Math.toRadians(trueHeading - 90));
 		}
+	}
+	
+	
+
+	public Vessel getVessel() {
+		return vessel;
 	}
 
 	/**

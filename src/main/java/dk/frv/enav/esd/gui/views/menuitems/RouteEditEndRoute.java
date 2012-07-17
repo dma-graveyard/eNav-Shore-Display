@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import javax.swing.JMenuItem;
 
 import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.gui.views.ToolBar;
 import dk.frv.enav.esd.layers.routeEdit.NewRouteContainerLayer;
 import dk.frv.enav.esd.route.Route;
 import dk.frv.enav.esd.route.RouteLeg;
@@ -41,8 +42,6 @@ import dk.frv.enav.esd.route.RouteManager;
 import dk.frv.enav.esd.route.RouteWaypoint;
 import dk.frv.enav.ins.common.Heading;
 import dk.frv.enav.ins.gui.menuitems.IMapMenuAction;
-
-
 
 public class RouteEditEndRoute extends JMenuItem implements IMapMenuAction {
 
@@ -52,6 +51,7 @@ public class RouteEditEndRoute extends JMenuItem implements IMapMenuAction {
 	private static final long serialVersionUID = 1L;
 	private NewRouteContainerLayer newRouteLayer;
 	private RouteManager routeManager;
+	private ToolBar toolBar;
 
 	public RouteEditEndRoute(String text) {
 		super();
@@ -60,44 +60,42 @@ public class RouteEditEndRoute extends JMenuItem implements IMapMenuAction {
 
 	@Override
 	public void doAction() {
-		if (newRouteLayer.getRoute().getWaypoints().size() > 1) {
-			Route route = new Route(newRouteLayer.getRoute());
-			route.setName("New route");
-			int i = 1;
-			LinkedList<RouteWaypoint> waypoints = route.getWaypoints();
-			for (RouteWaypoint routeWaypoint : waypoints) {
-				if (routeWaypoint.getOutLeg() != null) {
-					RouteLeg outLeg = routeWaypoint.getOutLeg();
-					double xtd = ESD.getSettings().getNavSettings().getDefaultXtd();
-					outLeg.setXtdPort(xtd);
-					outLeg.setXtdStarboard(xtd);
-					outLeg.setHeading(Heading.RL);
-					outLeg.setSpeed(ESD.getSettings().getNavSettings().getDefaultSpeed());
-				}
-				routeWaypoint.setTurnRad(ESD.getSettings().getNavSettings().getDefaultTurnRad());
-				routeWaypoint.setName(String.format("WP_%03d", i));
-				i++;
-			}
-			route.calcValues(true);
-			routeManager.addRoute(route);
-			routeManager.notifyListeners(null);
-		}
-		newRouteLayer.getWaypoints().clear();
-		newRouteLayer.getRouteGraphics().clear();
-		newRouteLayer.doPrepare();
-		
-		
-		//Edit mode
-//		ESD.getMainFrame().getChartPanel().editMode(false);
-		
-		
+
+		//
+		// if (newRouteLayer.getRoute().getWaypoints().size() > 1) {
+		// Route route = new Route(newRouteLayer.getRoute());
+		// route.setName("New route");
+		// int i = 1;
+		// LinkedList<RouteWaypoint> waypoints = route.getWaypoints();
+		// for (RouteWaypoint routeWaypoint : waypoints) {
+		// if (routeWaypoint.getOutLeg() != null) {
+		// RouteLeg outLeg = routeWaypoint.getOutLeg();
+		// double xtd = ESD.getSettings().getNavSettings().getDefaultXtd();
+		// outLeg.setXtdPort(xtd);
+		// outLeg.setXtdStarboard(xtd);
+		// outLeg.setHeading(Heading.RL);
+		// outLeg.setSpeed(ESD.getSettings().getNavSettings().getDefaultSpeed());
+		// }
+		// routeWaypoint.setTurnRad(ESD.getSettings().getNavSettings().getDefaultTurnRad());
+		// routeWaypoint.setName(String.format("WP_%03d", i));
+		// i++;
+		// }
+		// route.calcValues(true);
+		// routeManager.addRoute(route);
+		// routeManager.notifyListeners(null);
+		// }
+		// newRouteLayer.getWaypoints().clear();
+		// newRouteLayer.getRouteGraphics().clear();
+		// newRouteLayer.doPrepare();
+
+		// Edit mode
+		// ESD.getMainFrame().getChartPanel().editMode(false);
+
+		toolBar.newRoute();
+
 	}
 
-	public void setNewRouteLayer(NewRouteContainerLayer newRouteLayer) {
-		this.newRouteLayer = newRouteLayer;
-	}
-
-	public void setRouteManager(RouteManager routeManager) {
-		this.routeManager = routeManager;
+	public void setToolBar(ToolBar toolBar) {
+		this.toolBar = toolBar;
 	}
 }

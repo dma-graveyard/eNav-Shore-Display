@@ -51,8 +51,10 @@ import dk.frv.enav.esd.event.DragMouseMode;
 import dk.frv.enav.esd.event.NavigationMouseMode;
 import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.gui.views.JMapFrame;
+import dk.frv.enav.esd.gui.views.MapMenu;
 import dk.frv.enav.esd.msi.MsiHandler;
 import dk.frv.enav.ins.gps.GnssTime;
+
 
 /**
  * Layer handling all msi messages
@@ -69,6 +71,8 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 	
 	private OMGraphic closest = null;
 	private MsiInfoPanel msiInfoPanel = null;	
+	private MapMenu msiMenu;
+	private OMGraphic selectedGraphic;
 	
 	/**
 	 * Constructor for the layer
@@ -124,6 +128,9 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 			msiInfoPanel = new MsiInfoPanel();
 			jMapFrame.getGlassPanel().add(msiInfoPanel);
 		}		
+		if (obj instanceof MapMenu){
+			msiMenu = (MapMenu) obj;
+		}
 	}
 	
 	public MapMouseListener getMapMouseListener() {
@@ -143,6 +150,32 @@ public class MsiLayer extends OMGraphicHandlerLayer implements MapMouseListener 
 	public boolean mouseClicked(MouseEvent e) {
 		if(e.getButton() != MouseEvent.BUTTON3){
 			return false;
+		}
+		
+		selectedGraphic = null;
+		OMList<OMGraphic> allClosest = graphics.findAll(e.getX(), e.getY(), 5.0f);
+		for (OMGraphic omGraphic : allClosest) {
+			if (omGraphic instanceof MsiSymbolGraphic || omGraphic instanceof MsiDirectionalIcon) {
+				selectedGraphic = omGraphic;
+				break;
+			}
+		}
+		
+		if(selectedGraphic instanceof MsiSymbolGraphic){
+			MsiSymbolGraphic msi = (MsiSymbolGraphic) selectedGraphic;
+			msiMenu.msiMenu(msi);
+			msiMenu.setVisible(true);
+			msiMenu.show(this, e.getX()-2, e.getY()-2);
+			msiInfoPanel.setVisible(false);				
+			return true;
+		}
+		if(selectedGraphic instanceof MsiDirectionalIcon) {
+			MsiDirectionalIcon direction = (MsiDirectionalIcon) selectedGraphic;
+			msiMenu.msiDirectionalMenu(direction, this);
+			msiMenu.setVisible(true);
+			msiMenu.show(this, e.getX()-10, e.getY()-10);
+			msiInfoPanel.setVisible(false);			
+			return true;
 		}
 		return false;
 	}

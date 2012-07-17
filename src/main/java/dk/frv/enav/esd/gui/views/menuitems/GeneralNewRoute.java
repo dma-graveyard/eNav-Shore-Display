@@ -31,10 +31,7 @@ package dk.frv.enav.esd.gui.views.menuitems;
 
 import javax.swing.JMenuItem;
 
-import com.bbn.openmap.MouseDelegator;
-
-import dk.frv.enav.esd.event.NavigationMouseMode;
-import dk.frv.enav.esd.gui.views.MainFrame;
+import dk.frv.enav.esd.gui.views.ToolBar;
 import dk.frv.enav.ins.gui.menuitems.IMapMenuAction;
 
 
@@ -44,8 +41,7 @@ public class GeneralNewRoute extends JMenuItem implements IMapMenuAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private MouseDelegator mouseDelegator;
-	private MainFrame mainFrame;
+	private ToolBar toolBar;
 
 	public GeneralNewRoute(String text) {
 		super();
@@ -55,22 +51,13 @@ public class GeneralNewRoute extends JMenuItem implements IMapMenuAction {
 	@Override
 	public void doAction() {
 		
-		//New route action
-//		if(mouseDelegator.getActiveMouseModeID() == NavigationMouseMode.modeID){
-//			mainFrame.getChartPanel().editMode(true);
-//		} else {
-//			mainFrame.getChartPanel().editMode(false);
-//		}
-		
-		
+
+		toolBar.newRoute();
+
 	}
 
-	public void setMouseDelegator(MouseDelegator mouseDelegator) {
-		this.mouseDelegator = mouseDelegator;
-	}
-
-	public void setMainFrame(MainFrame mainFrame) {
-		this.mainFrame = mainFrame;
+	public void setToolBar(ToolBar toolBar){
+		this.toolBar = toolBar;
 	}
 
 }

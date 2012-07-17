@@ -61,6 +61,7 @@ import dk.frv.ais.message.AisMessage6;
 import dk.frv.ais.message.AisPositionMessage;
 import dk.frv.ais.message.binary.AddressedRouteInformation;
 import dk.frv.ais.message.binary.AisApplicationMessage;
+import dk.frv.ais.message.binary.AsmAcknowledge;
 import dk.frv.ais.message.binary.BroadcastIntendedRoute;
 import dk.frv.ais.message.binary.RouteSuggestionReply;
 import dk.frv.ais.reader.AisReader;
@@ -438,7 +439,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler, IStatusC
 				LOG.error("Failed to get application specific message: " + e.getMessage());
 				return;
 			}
-			
+
 			// Handle broadcast messages
 			if (aisMessage.getMsgId() == 8 && appMessage != null) {
 				// Handle route information
@@ -456,41 +457,47 @@ public class AisHandler extends MapHandlerChild implements IAisHandler, IStatusC
 			if (aisMessage.getMsgId() == 6 && appMessage != null) {
 
 				AisMessage6 msg6 = (AisMessage6) aisMessage;
-				
+
 				System.out.println("Application specific msg to me? sent to: " + msg6.getDestination());
 
-//				long meMMSI = 992199003;
+				// long meMMSI = 992199003;
 				long meMMSI = 219622000;
-				
+
 				// Check if for us
 				if (meMMSI != msg6.getDestination()) {
 					return;
 				}
 
-				
 				try {
 					AisApplicationMessage message = msg6.getApplicationMessage();
-					
-					if (message instanceof RouteSuggestionReply){
-						System.out.println("Route suggestion reply");
-						
-						RouteSuggestionReply reply = (RouteSuggestionReply) message;
-						
-						System.out.println(reply.getResponse());
-						
+
+					if (message instanceof AsmAcknowledge){
+						AsmAcknowledge reply = (AsmAcknowledge) message;
+						System.out.println(reply.getTextSequenceNum());
 					}
 					
+					if (message instanceof RouteSuggestionReply) {
+						System.out.println("Route suggestion reply");
+
+						RouteSuggestionReply reply = (RouteSuggestionReply) message;
+
+						System.out.println(reply.getResponse() + " msglinkid: " + reply.getMsgLinkId()
+
+						+ " refmsglinkid " + reply.getRefMsgLinkId()
+
+						);
+
+					}
+
 					System.out.println(message.getClass());
-					
-					
+
 				} catch (SixbitException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 				System.out.println("Yes");
-				
-				
+
 				// Handle adressed route information
 				if (appMessage.getDac() == 1 && appMessage.getFi() == 28) {
 					AddressedRouteInformation routeInformation = (AddressedRouteInformation) appMessage;

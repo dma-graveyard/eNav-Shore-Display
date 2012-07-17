@@ -45,10 +45,10 @@ import com.bbn.openmap.proj.coords.LatLonPoint;
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.esd.event.RouteEditMouseMode;
 import dk.frv.enav.esd.gui.views.ChartPanel;
+import dk.frv.enav.esd.gui.views.MapMenu;
 import dk.frv.enav.esd.route.RouteLeg;
 import dk.frv.enav.esd.route.RouteWaypoint;
 import dk.frv.enav.ins.common.Heading;
-//import dk.frv.enav.ins.gui.MapMenu;
 import dk.frv.enav.ins.layers.common.WpCircle;
 
 
@@ -66,7 +66,7 @@ public class RouteEditLayer extends OMGraphicHandlerLayer implements MapMouseLis
 	protected PanSupport panDelegate;
 	boolean panning = false;
 	private NewRouteContainerLayer routeContainerLayer;
-//	private MapMenu mapMenu;
+	private MapMenu mapMenu;
 
 	public RouteEditLayer() {
 		panDelegate = new PanSupport(this);
@@ -110,9 +110,9 @@ public class RouteEditLayer extends OMGraphicHandlerLayer implements MapMouseLis
 		if (obj instanceof PanListener) {
 			addPanListener((PanListener) obj);
 		}
-//		if (obj instanceof MapMenu) {
-//			mapMenu = (MapMenu) obj;
-//		}
+		if (obj instanceof MapMenu) {
+			mapMenu = (MapMenu) obj;
+		}
 		super.findAndInit(obj);
 	}
 	
@@ -157,10 +157,10 @@ public class RouteEditLayer extends OMGraphicHandlerLayer implements MapMouseLis
 			routeContainerLayer.doPrepare();
 			return true;
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
-//			mapMenu.routeEditMenu();
-//			mapMenu.setVisible(true);
-//			mapMenu.show(this, e.getX()-2, e.getY()-2);
-//			return true;
+			mapMenu.routeEditMenu();
+			mapMenu.setVisible(true);
+			mapMenu.show(this, e.getX()-2, e.getY()-2);
+			return true;
 		}
 		return false;
 	}

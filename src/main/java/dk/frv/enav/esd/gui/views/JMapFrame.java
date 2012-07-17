@@ -59,12 +59,14 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EtchedBorder;
 
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
+import dk.frv.enav.esd.gui.utils.ComponentFrame;
+
 
 /**
  * Class for setting up a map frame
  * @author Steffen D. Sommer (steffendsommer@gmail.com), David A. Camre (davidcamre@gmail.com)
  */
-public class JMapFrame extends JInternalFrame implements MouseListener  {
+public class JMapFrame extends ComponentFrame implements MouseListener  {
 
 	private static final long serialVersionUID = 1L;
 	private ChartPanel chartPanel;
@@ -78,7 +80,7 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
 	private JPanel mapPanel;
 	private JPanel masterPanel;
 	private JLabel maximize;
-	
+	private MapMenu mapMenu;
 	
 	private static int moveHandlerHeight = 18;
 	private boolean maximized = false;
@@ -294,6 +296,12 @@ public class JMapFrame extends JInternalFrame implements MouseListener  {
         
 	    this.setContentPane(masterPanel);
 	    repaintMapWindow();
+	    
+	    
+//		 Init the map right click menu
+		mapMenu = new MapMenu();
+		chartPanel.getMapHandler().add(mapMenu);
+		
 	}
 
 	public void setMaximizedIcon(){

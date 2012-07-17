@@ -89,6 +89,10 @@ public class ToolBar extends JInternalFrame {
 			new Color(37, 37, 37), new Color(52, 52, 52));
 	
 	private boolean routeCreation = false;
+	private final JLabel newRoute;
+	private final ToolItemGroup routeToolItems;
+	private MainFrame mainFrame;
+	private final ToolItemGroup mapToolItems;
 
 	// private MouseDelegator mouseDelegator;
 
@@ -100,6 +104,8 @@ public class ToolBar extends JInternalFrame {
 	 */
 	public ToolBar(final MainFrame mainFrame) {
 
+		this.mainFrame = mainFrame;
+		
 		// Setup location
 		this.setLocation((10 + moveHandlerHeight), 10);
 		this.setVisible(true);
@@ -129,7 +135,7 @@ public class ToolBar extends JInternalFrame {
 
 		// Setup toolitems (add here for more toolitems)
 		// Tool group: Map tools
-		final ToolItemGroup mapToolItems = new ToolItemGroup();
+		mapToolItems = new ToolItemGroup();
 
 		// Tool: Select
 		final JLabel select = new JLabel(toolbarIcon("images/toolbar/select.png"));
@@ -251,7 +257,7 @@ public class ToolBar extends JInternalFrame {
 
 
 		// Tool group: Route tools
-		final ToolItemGroup routeToolItems = new ToolItemGroup();
+		routeToolItems = new ToolItemGroup();
 
 		// Tool: Routes
 		final JLabel routes = new JLabel(toolbarIcon("images/toolbar/routes.png"));
@@ -271,7 +277,7 @@ public class ToolBar extends JInternalFrame {
 		
 
 		// Tool: New route
-		final JLabel newRoute = new JLabel(toolbarIcon("images/toolbar/routes_new.png"));
+		newRoute = new JLabel(toolbarIcon("images/toolbar/routes_new.png"));
 		newRoute.addMouseListener(new MouseAdapter() {
 			
 			public void mousePressed(MouseEvent e) {
@@ -283,42 +289,7 @@ public class ToolBar extends JInternalFrame {
 			}
 			
 			public void mouseReleased(MouseEvent e) {
-				
-				if (routeCreation){
-					
-					//Deactivate 
-					routeCreation = false;
-					
-					for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
-						mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(mainFrame.getMouseMode());
-					}
-					
-					//Save route?
-					endRoute();
-					
-					//Re activate the tool options
-					
-					for (int j = 0; j < mapToolItems.getToolItems().size(); j++) {
-						JLabel label = mapToolItems.getToolItems().get(j);
-						label.setEnabled(true);
-					}
-					
-				}else{
-					routeCreation = true;
-					
-					for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
-						mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(3);
-					}
-					
-					//Deactivate other map tools
-					
-					for (int j = 0; j < mapToolItems.getToolItems().size(); j++) {
-						JLabel label = mapToolItems.getToolItems().get(j);
-						label.setEnabled(false);
-					}
-
-				}
-
+				newRoute();
 			}
 		});
 		
@@ -345,6 +316,49 @@ public class ToolBar extends JInternalFrame {
 
 	}
 	
+	public void newRoute(){
+		
+		if (routeCreation){
+			setInactiveToolItem(newRoute);
+		}else{
+			setActiveToolItem(newRoute, routeToolItems);
+		}
+		
+		if (routeCreation){
+			
+			//Deactivate 
+			routeCreation = false;
+			
+			for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
+				mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(mainFrame.getMouseMode());
+			}
+			
+			//Save route?
+			endRoute();
+			
+			//Re activate the tool options
+			
+			for (int j = 0; j < mapToolItems.getToolItems().size(); j++) {
+				JLabel label = mapToolItems.getToolItems().get(j);
+				label.setEnabled(true);
+			}
+			
+		}else{
+			routeCreation = true;
+			
+			for (int i = 0; i < mainFrame.getMapWindows().size(); i++) {
+				mainFrame.getMapWindows().get(i).getChartPanel().setMouseMode(3);
+			}
+			
+			//Deactivate other map tools
+			
+			for (int j = 0; j < mapToolItems.getToolItems().size(); j++) {
+				JLabel label = mapToolItems.getToolItems().get(j);
+				label.setEnabled(false);
+			}
+
+		}
+	}
 	
 	public void endRoute(){
 		

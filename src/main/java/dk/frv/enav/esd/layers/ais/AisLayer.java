@@ -53,12 +53,11 @@ import dk.frv.enav.esd.event.SelectMouseMode;
 import dk.frv.enav.esd.gui.views.ChartPanel;
 import dk.frv.enav.esd.gui.views.JMapFrame;
 import dk.frv.enav.esd.gui.views.MainFrame;
+import dk.frv.enav.esd.gui.views.MapMenu;
 import dk.frv.enav.esd.gui.views.StatusArea;
 import dk.frv.enav.esd.nmea.IVesselAisListener;
 import dk.frv.enav.ins.ais.VesselPositionData;
 import dk.frv.enav.ins.ais.VesselTarget;
-import dk.frv.enav.esd.layers.ais.IntendedRouteWpCircle;
-import dk.frv.enav.esd.layers.ais.IntendedRouteInfoPanel;
 
 /**
  * The class AisLayer is the layer containing all AIS targets. The class handles
@@ -81,7 +80,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	private float mapScale = 0;
 	private boolean selectionOnScreen = false;
 	private IntendedRouteInfoPanel intendedRouteInfoPanel = new IntendedRouteInfoPanel();
-
+	private MapMenu aisTargetMenu = null;
 
 	// private OMGraphic highlighted;
 	// private VesselLayer highlightedVessel;
@@ -139,7 +138,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		// selectedMMSI = -1;
 
 		statusArea.removeHighlight();
-		
+
 		doPrepare();
 	}
 
@@ -179,7 +178,8 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					VesselTarget vesselTarget = aisHandler.getVesselTargets().get(vessel.MMSI);
 					location = vesselTarget.getPositionData();
 
-					// Check if vessel is near map coordinates
+					// Check if vessel is near map coordinates or it's sending
+					// an intended route
 					boolean t1 = location.getPos().getLatitude() >= lrlat;
 					boolean t2 = (location.getPos().getLatitude() <= ullat);
 					boolean t3 = location.getPos().getLongitude() >= ullon;
@@ -187,7 +187,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 					;
 
 					if (!(t1 && t2 && t3 && t4)) {
-						continue;
+
+						if (!vesselTarget.hasIntendedRoute()) {
+							continue;
+						}
 					}
 
 					double trueHeading = location.getTrueHeading();
@@ -208,7 +211,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 						aisTargetGraphic.moveSymbol(vesselTarget.getPositionData().getPos().getLatitude(), vesselTarget
 								.getPositionData().getPos().getLongitude());
 						selectionOnScreen = true;
-						
+
 						setStatusAreaTxt();
 					}
 				}
@@ -237,7 +240,6 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 
 		}
 	}
-
 
 	@Override
 	public synchronized OMGraphicList prepare() {
@@ -272,6 +274,9 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 		if (obj instanceof MainFrame) {
 			mainFrame = (MainFrame) obj;
 		}
+		if (obj instanceof MapMenu) {
+			aisTargetMenu = (MapMenu) obj;
+		}
 	}
 
 	@Override
@@ -305,8 +310,11 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 	public boolean mouseClicked(MouseEvent e) {
 		OMGraphic newClosest = null;
 		OMList<OMGraphic> allClosest = list.findAll(e.getX(), e.getY(), 3.0f);
+
 		for (OMGraphic omGraphic : allClosest) {
-			if (omGraphic instanceof VesselLayer) {
+
+			if (omGraphic instanceof VesselLayer || omGraphic instanceof IntendedRouteWpCircle
+					|| omGraphic instanceof IntendedRouteLegGraphic) {
 				newClosest = omGraphic;
 				break;
 			}
@@ -318,7 +326,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 				removeSelection();
 			}
 
-			if (newClosest != null) {
+			if (newClosest != null && newClosest instanceof VesselLayer) {
 
 				mainFrame.setSelectedMMSI(((VesselLayer) newClosest).getMMSI());
 
@@ -327,54 +335,49 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 				doPrepare();
 
 				setStatusAreaTxt();
-			
 
 			}
 
-			//
-			//
-			// if (allClosest.size() == 0) {
-			// // HIDE GLASS PANE
-			// highlightedMMSI = 0;
-			// statusArea.removeHighlight();
-			// highlightInfoPanel.setVisible(false);
-			// return false;
-			// }
-			//
-			// if (newClosest != highlighted && newClosest != null) {
-			//
-			// highlighted = newClosest;
-			// highlightedVessel = (VesselLayer) newClosest;
-			// highlightedMMSI = highlightedVessel.getMMSI();
-			// xy =
-			// chartPanel.getMap().getProjection().forward(highlightedVessel.getLat(),
-			// highlightedVessel.getLon());
-			// // MOVE AND SHOW GLASS PANE
-			// statusArea.setHighlightedVesselMMSI(highlightedVessel.getMMSI());
-			// if(jMapFrame.isLocked())
-			// highlightInfoPanel.displayHighlight((int) xy.getX() -
-			// offsetLockedX, (int) xy.getY() - offsetLockedY);
-			// else
-			// highlightInfoPanel.displayHighlight((int) xy.getX() -
-			// offsetUnlockedX, (int) xy.getY() - offsetUnlockedY);
-			// highlightInfoPanel.setVisible(true);
-			//
-			//
-			//
-			//
-			// } else {
-			// // HIDE GLASS PANE
-			// highlightedMMSI = 0;
-			// statusArea.removeHighlight();
-			// highlightInfoPanel.setVisible(false);
-			// }
-			// doPrepare();
-			//
+		}
+
+		if (e.getButton() == MouseEvent.BUTTON3 && newClosest != null) {
+
+			if (newClosest instanceof VesselLayer) {
+
+				VesselLayer vesselLayer = (VesselLayer) newClosest;
+
+				aisTargetMenu.aisSuggestedRouteMenu(vesselLayer.getVessel().getVesselTarget());
+				aisTargetMenu.setVisible(true);
+				aisTargetMenu.show(this, e.getX() - 2, e.getY() - 2);
+
+				return true;
+
+			} else if (newClosest instanceof IntendedRouteWpCircle) {
+
+				IntendedRouteWpCircle wpCircle = (IntendedRouteWpCircle) newClosest;
+				VesselTarget vesselTarget = wpCircle.getIntendedRouteGraphic().getVesselTarget();
+
+				aisTargetMenu.aisSuggestedRouteMenu(vesselTarget);
+				aisTargetMenu.setVisible(true);
+				aisTargetMenu.show(this, e.getX() - 2, e.getY() - 2);
+
+				return true;
+			} else if (newClosest instanceof IntendedRouteLegGraphic) {
+
+				IntendedRouteLegGraphic wpCircle = (IntendedRouteLegGraphic) newClosest;
+				VesselTarget vesselTarget = wpCircle.getIntendedRouteGraphic().getVesselTarget();
+				aisTargetMenu.aisSuggestedRouteMenu(vesselTarget);
+				aisTargetMenu.setVisible(true);
+				aisTargetMenu.show(this, e.getX() - 2, e.getY() - 2);
+
+				return true;
+			}
+
 		}
 		return false;
 	}
-	
-	private void setStatusAreaTxt(){
+
+	private void setStatusAreaTxt() {
 		HashMap<String, String> info = new HashMap<String, String>();
 		Vessel vessel = this.drawnVessels.get(mainFrame.getSelectedMMSI());
 		if (vessel != null) {
@@ -431,16 +434,14 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 
 		if (newClosest != closest) {
 			Point containerPoint = SwingUtilities.convertPoint(chartPanel, e.getPoint(), jMapFrame);
-			
+
 			if (newClosest instanceof IntendedRouteWpCircle) {
-				System.out.println("hi?");
 				closest = newClosest;
 				IntendedRouteWpCircle wpCircle = (IntendedRouteWpCircle) newClosest;
-				intendedRouteInfoPanel.setPos((int) containerPoint.getX(),
-						(int) containerPoint.getY() - 10);
+				intendedRouteInfoPanel.setPos((int) containerPoint.getX(), (int) containerPoint.getY() - 10);
 				intendedRouteInfoPanel.showWpInfo(wpCircle);
 			}
-			
+
 			if (newClosest instanceof VesselLayer) {
 				jMapFrame.getGlassPane().setVisible(true);
 				closest = newClosest;
@@ -456,7 +457,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 				}
 				aisInfoPanel.setPos(x, y);
 				aisInfoPanel.setVisible(true);
-				
+
 				return true;
 			}
 		}

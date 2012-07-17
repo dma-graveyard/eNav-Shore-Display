@@ -112,6 +112,14 @@ public class MainFrame extends JFrame implements WindowListener {
 
 	}
 
+	
+	
+	public NotificationCenter getNotificationCenter() {
+		return notificationCenter;
+	}
+
+
+
 	public JMapFrame getActiveMapWindow() {
 		return activeMapWindow;
 	}

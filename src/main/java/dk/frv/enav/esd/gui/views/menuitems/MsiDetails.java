@@ -32,6 +32,7 @@ package dk.frv.enav.esd.gui.views.menuitems;
 import javax.swing.JMenuItem;
 
 import dk.frv.enav.common.xml.msi.MsiMessage;
+import dk.frv.enav.esd.gui.views.NotificationCenter;
 import dk.frv.enav.ins.gui.menuitems.IMapMenuAction;
 
 
@@ -42,6 +43,7 @@ public class MsiDetails extends JMenuItem implements IMapMenuAction {
 	 */
 	private static final long serialVersionUID = 1L;
 	private MsiMessage message;
+	private NotificationCenter notificationCenter;
 
 	public MsiDetails(String text) {
 		super();
@@ -50,6 +52,9 @@ public class MsiDetails extends JMenuItem implements IMapMenuAction {
 	
 	@Override
 	public void doAction() {
+		
+		notificationCenter.showMessage(0, message.getMessageId());
+		notificationCenter.setVisible(true);
 		
 		
 //		if (topPanel != null && topPanel.getMsiDialog() != null) {
@@ -63,4 +68,7 @@ public class MsiDetails extends JMenuItem implements IMapMenuAction {
 		this.message = message;
 	}
 	
+	public void setNotCenter(NotificationCenter notCenter){
+		this.notificationCenter = notCenter;
+	}
 }
