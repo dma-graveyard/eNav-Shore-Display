@@ -53,9 +53,13 @@ import dk.frv.ais.message.AisPosition;
 import dk.frv.ais.message.binary.RouteSuggestion;
 import dk.frv.ais.message.binary.RouteSuggestion.RouteType;
 import dk.frv.ais.reader.SendException;
+import dk.frv.ais.reader.SendRequest;
 import dk.frv.ais.sentence.Abk;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.gui.fileselection.WorkspaceFileFilter;
+import dk.frv.enav.esd.service.ais.AisSendThread;
+import dk.frv.enav.esd.service.ais.AisServices;
+
 
 /**
  * Toolbar used in the mainframe
@@ -214,54 +218,77 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		
 		sendRoute.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				System.out.println("Send Route");
 				
-				int mmsiTarget = 219230000;
-//				int mmsiTarget = 219015063;
-				
-				// Create intended route ASM
-				RouteSuggestion routeSuggestion = new RouteSuggestion();
-				
-				routeSuggestion.addWaypoint(new AisPosition(new GeoLocation(55, 12)));
-				routeSuggestion.addWaypoint(new AisPosition(new GeoLocation(55, 13)));
-				
-				routeSuggestion.setDuration(10);
-				routeSuggestion.setMsgLinkId(359);
-				routeSuggestion.setRouteType(RouteType.RECOMMENDED.getType());
-
+				AisServices service = ESD.getAisServices();
 				
 				
-				Date start = new Date();
-				// Set start time
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(start);
-				cal.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
-				routeSuggestion.setStartMonth(cal.get(Calendar.MONTH) + 1);
-				routeSuggestion.setStartDay(cal.get(Calendar.DAY_OF_MONTH));
-				routeSuggestion.setStartHour(cal.get(Calendar.HOUR_OF_DAY));
-				routeSuggestion.setStartMin(cal.get(Calendar.MINUTE));
+				service.sendRouteSuggestion(219230000, ESD.getMainFrame().getRouteManagerDialog().getRouteManager().getRoutes().get(0));
+//				
+//				
+//				
+//				
+//				int mmsiTarget = 219230000;
+////				int mmsiTarget = 219015063;
+//				
+//				// Create intended route ASM
+//				RouteSuggestion routeSuggestion = new RouteSuggestion();
+//				
+//				routeSuggestion.addWaypoint(new AisPosition(new GeoLocation(55, 12)));
+//				routeSuggestion.addWaypoint(new AisPosition(new GeoLocation(55, 13)));
+//				
+//				routeSuggestion.setDuration(10);
+//				routeSuggestion.setMsgLinkId(359);
+//				routeSuggestion.setRouteType(RouteType.RECOMMENDED.getType());
+//
+//				
+//				
+//				Date start = new Date();
+//				// Set start time
+//				Calendar cal = Calendar.getInstance();
+//				cal.setTime(start);
+//				cal.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
+//				routeSuggestion.setStartMonth(cal.get(Calendar.MONTH) + 1);
+//				routeSuggestion.setStartDay(cal.get(Calendar.DAY_OF_MONTH));
+//				routeSuggestion.setStartHour(cal.get(Calendar.HOUR_OF_DAY));
+//				routeSuggestion.setStartMin(cal.get(Calendar.MINUTE));
+//				
+//				
+//				
+//				AisMessage6 msg6 = new AisMessage6();
+//				msg6.setAppMessage(routeSuggestion);
+//				
+//				msg6.setRetransmit(0);
+//				msg6.setDestination(mmsiTarget);
+//				
+//					
+//				
+//				
+//				// Create a send request
+//				SendRequest sendRequest = new SendRequest(msg6, 1, mmsiTarget);
+//				
+//				// Create a send thread
+//				AisSendThread aisSendThread = new AisSendThread(sendRequest, null);
+//				
+//				// Start send thread
+//				aisSendThread.start();
+//				
 				
 				
-				
-				AisMessage6 msg6 = new AisMessage6();
-				msg6.setAppMessage(routeSuggestion);
-				
-				msg6.setRetransmit(0);
-				msg6.setDestination(mmsiTarget);
-				
-					
-				// Send
-				try {
-					Abk abk = ESD.getAisReader().send(msg6, 1, mmsiTarget);
-					System.out.println(abk);
-				} catch (SendException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
+//				
+//				// Send
+//				try {
+//					Abk abk = ESD.getAisReader().send(msg6, 1, mmsiTarget);
+//					System.out.println(abk);
+//				} catch (SendException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				} catch (InterruptedException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//				
 				
 			}
 		});

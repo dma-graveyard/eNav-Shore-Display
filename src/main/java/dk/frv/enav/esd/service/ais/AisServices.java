@@ -1,0 +1,189 @@
+/*
+ * Copyright 2011 Danish Maritime Authority. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *   1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ *   2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation and/or
+ * other materials provided with the distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY Danish Maritime Authority ``AS IS'' 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ * The views and conclusions contained in the software and documentation are those
+ * of the authors and should not be interpreted as representing official policies,
+ * either expressed or implied, of Danish Maritime Authority.
+ * 
+ */
+package dk.frv.enav.esd.service.ais;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.TimeZone;
+
+import org.apache.log4j.Logger;
+
+import com.bbn.openmap.MapHandlerChild;
+
+import dk.frv.ais.message.AisMessage6;
+import dk.frv.ais.message.AisPosition;
+import dk.frv.ais.message.binary.RouteSuggestion;
+import dk.frv.ais.message.binary.RouteSuggestion.RouteType;
+import dk.frv.ais.reader.SendRequest;
+import dk.frv.enav.esd.route.Route;
+import dk.frv.enav.ins.ais.AisHandler;
+import dk.frv.enav.ins.settings.Settings;
+
+/**
+ * AIS service component providing an AIS link interface.
+ */
+public class AisServices extends MapHandlerChild {
+	
+	private static final Logger LOG = Logger.getLogger(AisServices.class);
+	private Settings settings;
+	private AisHandler aisHandler;
+	protected int idCounter = 0;
+	HashMap<Integer, RouteSuggestionData> routeSuggestions;
+	
+	public enum AIS_STATUS{
+		NOT_SENT,
+		FAILED,
+		SENT_NOT_ACK,
+		RECIEVED_APP_ACK,
+		RECIEVED_ACCEPTED,
+		RECIEVED_REJECTED,
+		RECIEVED_NOTED
+	}
+	
+	public AisServices() {
+		
+		routeSuggestions = new HashMap<Integer, RouteSuggestionData>();
+		
+		//Create hashmap of all requests transmitted?
+		
+		//use linkid as id
+		//contains target mmsi, route id (does it have one maybe name?), current status, time
+		
+		
+	}
+	
+	public void sendRouteSuggestion(int mmsiDestination, Route route){
+		System.out.println("Send Route Suggestion");
+		
+		// Create route suggestion - intended route ASM
+		RouteSuggestion routeSuggestion = new RouteSuggestion();
+		routeSuggestion.setRouteType(RouteType.RECOMMENDED.getType());
+		routeSuggestion.setDuration(10);
+		
+		//Convert the route
+		
+		// Recalculate all remaining ETA's
+		
+		int maxWps = 8;
+
+		Date start = route.getStarttime();
+		
+		if (start == null){
+			start = new Date();
+		}
+		
+		// Set start time
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(start);
+		cal.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
+		routeSuggestion.setStartMonth(cal.get(Calendar.MONTH) + 1);
+		routeSuggestion.setStartDay(cal.get(Calendar.DAY_OF_MONTH));
+		routeSuggestion.setStartHour(cal.get(Calendar.HOUR_OF_DAY));
+		routeSuggestion.setStartMin(cal.get(Calendar.MINUTE));
+		
+
+		routeSuggestion.setStartMonth(cal.get(Calendar.MONTH) + 1);
+		routeSuggestion.setStartDay(cal.get(Calendar.DAY_OF_MONTH));
+		routeSuggestion.setStartHour(cal.get(Calendar.HOUR_OF_DAY));
+		routeSuggestion.setStartMin(cal.get(Calendar.MINUTE));
+		
+		int waypoints;
+		
+		if (maxWps < route.getWaypoints().size()){
+			waypoints = maxWps;
+		}else{
+			waypoints = route.getWaypoints().size();
+		}
+		
+		// Add waypoints
+		for (int i = 0; i < waypoints; i++) {
+			routeSuggestion.addWaypoint(new AisPosition(route.getWaypoints().get(i).getPos()));
+		}
+
+		//Generate the uniqueID based on mmsiDestination and current time
+		routeSuggestion.setMsgLinkId(getID());
+		
+		
+		//Generate msg6 type AIS
+		AisMessage6 msg6 = new AisMessage6();
+		msg6.setAppMessage(routeSuggestion);
+	
+		msg6.setRetransmit(0);
+		msg6.setDestination(mmsiDestination);
+		
+
+		//Add it to the hashmap
+		routeSuggestions.put(mmsiDestination, new RouteSuggestionData(mmsiDestination, route, start, AIS_STATUS.NOT_SENT));
+		
+		// Create a send request
+		SendRequest sendRequest = new SendRequest(msg6, 1, mmsiDestination);
+		
+		// Create a send thread
+		AisSendThread aisSendThread = new AisSendThread(sendRequest, this);
+		
+		// Start send thread
+		aisSendThread.start();
+	}
+	
+	
+	synchronized int getID(){
+		return idCounter +1;
+	}
+	
+	
+	@Override
+	public void findAndInit(Object obj) {
+		if (settings == null && obj instanceof Settings) {
+			settings = (Settings)obj;
+		}
+		else if (aisHandler == null && obj instanceof AisHandler) {
+			aisHandler = (AisHandler)obj;
+		}
+	}
+	
+	
+	public void sendResult(boolean sendOk, int mmsi) {
+		
+		if (sendOk){
+			routeSuggestions.get(mmsi).setStatus(AIS_STATUS.RECIEVED_APP_ACK);
+		}else{
+			routeSuggestions.get(mmsi).setStatus(AIS_STATUS.FAILED);
+		}
+		
+		if (aisHandler == null) return;
+		if (sendOk) {
+			aisHandler.getAisStatus().markSuccesfullSend();
+		} else {
+			aisHandler.getAisStatus().markFailedSend();
+		}
+	}
+
+}
