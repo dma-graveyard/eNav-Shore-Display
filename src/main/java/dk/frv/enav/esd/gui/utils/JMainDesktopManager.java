@@ -48,6 +48,7 @@ import dk.frv.enav.esd.gui.views.JMapFrame;
 import dk.frv.enav.esd.gui.views.JSettingsWindow;
 import dk.frv.enav.esd.gui.views.NotificationArea;
 import dk.frv.enav.esd.gui.views.NotificationCenter;
+import dk.frv.enav.esd.gui.views.SendRouteDialog;
 import dk.frv.enav.esd.gui.views.StatusArea;
 import dk.frv.enav.esd.gui.views.ToolBar;
 
@@ -64,6 +65,7 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 	private StatusArea statusArea;
 	private JSettingsWindow settings;
 	private RouteManagerDialog routeManager;
+	private SendRouteDialog routeDialog;
 	
 	/**
 	 * Constructor for desktopmanager
@@ -107,6 +109,7 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 		super.activateFrame(notCenter);
 		super.activateFrame(settings);
 		super.activateFrame(routeManager);
+		super.activateFrame(routeDialog);
 	}
 	
 	public void clearToFront(){
@@ -247,6 +250,14 @@ public class JMainDesktopManager extends DefaultDesktopManager {
 	 */
 	public void setRouteManager(RouteManagerDialog routeManager) {
 		this.routeManager = routeManager;
+	}
+
+	/**
+	 * Set RouteExchange Dialog
+	 * @param notCenter
+	 */
+	public void setRouteExchangeDialog(SendRouteDialog routeDialog) {
+		this.routeDialog = routeDialog;
 	}
 
 	/**

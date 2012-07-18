@@ -97,6 +97,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	private NotificationCenter notificationCenter = new NotificationCenter();
 	private JSettingsWindow settingsWindow = new JSettingsWindow();
 	private RouteManagerDialog routeManagerDialog = new RouteManagerDialog(this);
+	private SendRouteDialog sendRouteDialog = new SendRouteDialog();
 
 	private StatusArea statusArea = new StatusArea(this);
 	private JMapFrame activeMapWindow = null;
@@ -342,16 +343,18 @@ public class MainFrame extends JFrame implements WindowListener {
 		desktop.getManager().setNotCenter(notificationCenter);
 		desktop.getManager().setSettings(settingsWindow);
 		desktop.getManager().setRouteManager(routeManagerDialog);
+		desktop.getManager().setRouteExchangeDialog(sendRouteDialog);
 
 		desktop.add(statusArea, true);
 		desktop.add(notificationCenter, true);
 		desktop.add(toolbar, true);
 		desktop.add(notificationArea, true);
 		desktop.add(settingsWindow, true);
+		desktop.add(sendRouteDialog, true);
 
 		beanHandler.add(notificationArea);
 		beanHandler.add(settingsWindow);
-		beanHandler.add(settingsWindow);
+		beanHandler.add(sendRouteDialog);
 		// dtp.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
 		// Add self to bean handler
@@ -360,6 +363,7 @@ public class MainFrame extends JFrame implements WindowListener {
 
 		desktop.add(routeManagerDialog, true);
 		beanHandler.add(routeManagerDialog);
+		beanHandler.add(routeManagerDialog.getRouteManager());
 //		routeManagerDialog.setVisible(true);
 
 		notificationCenter.showMiddleTable(0);
@@ -676,7 +680,13 @@ public class MainFrame extends JFrame implements WindowListener {
 	public synchronized void setSelectedMMSI(long selectedMMSI) {
 		this.selectedMMSI = selectedMMSI;
 	}
+
+
+
+	public SendRouteDialog getSendRouteDialog() {
+		return sendRouteDialog;
+	}
 	
-	
+
 
 }

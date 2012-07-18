@@ -347,11 +347,6 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		backgroundPane.add(bottomPanel, "1, 3, fill, fill");
 		bottomPanel.setLayout(null);
 
-		// JScrollPane scrollPane = new JScrollPane();
-		// scrollPane.setBounds(0, 0, 140, 428);
-		// scrollPane.setBorder(null);
-		// bottomPanel.add(scrollPane);
-
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -372,15 +367,6 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 
 		menuPanel.add(labelContainer);
 
-		// If many tabs
-		// JPanel labelContainer = new JPanel();
-		// labelContainer.setLocation(0, 0);
-		// labelContainer.setBackground(GuiStyler.backgroundColor);
-		// labelContainer.setSize(new Dimension(140, 417));
-		// scrollPane.setViewportView(labelContainer);
-		// labelContainer.setLayout(new GridLayout(0, 1, 0, 0));
-
-
 		contentPane = new JPanel();
 		contentPane.setBorder(new MatteBorder(0, 1, 0, 0, new Color(70, 70, 70)));
 		contentPane.setBounds(140, 0, 513, 428);
@@ -388,16 +374,11 @@ public class JSettingsWindow extends ComponentFrame implements MouseListener {
 		contentPane.setBackground(GuiStyler.backgroundColor);
 		contentPane.setLayout(null);
 
-		// ok = new GradientLabel("OK", new
-		// ImageIcon("images/toolbar/select.png"), new Color(83, 83, 83), new
-		// Color(105, 105, 105));
 		ok = new JLabel("OK", new ImageIcon("images/buttons/ok.png"), JLabel.CENTER);
 		ok.setBounds(335, 390, 75, 20);
 		GuiStyler.styleButton(ok);
 		contentPane.add(ok);
 
-		// cancel = new GradientLabel("CANCEL", new Color(83, 83, 83), new
-		// Color(105, 105, 105));
 		cancel = new JLabel("CANCEL", new ImageIcon("images/buttons/cancel.png"), JLabel.CENTER);
 		GuiStyler.styleButton(cancel);
 		cancel.setBounds(417, 390, 75, 20);

@@ -346,7 +346,10 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 
 				VesselLayer vesselLayer = (VesselLayer) newClosest;
 
-				aisTargetMenu.aisSuggestedRouteMenu(vesselLayer.getVessel().getVesselTarget());
+				aisTargetMenu.aisMenu(vesselLayer.getVessel().getVesselTarget());
+				
+//				aisTargetMenu.aisSuggestedRouteMenu(vesselLayer.getVessel().getVesselTarget());
+				
 				aisTargetMenu.setVisible(true);
 				aisTargetMenu.show(this, e.getX() - 2, e.getY() - 2);
 

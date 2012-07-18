@@ -59,6 +59,7 @@ import com.bbn.openmap.MapBean;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.ais.AisHandler;
 import dk.frv.enav.esd.gui.views.menuitems.AisIntendedRouteToggle;
+import dk.frv.enav.esd.gui.views.menuitems.AisTargetDetails;
 import dk.frv.enav.esd.gui.views.menuitems.GeneralHideIntendedRoutes;
 import dk.frv.enav.esd.gui.views.menuitems.GeneralNewRoute;
 import dk.frv.enav.esd.gui.views.menuitems.GeneralShowIntendedRoutes;
@@ -128,6 +129,7 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	private RouteWaypointActivateToggle routeWaypointActivateToggle;
 	private RouteWaypointDelete routeWaypointDelete;
 	private RouteEditEndRoute routeEditEndRoute;
+	private AisTargetDetails aisTargetDetails;
 	
 	// bean context
 	protected String propertyPrefix = null;
@@ -135,6 +137,7 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	protected boolean isolated = false;
 	private RouteManager routeManager;
 	private Route route;
+	private SendRouteDialog sendRouteDialog;
 	
 	//Route suggest?
 //	private RouteSuggestionDialog routeSuggestionDialog;
@@ -217,6 +220,10 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 		routeEditEndRoute = new RouteEditEndRoute("End route");
 		routeEditEndRoute.addActionListener(this);
 		
+		// ais menu items
+		aisTargetDetails = new AisTargetDetails("Send Route");
+		aisTargetDetails.addActionListener(this);
+		
 	}
 	
 	/**
@@ -282,16 +289,17 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 		add(scaleMenu);
 	}
 	
+	
 	/**
 	 * Builds ais target menu
 	 */
-	public void aisMenu(VesselTargetGraphic targetGraphic){
+	public void aisMenu(VesselTarget vesselTarget){
 		removeAll();
-
 		
-		VesselTarget vesselTarget = targetGraphic.getVesselTarget();
-
+		aisTargetDetails.setMSSI(vesselTarget.getMmsi());
+		aisTargetDetails.setSendRouteDialog(ESD.getMainFrame().getSendRouteDialog());
 		
+		add(aisTargetDetails);
 		
 		aisIntendedRouteToggle.setVesselTargetSettings(vesselTarget.getSettings());
 		aisIntendedRouteToggle.setAisLayer(aisLayer);
@@ -308,9 +316,7 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 			aisIntendedRouteToggle.setText("Show intended route");
 		}
 		add(aisIntendedRouteToggle);
-		
-		
-		
+
 		generalMenu(false);
 	}
 	
