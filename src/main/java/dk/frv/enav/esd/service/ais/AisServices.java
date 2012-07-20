@@ -31,9 +31,9 @@ package dk.frv.enav.esd.service.ais;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.TimeZone;
-
-import org.apache.log4j.Logger;
 
 import com.bbn.openmap.MapHandlerChild;
 
@@ -44,6 +44,7 @@ import dk.frv.ais.message.binary.RouteSuggestion;
 import dk.frv.ais.message.binary.RouteSuggestion.RouteType;
 import dk.frv.ais.message.binary.RouteSuggestionReply;
 import dk.frv.ais.reader.SendRequest;
+import dk.frv.enav.esd.ais.AISRouteExchangeListener;
 import dk.frv.enav.esd.route.Route;
 import dk.frv.enav.ins.ais.AisHandler;
 import dk.frv.enav.ins.settings.Settings;
@@ -53,11 +54,11 @@ import dk.frv.enav.ins.settings.Settings;
  */
 public class AisServices extends MapHandlerChild {
 
-	private static final Logger LOG = Logger.getLogger(AisServices.class);
 	private Settings settings;
 	private AisHandler aisHandler;
 	protected int idCounter = 0;
 	RouteSuggestionDataStructure<RouteSuggestionKey, RouteSuggestionData> routeSuggestions = new RouteSuggestionDataStructure<RouteSuggestionKey, RouteSuggestionData>();
+	protected Set<AISRouteExchangeListener> routeExchangeListener = new HashSet<AISRouteExchangeListener>();
 
 	public enum AIS_STATUS {
 		NOT_SENT, FAILED, SENT_NOT_ACK, RECIEVED_APP_ACK, RECIEVED_ACCEPTED, RECIEVED_REJECTED, RECIEVED_NOTED
@@ -73,9 +74,32 @@ public class AisServices extends MapHandlerChild {
 
 			System.out.println("Acknowledge recieved for " + mmsi + " " + reply.getTextSequenceNum());
 
-			routeSuggestions.get(new RouteSuggestionKey(mmsi, reply.getTextSequenceNum())).setStatus(
-					AIS_STATUS.RECIEVED_APP_ACK);
+			if (routeSuggestions.get(new RouteSuggestionKey(mmsi, reply.getTextSequenceNum())).getStatus() != AIS_STATUS.RECIEVED_APP_ACK){
+				//New change
+				routeSuggestions.get(new RouteSuggestionKey(mmsi, reply.getTextSequenceNum())).setStatus(
+						AIS_STATUS.RECIEVED_APP_ACK);
+				notifyRouteExchangeListeners();
+			}
 
+		}
+		
+
+
+	}
+	
+
+	/**
+	 * Add a listener to the asService
+	 * 
+	 * @param listener
+	 */
+	public synchronized void addRouteExchangeListener(AISRouteExchangeListener listener) {
+		routeExchangeListener.add(listener);
+	}
+	
+	protected synchronized void notifyRouteExchangeListeners(){
+		for (AISRouteExchangeListener listener : routeExchangeListener) {
+			listener.aisUpdate();
 		}
 
 	}
@@ -89,19 +113,31 @@ public class AisServices extends MapHandlerChild {
 
 			switch (response) {
 			case 0:
-				// Accepted
-				routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
-						AIS_STATUS.RECIEVED_ACCEPTED);
+				if (routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).getStatus() != AIS_STATUS.RECIEVED_ACCEPTED){
+					// Accepted
+					routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
+							AIS_STATUS.RECIEVED_ACCEPTED);
+					notifyRouteExchangeListeners();
+				}
+
 				break;
 			case 1:
 				// Rejected
-				routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
-						AIS_STATUS.RECIEVED_REJECTED);
+				if (routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).getStatus() != AIS_STATUS.RECIEVED_REJECTED){
+					// Accepted
+					routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
+							AIS_STATUS.RECIEVED_REJECTED);
+					notifyRouteExchangeListeners();
+				}
 				break;
 			case 2:
 				// Noted
-				routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
-						AIS_STATUS.RECIEVED_NOTED);
+				if (routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).getStatus() != AIS_STATUS.RECIEVED_NOTED){
+					// Accepted
+					routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
+							AIS_STATUS.RECIEVED_NOTED);
+					notifyRouteExchangeListeners();
+				}
 				break;
 			default:
 				break;

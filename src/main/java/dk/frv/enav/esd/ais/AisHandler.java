@@ -40,10 +40,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -146,7 +144,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler, IStatusC
 	protected AisReader aisReader = null;
 	protected Settings settings;
 	protected List<IAisRouteSuggestionListener> suggestionListeners = new ArrayList<IAisRouteSuggestionListener>();
-	protected Set<AISRouteExchangeListener> routeExchangeListener = new HashSet<AISRouteExchangeListener>();
+
 
 	private long ownMMSI = 219622000;
 	private AisServices aisService;
@@ -167,14 +165,6 @@ public class AisHandler extends MapHandlerChild implements IAisHandler, IStatusC
 		ESD.startThread(this, "AisHandler");
 	}
 
-	/**
-	 * Add a listener to the msihandler
-	 * 
-	 * @param listener
-	 */
-	public synchronized void addRouteExchangeListener(AISRouteExchangeListener listener) {
-		routeExchangeListener.add(listener);
-	}
 	
 	/**
 	 * Add a route suggestion
@@ -411,12 +401,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler, IStatusC
 		}
 	}
 	
-	protected synchronized void notifyRouteExchangeListeners(){
-		for (AISRouteExchangeListener listener : routeExchangeListener) {
-			listener.aisUpdate();
-		}
 
-	}
 
 	/**
 	 * Method receiving AIS messages from AIS sensor
@@ -494,7 +479,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler, IStatusC
 					if (message instanceof AsmAcknowledge){
 						
 						aisService.acknowledgedRecieved(aisMessage.getUserId(),  (AsmAcknowledge) message);
-						AsmAcknowledge reply = (AsmAcknowledge) message;
+//						AsmAcknowledge reply = (AsmAcknowledge) message;
 						
 //						System.out.println("Acknowledge recieved " + reply.getTextSequenceNum());
 //						System.out.println("Ack recieved: " + " " + aisMessage.getUserId());
@@ -504,7 +489,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler, IStatusC
 					if (message instanceof RouteSuggestionReply) {
 						System.out.println("Route suggestion reply");
 
-						RouteSuggestionReply reply = (RouteSuggestionReply) message;
+//						RouteSuggestionReply reply = (RouteSuggestionReply) message;
 						
 						aisService.replyRecieved(aisMessage.getUserId(),  (RouteSuggestionReply) message);
 						

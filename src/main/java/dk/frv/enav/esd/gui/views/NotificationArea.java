@@ -50,14 +50,12 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
-import dk.frv.ais.message.AisMessage;
 import dk.frv.enav.esd.ais.AISRouteExchangeListener;
-import dk.frv.enav.esd.ais.AisHandler;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 import dk.frv.enav.esd.gui.utils.ComponentFrame;
 import dk.frv.enav.esd.msi.IMsiUpdateListener;
 import dk.frv.enav.esd.msi.MsiHandler;
-import dk.frv.enav.esd.nmea.IVesselAisListener;
+import dk.frv.enav.esd.service.ais.AisServices;
 
 /**
  * Class for setting up the notification area of the application
@@ -81,7 +79,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 	public int width;
 	public int height;
 	private MsiHandler msiHandler;
-	private AisHandler aisHandler;
+	private AisServices aisService;
 
 	Border paddingLeft = BorderFactory.createMatteBorder(0, 8, 0, 0, new Color(65, 65, 65));
 	Border paddingBottom = BorderFactory.createMatteBorder(0, 0, 5, 0, new Color(83, 83, 83));
@@ -193,9 +191,9 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 			msiHandler.addListener(this);
 		}
 		
-		if (obj instanceof AisHandler) {
-			aisHandler = (AisHandler) obj;
-			aisHandler.addRouteExchangeListener(this);
+		if (obj instanceof AisServices) {
+			aisService = (AisServices) obj;
+			aisService.addRouteExchangeListener(this);
 		}
 
 	}

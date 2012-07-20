@@ -366,7 +366,6 @@ public class MainFrame extends JFrame implements WindowListener {
 		beanHandler.add(routeManagerDialog.getRouteManager());
 //		routeManagerDialog.setVisible(true);
 
-		notificationCenter.showMiddleTable(0);
 
 		setWorkSpace(workspace);
 
@@ -595,8 +594,7 @@ public class MainFrame extends JFrame implements WindowListener {
 	}
 
 	public void toggleNotificationCenter(int service) {
-		notificationCenter.showMiddleTable(service);
-		notificationCenter.toggleVisibility();
+		notificationCenter.toggleVisibility(service);
 	}
 
 	@Override
