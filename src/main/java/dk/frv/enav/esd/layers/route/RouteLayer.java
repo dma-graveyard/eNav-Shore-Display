@@ -377,7 +377,6 @@ public class RouteLayer extends OMGraphicHandlerLayer implements IRoutesUpdateLi
 		}
 		
 		if(!dragging){
-			jMapFrame.getGlassPane().setVisible(false);
 			selectedGraphic = null;
 			OMList<OMGraphic> allClosest = graphics.findAll(e.getX(), e.getY(), 5.0f);
 			for (OMGraphic omGraphic : allClosest) {
@@ -439,7 +438,6 @@ public class RouteLayer extends OMGraphicHandlerLayer implements IRoutesUpdateLi
 			if (newClosest != closest) {
 				if (newClosest == null) {
 					metocInfoPanel.setVisible(false);
-					jMapFrame.getGlassPane().setVisible(false);
 					waypointInfoPanel.setVisible(false);
 					closest = null;
 				} else {
@@ -470,7 +468,6 @@ public class RouteLayer extends OMGraphicHandlerLayer implements IRoutesUpdateLi
 				return true;
 			} else {
 				waypointInfoPanel.setVisible(false);
-				jMapFrame.getGlassPane().setVisible(false);
 				closest = null;
 				return true;
 			}

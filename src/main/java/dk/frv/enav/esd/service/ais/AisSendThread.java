@@ -48,8 +48,10 @@ public class AisSendThread extends Thread implements ISendResultListener {
 	protected AisServices aisServices;
 	protected Abk abk = null;
 	protected Boolean abkReceived = false;
+	protected int id;
 	
-	public AisSendThread(SendRequest sendRequest, AisServices aisServices) {
+	public AisSendThread(SendRequest sendRequest, AisServices aisServices, int id) {
+		this.id = id;
 		this.sendRequest = sendRequest;
 		this.aisServices = aisServices;
 	}
@@ -61,7 +63,7 @@ public class AisSendThread extends Thread implements ISendResultListener {
 			ESD.getAisReader().send(sendRequest, this);
 		} catch (SendException e) {
 			LOG.error("Failed to send AIS message: " + sendRequest + ": " + e.getMessage());
-			aisServices.sendResult(false, sendRequest.getDestination());
+			aisServices.sendResult(false, sendRequest.getDestination(), id);
 			return;
 		}
 		
@@ -81,12 +83,12 @@ public class AisSendThread extends Thread implements ISendResultListener {
 		
 		if (abk != null && abk.isSuccess()) {
 			LOG.info("AIS SEND SUCCESS");
-			aisServices.sendResult(true, sendRequest.getDestination());
+			aisServices.sendResult(true, sendRequest.getDestination(), id);
 			
 		} else {
 			LOG.info("AIS SEND ERROR");
 			
-			aisServices.sendResult(false, sendRequest.getDestination());
+			aisServices.sendResult(false, sendRequest.getDestination(), id);
 			
 		}
 		

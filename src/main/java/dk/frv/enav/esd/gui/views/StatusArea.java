@@ -51,6 +51,7 @@ import javax.swing.border.EtchedBorder;
 
 import com.bbn.openmap.proj.coords.LatLonPoint;
 
+import dk.frv.ais.message.AisMessage;
 import dk.frv.enav.esd.event.IMapCoordListener;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 import dk.frv.enav.ins.common.text.Formatter;
@@ -301,9 +302,9 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 		for (Iterator<Entry<String, String>> i = hashMap.entrySet().iterator(); i.hasNext();) {
 			Entry<String, String> ii = i.next();
 			if(highlightItems.containsKey(ii.getKey())){
-				highlightItems.get(ii.getKey()).setText(" "+ii.getKey()+"  " + ii.getValue());
+				highlightItems.get(ii.getKey()).setText(AisMessage.trimText(" "+ii.getKey()+"  " + ii.getValue()));
 			} else {
-				highlightItems.put(ii.getKey(), new JLabel(" "+ii.getKey()+"  " + ii.getValue()));
+				highlightItems.put(ii.getKey(), new JLabel(AisMessage.trimText(" "+ii.getKey()+"  " + ii.getValue())));
 			}
 		}
 		repaintToolbar();

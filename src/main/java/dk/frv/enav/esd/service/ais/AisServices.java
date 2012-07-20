@@ -31,7 +31,6 @@ package dk.frv.enav.esd.service.ais;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
@@ -40,8 +39,10 @@ import com.bbn.openmap.MapHandlerChild;
 
 import dk.frv.ais.message.AisMessage6;
 import dk.frv.ais.message.AisPosition;
+import dk.frv.ais.message.binary.AsmAcknowledge;
 import dk.frv.ais.message.binary.RouteSuggestion;
 import dk.frv.ais.message.binary.RouteSuggestion.RouteType;
+import dk.frv.ais.message.binary.RouteSuggestionReply;
 import dk.frv.ais.reader.SendRequest;
 import dk.frv.enav.esd.route.Route;
 import dk.frv.enav.ins.ais.AisHandler;
@@ -56,7 +57,7 @@ public class AisServices extends MapHandlerChild {
 	private Settings settings;
 	private AisHandler aisHandler;
 	protected int idCounter = 0;
-	HashMap<Integer, RouteSuggestionData> routeSuggestions;
+	RouteSuggestionDataStructure<RouteSuggestionKey, RouteSuggestionData> routeSuggestions = new RouteSuggestionDataStructure<RouteSuggestionKey, RouteSuggestionData>();
 
 	public enum AIS_STATUS {
 		NOT_SENT, FAILED, SENT_NOT_ACK, RECIEVED_APP_ACK, RECIEVED_ACCEPTED, RECIEVED_REJECTED, RECIEVED_NOTED
@@ -64,13 +65,56 @@ public class AisServices extends MapHandlerChild {
 
 	public AisServices() {
 
-		routeSuggestions = new HashMap<Integer, RouteSuggestionData>();
+	}
 
-		// Create hashmap of all requests transmitted?
+	public void acknowledgedRecieved(long mmsi, AsmAcknowledge reply) {
 
-		// use linkid as id
-		// contains target mmsi, route id (does it have one maybe name?),
-		// current status, time
+		if (routeSuggestions.containsKey(new RouteSuggestionKey(mmsi, reply.getTextSequenceNum()))) {
+
+			System.out.println("Acknowledge recieved for " + mmsi + " " + reply.getTextSequenceNum());
+
+			routeSuggestions.get(new RouteSuggestionKey(mmsi, reply.getTextSequenceNum())).setStatus(
+					AIS_STATUS.RECIEVED_APP_ACK);
+
+		}
+
+	}
+
+	public void replyRecieved(long mmsi, RouteSuggestionReply message) {
+
+		if (routeSuggestions.containsKey(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId()))) {
+
+			System.out.println("Reply recieved for " + mmsi + " " + message.getRefMsgLinkId());
+			int response = message.getResponse();
+
+			switch (response) {
+			case 0:
+				// Accepted
+				routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
+						AIS_STATUS.RECIEVED_ACCEPTED);
+				break;
+			case 1:
+				// Rejected
+				routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
+						AIS_STATUS.RECIEVED_REJECTED);
+				break;
+			case 2:
+				// Noted
+				routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
+						AIS_STATUS.RECIEVED_NOTED);
+				break;
+			default:
+				break;
+			}
+
+			// Notify listeners
+
+			// System.out.println(routeSuggestions.get(new
+			// RouteSuggestionKey(mmsi, message.getRefMsgLinkId())));
+
+			// System.out.println("The response was: " + response);
+
+		}
 
 	}
 
@@ -121,8 +165,10 @@ public class AisServices extends MapHandlerChild {
 			routeSuggestion.addWaypoint(new AisPosition(route.getWaypoints().get(i).getPos()));
 		}
 
+		int id = getID();
+
 		// Generate the uniqueID based on mmsiDestination and current time
-		routeSuggestion.setMsgLinkId(getID());
+		routeSuggestion.setMsgLinkId(id);
 
 		// Generate msg6 type AIS
 		AisMessage6 msg6 = new AisMessage6();
@@ -132,21 +178,22 @@ public class AisServices extends MapHandlerChild {
 		msg6.setDestination(mmsiDestination);
 
 		// Add it to the hashmap
-		routeSuggestions.put(mmsiDestination, new RouteSuggestionData(mmsiDestination, route, start,
-				AIS_STATUS.NOT_SENT));
+		routeSuggestions.put(new RouteSuggestionKey(mmsiDestination, id), new RouteSuggestionData(id, mmsiDestination,
+				route, start, AIS_STATUS.NOT_SENT));
 
 		// Create a send request
 		SendRequest sendRequest = new SendRequest(msg6, 1, mmsiDestination);
 
 		// Create a send thread
-		AisSendThread aisSendThread = new AisSendThread(sendRequest, this);
+		AisSendThread aisSendThread = new AisSendThread(sendRequest, this, id);
 
 		// Start send thread
 		aisSendThread.start();
 	}
 
 	synchronized int getID() {
-		return idCounter + 1;
+		idCounter++;
+		return idCounter;
 	}
 
 	@Override
@@ -158,12 +205,12 @@ public class AisServices extends MapHandlerChild {
 		}
 	}
 
-	public void sendResult(boolean sendOk, int mmsi) {
+	public void sendResult(boolean sendOk, int mmsi, int id) {
 
 		if (sendOk) {
-			routeSuggestions.get(mmsi).setStatus(AIS_STATUS.RECIEVED_APP_ACK);
+			routeSuggestions.get(new RouteSuggestionKey(Long.valueOf(mmsi), id)).setStatus(AIS_STATUS.RECIEVED_APP_ACK);
 		} else {
-			routeSuggestions.get(mmsi).setStatus(AIS_STATUS.FAILED);
+			routeSuggestions.get(new RouteSuggestionKey(Long.valueOf(mmsi), id)).setStatus(AIS_STATUS.FAILED);
 		}
 
 		if (aisHandler == null)
@@ -174,5 +221,11 @@ public class AisServices extends MapHandlerChild {
 			aisHandler.getAisStatus().markFailedSend();
 		}
 	}
+
+	public RouteSuggestionDataStructure<RouteSuggestionKey, RouteSuggestionData> getRouteSuggestions() {
+		return routeSuggestions;
+	}
+	
+	
 
 }

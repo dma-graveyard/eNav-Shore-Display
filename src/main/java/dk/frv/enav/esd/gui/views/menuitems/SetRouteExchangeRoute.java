@@ -32,20 +32,21 @@ package dk.frv.enav.esd.gui.views.menuitems;
 import javax.swing.JMenuItem;
 
 import dk.frv.enav.esd.gui.views.SendRouteDialog;
+import dk.frv.enav.esd.route.Route;
 import dk.frv.enav.ins.gui.menuitems.IMapMenuAction;
 
 
 
-public class AisTargetDetails extends JMenuItem implements IMapMenuAction {
+public class SetRouteExchangeRoute extends JMenuItem implements IMapMenuAction {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private long MMSI;	
+	private Route route;
 	private SendRouteDialog sendRouteDialog;
 
-	public AisTargetDetails(String text) {
+	public SetRouteExchangeRoute(String text) {
 		super();
 		this.setText(text);
 	}
@@ -53,18 +54,13 @@ public class AisTargetDetails extends JMenuItem implements IMapMenuAction {
 	@Override
 	public void doAction() {
 		
-		//Ais target thing?
-		sendRouteDialog.setSelectedMMSI(MMSI);
-//		sendRouteDialog.loadData();
+		sendRouteDialog.setSelectedRoute(route);
 		sendRouteDialog.setVisible(true);
-		
-//		dialog.setVisible(true);
-		System.out.println("Send route dialog");	
 	}
 
 	
-	public void setMSSI(long MSSI) {
-		this.MMSI = MSSI;
+	public void setRoute(Route route) {
+		this.route = route;
 	}	
 	
 	public void setSendRouteDialog(SendRouteDialog sendRouteDialog){

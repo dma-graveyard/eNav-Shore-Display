@@ -50,17 +50,19 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
+import dk.frv.ais.message.AisMessage;
+import dk.frv.enav.esd.ais.AISRouteExchangeListener;
+import dk.frv.enav.esd.ais.AisHandler;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 import dk.frv.enav.esd.gui.utils.ComponentFrame;
 import dk.frv.enav.esd.msi.IMsiUpdateListener;
 import dk.frv.enav.esd.msi.MsiHandler;
+import dk.frv.enav.esd.nmea.IVesselAisListener;
 
 /**
  * Class for setting up the notification area of the application
- * 
- * @author Steffen D. Sommer (steffendsommer@gmail.com)
  */
-public class NotificationArea extends ComponentFrame implements IMsiUpdateListener {
+public class NotificationArea extends ComponentFrame implements IMsiUpdateListener, AISRouteExchangeListener {
 
 	private static final long serialVersionUID = 1L;
 	private Boolean locked = false;
@@ -69,7 +71,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 	private JPanel notificationPanel;
 	private static int moveHandlerHeight = 18;
 	private static int notificationHeight = 25;
-	private static int notificationWidth = 125;
+	private static int notificationWidth = 130;
 	private static int notificationPanelOffset = 4;
 	private HashMap<String, JPanel> notifications = new HashMap<String, JPanel>();
 	private HashMap<String, String> services = new HashMap<String, String>();
@@ -79,6 +81,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 	public int width;
 	public int height;
 	private MsiHandler msiHandler;
+	private AisHandler aisHandler;
 
 	Border paddingLeft = BorderFactory.createMatteBorder(0, 8, 0, 0, new Color(65, 65, 65));
 	Border paddingBottom = BorderFactory.createMatteBorder(0, 0, 5, 0, new Color(83, 83, 83));
@@ -143,6 +146,27 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 			}
 
 		});
+		
+		
+		// Notification: RouteExchange
+		final JPanel routeExchange = new JPanel();
+		notifications.put("routeExchange", routeExchange);
+		services.put("routeExchange", "Route Exchange");
+
+		routeExchange.addMouseListener(new MouseAdapter() {
+
+			public void mousePressed(MouseEvent e) {
+				routeExchange.setBorder(notificationPaddingPressed);
+				routeExchange.setBackground(new Color(45, 45, 45));
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				routeExchange.setBorder(notificationPadding);
+				routeExchange.setBackground(new Color(65, 65, 65));
+				mainFrame.toggleNotificationCenter(1);
+			}
+
+		});
 
 		// Create the masterpanel for aligning
 		masterPanel = new JPanel(new BorderLayout());
@@ -167,6 +191,11 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 		if (obj instanceof MsiHandler) {
 			msiHandler = (MsiHandler) obj;
 			msiHandler.addListener(this);
+		}
+		
+		if (obj instanceof AisHandler) {
+			aisHandler = (AisHandler) obj;
+			aisHandler.addRouteExchangeListener(this);
 		}
 
 	}
@@ -284,7 +313,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 			// Create labels for each service
 			// The label
 			JLabel notification = new JLabel(service);
-			notification.setPreferredSize(new Dimension(76, notificationHeight));
+			notification.setPreferredSize(new Dimension(80, notificationHeight));
 			notification.setFont(new Font("Arial", Font.PLAIN, 11));
 			notification.setForeground(new Color(237, 237, 237));
 			servicePanel.add(notification);
@@ -399,5 +428,11 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 			this.setLocation(new_location);
 
 		}
+	}
+
+
+	@Override
+	public void aisUpdate() {
+		System.out.println("ais updated");
 	}
 }

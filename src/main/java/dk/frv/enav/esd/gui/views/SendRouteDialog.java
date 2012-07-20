@@ -25,6 +25,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 
+import dk.frv.ais.message.AisMessage;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.ais.AisHandler;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
@@ -36,7 +37,7 @@ import dk.frv.enav.esd.service.ais.AisServices;
 import dk.frv.enav.ins.ais.AisTarget;
 import dk.frv.enav.ins.ais.VesselTarget;
 
-public class SendRouteDialog extends ComponentFrame implements MouseListener, ActionListener  {
+public class SendRouteDialog extends ComponentFrame implements MouseListener, ActionListener {
 	/**
 	 * 
 	 */
@@ -51,7 +52,7 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 	private JLabel sendLbl;
 	private JLabel cancelLbl;
 	private JLabel zoomLbl;
-	
+
 	private static int moveHandlerHeight = 18;
 
 	private JPanel mainPanel;
@@ -64,7 +65,11 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 	private JLabel statusLbl;
 	private AisHandler aisHandler;
 	private RouteManager routeManager;
-	
+
+	private Route route;
+	private long mmsi;
+	private boolean loading = false;
+
 	/**
 	 * Create the frame.
 	 */
@@ -227,8 +232,7 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 		routePanel.add(zoomLbl);
 
 		routeListComboBox = new JComboBox();
-		routeListComboBox.setModel(new DefaultComboBoxModel(new String[] { "New route 1", "New route 2", "Blabla route",
-				"Oslo route" }));
+		routeListComboBox.setModel(new DefaultComboBoxModel(new String[] { "" }));
 		routeListComboBox.setBounds(91, 20, 143, 20);
 		routePanel.add(routeListComboBox);
 		GuiStyler.styleDropDown(routeListComboBox);
@@ -256,7 +260,7 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 		// sendBtn.setBounds(10, 61, 89, 23);
 		// sendPanel.add(sendBtn);
 
-		statusLbl = new JLabel("N/A");
+		statusLbl = new JLabel("");
 		statusLbl.setBounds(10, 11, 224, 39);
 		sendPanel.add(statusLbl);
 		GuiStyler.styleText(statusLbl);
@@ -273,10 +277,10 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 		sendLbl.addMouseListener(this);
 		cancelLbl.addMouseListener(this);
 		zoomLbl.addMouseListener(this);
-		
+
 		mmsiListComboBox.addActionListener(this);
 		routeListComboBox.addActionListener(this);
-		
+
 	}
 
 	@Override
@@ -308,110 +312,160 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 
 		if (arg0.getSource() == sendLbl) {
 
-
-			int mmsiTarget = Integer.parseInt( (String) mmsiListComboBox.getSelectedItem() );
-			Route selectedRoute = ESD.getMainFrame().getRouteManagerDialog().getRouteManager().getRoutes().get(routeListComboBox.getSelectedIndex());
-			
+			int mmsiTarget = Integer.parseInt((String) mmsiListComboBox.getSelectedItem());
 			mmsiTarget = 219230000;
-			
+
 			AisServices service = ESD.getAisServices();
-			service.sendRouteSuggestion(mmsiTarget, selectedRoute);
 			
-			//Send it
-			System.out.println("Selected the mmsi: " + mmsiListComboBox.getSelectedItem() + " Hardcoded to: 219230000");
-			System.out.println("Selected the route: " + routeListComboBox.getSelectedItem());
-			System.out.println("The route is index: " + routeListComboBox.getSelectedIndex());
+			if (route == null){
+				route = routeManager.getRoutes().get(routeListComboBox.getSelectedIndex());
+//				System.out.println("no route");
+			}
 			
-//			this.setVisible(false);
+			if (mmsi == -1){
+				mmsi = (Long) mmsiListComboBox.getSelectedItem();
+//				System.out.println("no mmsi");
+			}
 			
+			service.sendRouteSuggestion(mmsiTarget, route);	
 			
-			
-			
-			
-			
-			
+
+			// Send it
+//			System.out.println("Selected the mmsi: " + mmsiListComboBox.getSelectedItem() + " Hardcoded to: 219230000");
+//			System.out.println("Selected the route: " + route.getName());
+//			System.out.println("The route is index: " + routeListComboBox.getSelectedIndex());
+
+			 this.setVisible(false);
+
+			this.mmsi = -1;
+			this.route = null;
+
 		}
 		if (arg0.getSource() == cancelLbl) {
-			
-			//Hide it
+
+			// Hide it
 			this.setVisible(false);
 		}
-		
+
 		if (arg0.getSource() == zoomLbl) {
-			
-			//go to the route on the map
-			
+
+			// go to the route on the map
+
 		}
 	}
-	
-	public void loadData(){
+
+	public void loadData() {
+//		System.out.println("load data");
+		loading = true;
 		mmsiListComboBox.removeAllItems();
 		for (int i = 0; i < aisHandler.getShipList().size(); i++) {
 			mmsiListComboBox.addItem(Long.toString(aisHandler.getShipList().get(i).MMSI));
 		}
-		
+
 		routeListComboBox.removeAllItems();
-		
+
 		for (int i = 0; i < routeManager.getRoutes().size(); i++) {
-			routeListComboBox.addItem(routeManager.getRoutes().get(i).getName() + " " + i);
+			routeListComboBox.addItem(routeManager.getRoutes().get(i).getName() + "                                                 " + i);
 		}
 		
+		loading = false;
+
 	}
-	
+
 	@Override
 	public void findAndInit(Object obj) {
 
 		if (obj instanceof AisHandler) {
-			aisHandler = (AisHandler)obj;
+			aisHandler = (AisHandler) obj;
 
 		}
 		if (obj instanceof RouteManager) {
-			routeManager = (RouteManager)obj;
+			routeManager = (RouteManager) obj;
 		}
 
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-	if (arg0.getSource() == mmsiListComboBox){
-		System.out.println("Selected mmsi");
-		
-		if (mmsiListComboBox.getSelectedItem() != null){
-		VesselTarget selectedShip = aisHandler.getVesselTargets().get(Long.valueOf((String) mmsiListComboBox.getSelectedItem()));
-		
+		if (arg0.getSource() == mmsiListComboBox && !loading) {
 
-		
-//		AisTarget selectedShip = aisHandler.getTarget());
-		if (selectedShip.getStaticData() != null){
-			nameLbl.setText(selectedShip.getStaticData().getName());
-			callsignLbl.setText(selectedShip.getStaticData().getCallsign());
-		}else{
-			nameLbl.setText("N/A");
-			callsignLbl.setText("N/A");
-		}
-		}
-	}
-	
-	if (arg0.getSource() == routeListComboBox){
-		System.out.println("Selected route");
-		
-		if (routeListComboBox.getSelectedItem() != null){
-		Route route = routeManager.getRoute(routeListComboBox.getSelectedIndex());
-		routeLengthLbl.setText(Integer.toString(route.getWaypoints().size()));
-		}
-	}
-		
-	}
-	
-	public void setSelectedMMSI(long mmsi){
-		//Load the data
-		loadData();
-		
-		for (int i = 0; i < mmsiListComboBox.getItemCount(); i++) {
-			if (mmsiListComboBox.getItemAt(i).equals(Long.toString(mmsi))){
-				mmsiListComboBox.setSelectedIndex(i);
+			if (mmsiListComboBox.getSelectedItem() != null) {
+				mmsi = Long.valueOf((String) mmsiListComboBox.getSelectedItem());
+//				System.out.println("mmsi selected to set to " + mmsi);
+				VesselTarget selectedShip = aisHandler.getVesselTargets().get(mmsi);
+
+				// AisTarget selectedShip = aisHandler.getTarget());
+				if (selectedShip != null){
+					
+				
+				if (selectedShip.getStaticData() != null) {
+					nameLbl.setText(AisMessage.trimText(selectedShip.getStaticData().getName()));
+					callsignLbl.setText(AisMessage.trimText(selectedShip.getStaticData().getCallsign()));
+				} else {
+					nameLbl.setText("N/A");
+					callsignLbl.setText("N/A");
+				}
+				sendLbl.setEnabled(true);
+				}else{
+					statusLbl.setText("The ship is not visible on AIS");
+					sendLbl.setEnabled(false);	
+				}
 			}
 		}
+
+		if (arg0.getSource() == routeListComboBox && !loading) {
+//			System.out.println("Selected route");
+			if (routeListComboBox.getSelectedItem() != null) {
+				
+				route = routeManager.getRoute(routeListComboBox.getSelectedIndex());
+				routeLengthLbl.setText(Integer.toString(route.getWaypoints().size()));
+			}
+			if (route.getWaypoints().size() > 8){
+				statusLbl.setText("<html>The Route has more than 8 waypoints.<br>Only the first 8 will be sent to the ship</html>");
+			}else{
+				statusLbl.setText("");
+			}
+			
+		}
+
+	}
+
+	public void setSelectedMMSI(long mmsi) {
+		this.mmsi = mmsi;
+//		System.out.println("MMSI is set to: " + mmsi);
+		
+		selectAndLoad();
+	}
+
+	public void setSelectedRoute(Route route) {
+		if (!this.isVisible()){
+			mmsiListComboBox.setSelectedIndex(0);
+		}
+		
+		this.route = route;
+		loadData();
+		selectAndLoad();
+	}
+
+	private void selectAndLoad() {
+		loadData();
+		
+		if (mmsi != -1) {
+			for (int i = 0; i < mmsiListComboBox.getItemCount(); i++) {
+				if (mmsiListComboBox.getItemAt(i).equals(Long.toString(mmsi))) {
+					mmsiListComboBox.setSelectedIndex(i);
+				}
+			}
+		}
+		
+		if (route != null) {
+			for (int i = 0; i < ESD.getMainFrame().getRouteManagerDialog().getRouteManager().getRoutes().size(); i++) {
+				if (ESD.getMainFrame().getRouteManagerDialog().getRouteManager().getRoutes().get(i) == route){
+					routeListComboBox.setSelectedIndex(i);
+				}
+			}
+		}	
+		
 	}
 
 }

@@ -7,23 +7,39 @@ import dk.frv.enav.esd.service.ais.AisServices.AIS_STATUS;
 
 public class RouteSuggestionData {
 	
-	private int mmsi;
+	private long mmsi;
 	private Route route;
 	private Date timeSent;
 	private AIS_STATUS status;
+	private int id;
 
-	public RouteSuggestionData(int mmsi, Route route, Date timeSent, AIS_STATUS status){
+	public RouteSuggestionData(int id, int mmsi, Route route, Date timeSent, AIS_STATUS status){
 		this.mmsi = mmsi;
 		this.route = route;
 		this.timeSent = timeSent;
 		this.status = status;
+		this.id = id;
 	}
 
-	public int getMmsi() {
+	
+	
+	public int getId() {
+		return id;
+	}
+
+
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+
+	public long getMmsi() {
 		return mmsi;
 	}
 
-	public void setMmsi(int mmsi) {
+	public void setMmsi(long mmsi) {
 		this.mmsi = mmsi;
 	}
 
@@ -52,5 +68,7 @@ public class RouteSuggestionData {
 	}
 	
 	
-	
+	public String toString(){
+		return mmsi + " " + route.getName() + " " + status;
+	}
 }

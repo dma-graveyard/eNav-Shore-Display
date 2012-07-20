@@ -59,7 +59,7 @@ import com.bbn.openmap.MapBean;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.ais.AisHandler;
 import dk.frv.enav.esd.gui.views.menuitems.AisIntendedRouteToggle;
-import dk.frv.enav.esd.gui.views.menuitems.AisTargetDetails;
+import dk.frv.enav.esd.gui.views.menuitems.SetRouteExchangeAIS;
 import dk.frv.enav.esd.gui.views.menuitems.GeneralHideIntendedRoutes;
 import dk.frv.enav.esd.gui.views.menuitems.GeneralNewRoute;
 import dk.frv.enav.esd.gui.views.menuitems.GeneralShowIntendedRoutes;
@@ -79,6 +79,7 @@ import dk.frv.enav.esd.gui.views.menuitems.RouteReverse;
 import dk.frv.enav.esd.gui.views.menuitems.RouteShowMetocToggle;
 import dk.frv.enav.esd.gui.views.menuitems.RouteWaypointActivateToggle;
 import dk.frv.enav.esd.gui.views.menuitems.RouteWaypointDelete;
+import dk.frv.enav.esd.gui.views.menuitems.SetRouteExchangeRoute;
 import dk.frv.enav.esd.layers.ais.AisLayer;
 import dk.frv.enav.esd.layers.msi.MsiDirectionalIcon;
 import dk.frv.enav.esd.layers.msi.MsiLayer;
@@ -129,7 +130,8 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	private RouteWaypointActivateToggle routeWaypointActivateToggle;
 	private RouteWaypointDelete routeWaypointDelete;
 	private RouteEditEndRoute routeEditEndRoute;
-	private AisTargetDetails aisTargetDetails;
+	private SetRouteExchangeAIS setRouteExchangeAIS;
+	private SetRouteExchangeRoute setRouteExchangeRoute;
 	
 	// bean context
 	protected String propertyPrefix = null;
@@ -181,6 +183,9 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 		msiZoomTo.addActionListener(this);
 		
 		// route general items
+		setRouteExchangeRoute = new SetRouteExchangeRoute("Send Route");
+		setRouteExchangeRoute.addActionListener(this);
+		
 		routeHide = new RouteHide("Hide route");
 		routeHide.addActionListener(this);
 
@@ -221,8 +226,8 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 		routeEditEndRoute.addActionListener(this);
 		
 		// ais menu items
-		aisTargetDetails = new AisTargetDetails("Send Route");
-		aisTargetDetails.addActionListener(this);
+		setRouteExchangeAIS = new SetRouteExchangeAIS("Send Route to vessel");
+		setRouteExchangeAIS.addActionListener(this);
 		
 	}
 	
@@ -296,10 +301,10 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	public void aisMenu(VesselTarget vesselTarget){
 		removeAll();
 		
-		aisTargetDetails.setMSSI(vesselTarget.getMmsi());
-		aisTargetDetails.setSendRouteDialog(ESD.getMainFrame().getSendRouteDialog());
+		setRouteExchangeAIS.setMSSI(vesselTarget.getMmsi());
+		setRouteExchangeAIS.setSendRouteDialog(ESD.getMainFrame().getSendRouteDialog());
 		
-		add(aisTargetDetails);
+		add(setRouteExchangeAIS);
 		
 		aisIntendedRouteToggle.setVesselTargetSettings(vesselTarget.getSettings());
 		aisIntendedRouteToggle.setAisLayer(aisLayer);
@@ -382,12 +387,18 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	public void generalRouteMenu(int routeIndex){		
 
 		routeManager = ESD.getMainFrame().getRouteManagerDialog().getRouteManager();
+		route = routeManager.getRoute(routeIndex);
 		
 		routeAppendWaypoint.setRouteManager(routeManager);
 		routeAppendWaypoint.setRouteIndex(routeIndex);
 		add(routeAppendWaypoint);
 		
 		addSeparator();
+		
+		setRouteExchangeRoute.setRoute(route);
+		setRouteExchangeRoute.setSendRouteDialog(ESD.getMainFrame().getSendRouteDialog());
+		add(setRouteExchangeRoute);
+		
 		
 		routeHide.setRouteManager(routeManager);
 		routeHide.setRouteIndex(routeIndex);
@@ -405,7 +416,7 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 		routeReverse.setRouteIndex(routeIndex);
 		add(routeReverse);
 		
-		route = routeManager.getRoute(routeIndex);
+		
 	
 		routeRequestMetoc.setRouteManager(routeManager);
 		routeRequestMetoc.setRouteIndex(routeIndex);

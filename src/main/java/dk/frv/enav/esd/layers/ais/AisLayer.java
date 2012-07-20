@@ -393,7 +393,6 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			info.put("LON", vessel.getLon());
 			info.put("SOG", vessel.getSog());
 			info.put("ETA", vessel.getEta());
-			info.put("DST", vessel.getDest());
 			info.put("Type", vessel.getShipType());
 			statusArea.receiveHighlight(info, vessel.getMMSI());
 
