@@ -33,13 +33,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.TimeZone;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
@@ -47,17 +44,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import dk.frv.ais.geo.GeoLocation;
-import dk.frv.ais.message.AisMessage6;
-import dk.frv.ais.message.AisPosition;
-import dk.frv.ais.message.binary.RouteSuggestion;
-import dk.frv.ais.message.binary.RouteSuggestion.RouteType;
-import dk.frv.ais.reader.SendException;
-import dk.frv.ais.reader.SendRequest;
-import dk.frv.ais.sentence.Abk;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.gui.fileselection.WorkspaceFileFilter;
-import dk.frv.enav.esd.service.ais.AisSendThread;
 import dk.frv.enav.esd.service.ais.AisServices;
 
 

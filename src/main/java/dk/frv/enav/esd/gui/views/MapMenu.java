@@ -59,7 +59,6 @@ import com.bbn.openmap.MapBean;
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.ais.AisHandler;
 import dk.frv.enav.esd.gui.views.menuitems.AisIntendedRouteToggle;
-import dk.frv.enav.esd.gui.views.menuitems.SetRouteExchangeAIS;
 import dk.frv.enav.esd.gui.views.menuitems.GeneralHideIntendedRoutes;
 import dk.frv.enav.esd.gui.views.menuitems.GeneralNewRoute;
 import dk.frv.enav.esd.gui.views.menuitems.GeneralShowIntendedRoutes;
@@ -79,6 +78,7 @@ import dk.frv.enav.esd.gui.views.menuitems.RouteReverse;
 import dk.frv.enav.esd.gui.views.menuitems.RouteShowMetocToggle;
 import dk.frv.enav.esd.gui.views.menuitems.RouteWaypointActivateToggle;
 import dk.frv.enav.esd.gui.views.menuitems.RouteWaypointDelete;
+import dk.frv.enav.esd.gui.views.menuitems.SetRouteExchangeAIS;
 import dk.frv.enav.esd.gui.views.menuitems.SetRouteExchangeRoute;
 import dk.frv.enav.esd.layers.ais.AisLayer;
 import dk.frv.enav.esd.layers.msi.MsiDirectionalIcon;
@@ -91,7 +91,6 @@ import dk.frv.enav.esd.route.RouteLeg;
 import dk.frv.enav.esd.route.RouteManager;
 import dk.frv.enav.ins.ais.VesselTarget;
 import dk.frv.enav.ins.gui.menuitems.IMapMenuAction;
-import dk.frv.enav.ins.layers.ais.VesselTargetGraphic;
 
 
 /**
@@ -139,7 +138,7 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	protected boolean isolated = false;
 	private RouteManager routeManager;
 	private Route route;
-	private SendRouteDialog sendRouteDialog;
+//	private SendRouteDialog sendRouteDialog;
 	
 	//Route suggest?
 //	private RouteSuggestionDialog routeSuggestionDialog;
@@ -147,7 +146,7 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 	
 	private MapBean mapBean;
 	private Map<Integer, String> map;
-	private NewRouteContainerLayer newRouteLayer;
+//	private NewRouteContainerLayer newRouteLayer;
 	private AisLayer aisLayer;
 	private AisHandler aisHandler;
 	
@@ -517,7 +516,7 @@ public class MapMenu extends JPopupMenu implements ActionListener, LightMapHandl
 			mapBean = (BufferedLayerMapBean) obj;
 		}
 		if(obj instanceof NewRouteContainerLayer){
-			newRouteLayer = (NewRouteContainerLayer) obj;
+//			newRouteLayer = (NewRouteContainerLayer) obj;
 		}
 		if(obj instanceof AisLayer){
 			aisLayer = (AisLayer) obj;

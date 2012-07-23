@@ -23,12 +23,14 @@ public class AisSettingsPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
 	private JTextField textFieldAisHostOrSerialPort;
 	private AisSettings aisSettings;
+	@SuppressWarnings("rawtypes")
 	private JComboBox comboBoxAisConnectionType;
 	private JSpinner spinnerAisTcpPort;
 	private JCheckBox chckbxAllowSending;
 	private JCheckBox chckbxStrictTimeout;
 	
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public AisSettingsPanel(){
 		super();
 		

@@ -125,6 +125,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 		notificationPanel.setBackground(new Color(83, 83, 83));
 
 		// Setup notifications (add here for more notifications)
+
 		// Notification: MSI
 		final JPanel msi = new JPanel();
 		notifications.put("msi", msi);
@@ -145,7 +146,6 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 
 		});
 		
-		
 		// Notification: RouteExchange
 		final JPanel routeExchange = new JPanel();
 		notifications.put("routeExchange", routeExchange);
@@ -165,6 +165,8 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 			}
 
 		});
+
+
 
 		// Create the masterpanel for aligning
 		masterPanel = new JPanel(new BorderLayout());
@@ -190,7 +192,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 			msiHandler = (MsiHandler) obj;
 			msiHandler.addListener(this);
 		}
-		
+
 		if (obj instanceof AisServices) {
 			aisService = (AisServices) obj;
 			aisService.addRouteExchangeListener(this);
@@ -293,6 +295,8 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 
 			// Get values for service
 			String service = services.get(entry.getKey());
+			
+			
 			Integer messageCount = unreadMessages.get(entry.getKey());
 
 			if (messageCount == null)
@@ -428,9 +432,14 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 		}
 	}
 
-
 	@Override
 	public void aisUpdate() {
-		System.out.println("ais updated");
+
+		try {
+			setMessages("routeExchange", aisService.getUnkAck());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
 	}
 }

@@ -30,8 +30,10 @@
 package dk.frv.enav.esd.service.ais;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -69,15 +71,18 @@ public class AisServices extends MapHandlerChild {
 	}
 
 	public void acknowledgedRecieved(long mmsi, AsmAcknowledge reply) {
-
+System.out.println("ack?");
 		if (routeSuggestions.containsKey(new RouteSuggestionKey(mmsi, reply.getTextSequenceNum()))) {
 
 			System.out.println("Acknowledge recieved for " + mmsi + " " + reply.getTextSequenceNum());
 
 			if (routeSuggestions.get(new RouteSuggestionKey(mmsi, reply.getTextSequenceNum())).getStatus() != AIS_STATUS.RECIEVED_APP_ACK){
 				//New change
+				
 				routeSuggestions.get(new RouteSuggestionKey(mmsi, reply.getTextSequenceNum())).setStatus(
 						AIS_STATUS.RECIEVED_APP_ACK);
+				routeSuggestions.get(new RouteSuggestionKey(mmsi, reply.getTextSequenceNum())).setAcknowleged(false);
+				
 				notifyRouteExchangeListeners();
 			}
 
@@ -87,6 +92,50 @@ public class AisServices extends MapHandlerChild {
 
 	}
 	
+	public void replyRecieved(long mmsi, RouteSuggestionReply message) {
+
+		if (routeSuggestions.containsKey(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId()))) {
+
+//			System.out.println("Reply recieved for " + mmsi + " " + message.getRefMsgLinkId());
+			int response = message.getResponse();
+
+			switch (response) {
+			case 0:
+				if (routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).getStatus() != AIS_STATUS.RECIEVED_ACCEPTED){
+					// Accepted
+					routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
+							AIS_STATUS.RECIEVED_ACCEPTED);
+					routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setAcknowleged(false);
+					notifyRouteExchangeListeners();
+				}
+
+				break;
+			case 1:
+				// Rejected
+				if (routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).getStatus() != AIS_STATUS.RECIEVED_REJECTED){
+					// Accepted
+					routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
+							AIS_STATUS.RECIEVED_REJECTED);
+					routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setAcknowleged(false);
+					notifyRouteExchangeListeners();
+				}
+				break;
+			case 2:
+				// Noted
+				if (routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).getStatus() != AIS_STATUS.RECIEVED_NOTED){
+					// Accepted
+					routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
+							AIS_STATUS.RECIEVED_NOTED);
+					routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setAcknowleged(false);
+					notifyRouteExchangeListeners();
+				}
+				break;
+			default:
+				break;
+			}
+		}
+
+	}
 
 	/**
 	 * Add a listener to the asService
@@ -98,68 +147,20 @@ public class AisServices extends MapHandlerChild {
 	}
 	
 	protected synchronized void notifyRouteExchangeListeners(){
+
 		for (AISRouteExchangeListener listener : routeExchangeListener) {
 			listener.aisUpdate();
 		}
 
 	}
 
-	public void replyRecieved(long mmsi, RouteSuggestionReply message) {
-
-		if (routeSuggestions.containsKey(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId()))) {
-
-			System.out.println("Reply recieved for " + mmsi + " " + message.getRefMsgLinkId());
-			int response = message.getResponse();
-
-			switch (response) {
-			case 0:
-				if (routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).getStatus() != AIS_STATUS.RECIEVED_ACCEPTED){
-					// Accepted
-					routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
-							AIS_STATUS.RECIEVED_ACCEPTED);
-					notifyRouteExchangeListeners();
-				}
-
-				break;
-			case 1:
-				// Rejected
-				if (routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).getStatus() != AIS_STATUS.RECIEVED_REJECTED){
-					// Accepted
-					routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
-							AIS_STATUS.RECIEVED_REJECTED);
-					notifyRouteExchangeListeners();
-				}
-				break;
-			case 2:
-				// Noted
-				if (routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).getStatus() != AIS_STATUS.RECIEVED_NOTED){
-					// Accepted
-					routeSuggestions.get(new RouteSuggestionKey(mmsi, message.getRefMsgLinkId())).setStatus(
-							AIS_STATUS.RECIEVED_NOTED);
-					notifyRouteExchangeListeners();
-				}
-				break;
-			default:
-				break;
-			}
-
-			// Notify listeners
-
-			// System.out.println(routeSuggestions.get(new
-			// RouteSuggestionKey(mmsi, message.getRefMsgLinkId())));
-
-			// System.out.println("The response was: " + response);
-
-		}
-
-	}
 
 	public void sendRouteSuggestion(int mmsiDestination, Route route) {
-		System.out.println("Send Route Suggestion");
+//		System.out.println("Send Route Suggestion");
 
 		// Create route suggestion - intended route ASM
 		RouteSuggestion routeSuggestion = new RouteSuggestion();
-		routeSuggestion.setRouteType(RouteType.RECOMMENDED.getType());
+		routeSuggestion.setRouteType(RouteType.ALTERNATIVE.getType());
 		routeSuggestion.setDuration(10);
 
 		// Convert the route
@@ -225,6 +226,8 @@ public class AisServices extends MapHandlerChild {
 
 		// Start send thread
 		aisSendThread.start();
+		
+		notifyRouteExchangeListeners();
 	}
 
 	synchronized int getID() {
@@ -244,7 +247,7 @@ public class AisServices extends MapHandlerChild {
 	public void sendResult(boolean sendOk, int mmsi, int id) {
 
 		if (sendOk) {
-			routeSuggestions.get(new RouteSuggestionKey(Long.valueOf(mmsi), id)).setStatus(AIS_STATUS.RECIEVED_APP_ACK);
+			routeSuggestions.get(new RouteSuggestionKey(Long.valueOf(mmsi), id)).setStatus(AIS_STATUS.SENT_NOT_ACK);
 		} else {
 			routeSuggestions.get(new RouteSuggestionKey(Long.valueOf(mmsi), id)).setStatus(AIS_STATUS.FAILED);
 		}
@@ -262,6 +265,35 @@ public class AisServices extends MapHandlerChild {
 		return routeSuggestions;
 	}
 	
+	public void setAcknowledged(long l, int id){
+		routeSuggestions.get(new RouteSuggestionKey(l, id)).setAcknowleged(true);
+		notifyRouteExchangeListeners();
+	}
+	
+	public void removeSuggestion(long l, int id){
+		routeSuggestions.remove(new RouteSuggestionKey(l, id));
+		notifyRouteExchangeListeners();
+	}
+	
+	public int getUnkAck(){
+		
+		int counter = 0;
+		
+	    Collection<RouteSuggestionData> c = routeSuggestions.values();
+	    
+	    //obtain an Iterator for Collection
+	    Iterator<RouteSuggestionData> itr = c.iterator();
+	   
+	    //iterate through HashMap values iterator
+	    while(itr.hasNext()){
+	    	RouteSuggestionData value = itr.next();
+	    	if (!value.isAcknowleged()){
+	    		counter++;
+	    	}
+	    }
+	    
+		return counter;
+	}
 	
 
 }

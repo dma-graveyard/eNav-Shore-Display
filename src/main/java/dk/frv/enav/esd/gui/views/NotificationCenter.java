@@ -18,14 +18,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListSelectionModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
@@ -34,6 +31,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import dk.frv.enav.esd.ais.AISRouteExchangeListener;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
 import dk.frv.enav.esd.gui.msi.MsiTableModel;
 import dk.frv.enav.esd.gui.route.RouteExchangeTableModel;
@@ -44,7 +42,7 @@ import dk.frv.enav.esd.msi.MsiHandler.MsiMessageExtended;
 import dk.frv.enav.esd.service.ais.AisServices;
 
 public class NotificationCenter extends ComponentFrame implements ListSelectionListener, ActionListener,
-		IMsiUpdateListener {
+		IMsiUpdateListener, AISRouteExchangeListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -63,12 +61,13 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	private static int notificationHeight = 25;
 	private static int notificationWidth = 125;
 	private JTable msiTable;
+	private JTable routeTable;
 
 	private MsiHandler msiHandler;
 	private MsiTableModel msiTableModel;
 
 	private AisServices aisService;
-
+	private RouteExchangeTableModel routeTableModel;
 
 	private JPanel msiPanelLeft;
 
@@ -85,7 +84,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 	private JPanel notificationContentPanel;
 
 	private MSINotificationPanel msiPanel;
-	
+	private RouteExchangeNotificationPanel routePanel;
 
 	public NotificationCenter() {
 
@@ -148,6 +147,10 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		Integer messageCountMSI = unreadMessages.get("MSI");
 		if (messageCountMSI == null)
 			messageCountMSI = 0;
+		
+		Integer messageCountRoute = unreadMessages.get("Route");
+		if (messageCountRoute == null)
+			messageCountRoute = 0;
 
 		String[] colHeadings = { "ID", "Title" };
 		DefaultTableModel model = new DefaultTableModel(30, colHeadings.length);
@@ -159,12 +162,13 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 
 		JPanel LeftLabelPane = new JPanel();
 		LeftLabelPane.setLayout(new FlowLayout());
-		
-//		LeftLabelPane.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(
-//				45, 45, 45)));
+
+		// LeftLabelPane.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED,
+		// new Color(30, 30, 30), new Color(
+		// 45, 45, 45)));
 		LeftLabelPane.setBorder(new MatteBorder(0, 0, 0, 1, new Color(30, 30, 30)));
-		
-//		LeftLabelPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
+
+		// LeftLabelPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
 		LeftLabelPane.setBackground(backgroundColor);
 		GridBagConstraints gbc_LeftLabelPane = new GridBagConstraints();
 		gbc_LeftLabelPane.fill = GridBagConstraints.BOTH;
@@ -196,29 +200,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 
 		// Create labels for each service
 
-		// MSI
-		JLabel notification = new JLabel("  MSI");
-		notification.setPreferredSize(new Dimension(98, notificationHeight));
-		notification.setSize(new Dimension(76, notificationHeight));
-		notification.setFont(new Font("Arial", Font.PLAIN, 11));
-		notification.setForeground(new Color(237, 237, 237));
-		msiPanelLeft.add(notification);
-		
-		// Unread messages
-		JLabel messages = new JLabel(messageCountMSI.toString(), SwingConstants.RIGHT);
-		messages.setPreferredSize(new Dimension(20, notificationHeight));
-		messages.setSize(new Dimension(20, notificationHeight));
-		messages.setFont(new Font("Arial", Font.PLAIN, 9));
-		messages.setForeground(new Color(100, 100, 100));
-		messages.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
-		msiPanelLeft.add(messages);
-		// The unread indicator
-		JLabel msiUnreadIndicator = new JLabel();
-		msiUnreadIndicator.setPreferredSize(new Dimension(7, notificationHeight));
-		msiUnreadIndicator.setSize(new Dimension(7, notificationHeight));
-		msiPanelLeft.add(msiUnreadIndicator);
-
-		labelContainer.add(msiPanelLeft);
+	
 
 		// Route Exchange
 		JLabel notificationRoute = new JLabel("  Route Exchange");
@@ -227,18 +209,56 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		notificationRoute.setFont(new Font("Arial", Font.PLAIN, 11));
 		notificationRoute.setForeground(new Color(237, 237, 237));
 		routePanelLeft.add(notificationRoute);
+		
+		// Unread messages
+		JLabel routeMessages = new JLabel(messageCountRoute.toString(), SwingConstants.RIGHT);
+		routeMessages.setPreferredSize(new Dimension(20, notificationHeight));
+		routeMessages.setSize(new Dimension(20, notificationHeight));
+		routeMessages.setFont(new Font("Arial", Font.PLAIN, 9));
+		routeMessages.setForeground(new Color(100, 100, 100));
+		routeMessages.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+		routePanelLeft.add(routeMessages);
 
 		// The unread indicator
-		JLabel unreadIndicatorRoute = new JLabel();
-		unreadIndicatorRoute.setPreferredSize(new Dimension(7, notificationHeight));
-		unreadIndicatorRoute.setSize(new Dimension(7, notificationHeight));
-		routePanelLeft.add(unreadIndicatorRoute);
+		JLabel routeUnreadIndicator = new JLabel();
+		routeUnreadIndicator.setPreferredSize(new Dimension(7, notificationHeight));
+		routeUnreadIndicator.setSize(new Dimension(7, notificationHeight));
+		routePanelLeft.add(routeUnreadIndicator);
 
 		labelContainer.add(routePanelLeft);
+		
+		// MSI
+		JLabel notification = new JLabel("  MSI");
+		notification.setPreferredSize(new Dimension(98, notificationHeight));
+		notification.setSize(new Dimension(76, notificationHeight));
+		notification.setFont(new Font("Arial", Font.PLAIN, 11));
+		notification.setForeground(new Color(237, 237, 237));
+		msiPanelLeft.add(notification);
+
+		// Unread messages
+		JLabel msiMessages = new JLabel(messageCountMSI.toString(), SwingConstants.RIGHT);
+		msiMessages.setPreferredSize(new Dimension(20, notificationHeight));
+		msiMessages.setSize(new Dimension(20, notificationHeight));
+		msiMessages.setFont(new Font("Arial", Font.PLAIN, 9));
+		msiMessages.setForeground(new Color(100, 100, 100));
+		msiMessages.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+		msiPanelLeft.add(msiMessages);
+		// The unread indicator
+		JLabel msiUnreadIndicator = new JLabel();
+		msiUnreadIndicator.setPreferredSize(new Dimension(7, notificationHeight));
+		msiUnreadIndicator.setSize(new Dimension(7, notificationHeight));
+		msiPanelLeft.add(msiUnreadIndicator);
+
+		labelContainer.add(msiPanelLeft);
 
 		// Make list of labels to use when updating service
 		indicatorLabels.put("MSI", msiUnreadIndicator);
-		unreadMessagesLabels.put("MSI", messages);
+		unreadMessagesLabels.put("MSI", msiMessages);
+		
+		// Make list of labels to use when updating service
+		indicatorLabels.put("Route", routeUnreadIndicator);
+		unreadMessagesLabels.put("Route", routeMessages);
+
 
 		notificationContentPanel = new JPanel();
 		GridBagConstraints gbc_notificationContentPanel = new GridBagConstraints();
@@ -247,35 +267,36 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		gbc_notificationContentPanel.gridy = 0;
 		outerPanel.add(notificationContentPanel, gbc_notificationContentPanel);
 		GridBagLayout gbl_notificationContentPanel = new GridBagLayout();
-		gbl_notificationContentPanel.columnWidths = new int[]{752, 0};
-		gbl_notificationContentPanel.rowHeights = new int[]{900, 0};
+		gbl_notificationContentPanel.columnWidths = new int[] { 752, 0 };
+		gbl_notificationContentPanel.rowHeights = new int[] { 900, 0 };
 		gbl_notificationContentPanel.columnWeights = new double[] { 0.0, Double.MIN_VALUE };
 		gbl_notificationContentPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		notificationContentPanel.setLayout(gbl_notificationContentPanel);
 		masterPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(
 				45, 45, 45)));
 		this.getContentPane().add(masterPanel);
-		
+
 		msiPanel = new MSINotificationPanel();
 		msiTable = msiPanel.getMsiTable();
-		
+
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.fill = GridBagConstraints.BOTH;
 		gbc_panel.gridx = 0;
 		gbc_panel.gridy = 0;
-		
-		
-		//Add notification panel
+
+		// Add notification panels
 		notificationContentPanel.add(msiPanel, gbc_panel);
 		msiPanel.setVisible(true);
-		
-		JPanel pink = new JPanel();
-		pink.setBackground(Color.pink);
-//		notificationContentPanel.add(pink, gbc_panel);
-		
-		
+
+		routePanel = new RouteExchangeNotificationPanel();
+		routeTable = routePanel.getRouteTable();
+
+		// Add notification panel
+		notificationContentPanel.add(routePanel, gbc_panel);
+		routePanel.setVisible(false);
+
 		addMouseListeners();
-		
+
 	}
 
 	public void newMessage(final String service) throws InterruptedException {
@@ -315,7 +336,6 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 
 	}
 
-	
 	public void setMessages(String service, int messageCount) throws InterruptedException {
 
 		JLabel unread = unreadMessagesLabels.get(service);
@@ -342,99 +362,9 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		unreadMessages.put(service, messageCount);
 	}
 
-//	public void removeArea() {
-//		area.setText(doc.toString());
-//		pane_3.setVisible(false);
-//		scrollPane_1.setVisible(false);
-//	}
 
-//	public void styleButton(JLabel label, Color color) {
-//		label.setPreferredSize(new Dimension(125, 25));
-//		label.setFont(new Font("Arial", Font.PLAIN, 11));
-//		label.setForeground(new Color(237, 237, 237));
-//		label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
-//		label.setBackground(color);
-//		label.setOpaque(true);
-//	}
 
-//	public void addMouseListeners() {
-//
-//		msiPanel.addMouseListener(new MouseAdapter() {
-//			public void mousePressed(MouseEvent e) {
-//				msiPanel.setBackground(leftButtonColorClicked);
-//			}
-//
-//			public void mouseReleased(MouseEvent e) {
-//				msiPanel.setBackground(leftButtonColor);
-//			}
-//
-//			public void mouseClicked(MouseEvent e) {
-//				// Activate and update table
-//				leftScrollPane.setViewportView(msiTable);
-//				msiTable.setFocusable(true);
-//				showMiddleTable(0); // 0 = MSI
-//
-//			}
-//		});
-//
-//		routePanel.addMouseListener(new MouseAdapter() {
-//			public void mousePressed(MouseEvent e) {
-//				routePanel.setBackground(leftButtonColorClicked);
-//			}
-//
-//			public void mouseReleased(MouseEvent e) {
-//				routePanel.setBackground(leftButtonColor);
-//			}
-//
-//			public void mouseClicked(MouseEvent e) {
-//				// Activate and update table
-//				leftScrollPane.setViewportView(routeTable);
-//				routeTable.setFocusable(true);
-//				showMiddleTable(1); // 0 = Route Exchange
-//			}
-//		});
-//
-//		but_read.addMouseListener(new MouseAdapter() {
-//			public void mouseClicked(MouseEvent e) {
-//				if (selectedService == 0) { // MSI
-//					int rowAfter = selectedRow;
-//
-//					MsiMessage msiMessage = msiHandler.getMessageList().get(selectedRow).msiMessage;
-//					msiHandler.setAcknowledged(msiMessage);
-//					msiUpdate();
-//					showMiddleTable(0);
-//					msiTable.changeSelection(rowAfter, 0, false, false);
-//
-//				}
-//			}
-//		});
-//
-//		but_goto.addMouseListener(new MouseAdapter() {
-//			public void mouseClicked(MouseEvent e) {
-//				if (mainFrame.getActiveMapWindow() != null) {
-//					mainFrame.getActiveMapWindow().getChartPanel()
-//							.zoomToPoint(msiTableModel.getMessageLatLon(selectedRow));
-//				} else if (mainFrame.getMapWindows().size() > 0) {
-//					mainFrame.getMapWindows().get(0).getChartPanel()
-//							.zoomToPoint(msiTableModel.getMessageLatLon(selectedRow));
-//				}
-//			}
-//		});
-//
-//		but_delete.addMouseListener(new MouseAdapter() {
-//			public void mouseClicked(MouseEvent e) {
-//				if (selectedService == 0) { // MSI
-//
-//					MsiMessage msiMessage = msiHandler.getMessageList().get(selectedRow).msiMessage;
-//					msiHandler.deleteMessage(msiMessage);
-//					msiUpdate();
-//					showMiddleTable(0);
-//				}
-//			}
-//		});
-//	}
-
-	public void showMessage(int service, int msgId) {
+	public void showMSIMessage(int service, int msgId) {
 
 		int index = -1;
 
@@ -447,10 +377,9 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 				break;
 			}
 		}
-		
+
 		msiPanel.readMessage(index, index);
 	}
-
 
 	@Override
 	public void findAndInit(Object obj) {
@@ -470,8 +399,12 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		}
 		if (obj instanceof AisServices) {
 			aisService = (AisServices) obj;
-			// msiHandler.addListener(this);
-//			routeTableModel = new RouteExchangeTableModel(aisService);
+			aisService.addRouteExchangeListener(this);
+			routeTableModel = new RouteExchangeTableModel(aisService);
+			routeTable.setModel(routeTableModel);
+			routePanel.setAisService(aisService);
+			routePanel.initTable();
+
 		}
 	}
 
@@ -482,9 +415,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("New messages are in");
 		msiPanel.updateTable();
-		
 
 	}
 
@@ -507,7 +438,6 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		setVisible(!this.isVisible());
 	}
 
-	
 	public void addMouseListeners() {
 
 		msiPanelLeft.addMouseListener(new MouseAdapter() {
@@ -521,13 +451,13 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 
 			public void mouseClicked(MouseEvent e) {
 				// Activate and update table
-				
-				//aispanel not visible
+
+				routePanel.setVisible(false);
 				msiPanel.setVisible(true);
 
 			}
 		});
-		
+
 		routePanelLeft.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				routePanelLeft.setBackground(leftButtonColorClicked);
@@ -539,6 +469,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 
 			public void mouseClicked(MouseEvent e) {
 				msiPanel.setVisible(false);
+				routePanel.setVisible(true);
 			}
 		});
 	}
@@ -547,31 +478,43 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 
 		setVisible(!this.isVisible());
 		setNotificationView(service);
-		
+
 	}
-	
-	
-	private void setNotificationView(int service){
+
+	private void setNotificationView(int service) {
 		switch (service) {
 		case 0:
 
-			//Activate MSI
-			//aisPanel.setVisible(false);
-			
+			// Activate MSI
+			routePanel.setVisible(false);
 			msiPanel.setVisible(true);
-			
+
 			break;
-			
+
 		case 1:
-			
-			//aisPanel.setVisible(true);
+
+			routePanel.setVisible(true);
 			msiPanel.setVisible(false);
-			
-			break;	
+
+			break;
 		default:
 			break;
 		}
 	}
+
+	@Override
+	public void aisUpdate() {
+		routePanel.updateTable();
+		
+		if (routeTable.getSelectedRow() != -1){
+			routePanel.readMessage(routeTable.getSelectedRow());
+		}
+		try {
+			setMessages("Route", aisService.getUnkAck());
+			
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+	}
 }
-
-

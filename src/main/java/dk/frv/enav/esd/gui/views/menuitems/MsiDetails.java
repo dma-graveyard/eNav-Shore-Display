@@ -53,7 +53,7 @@ public class MsiDetails extends JMenuItem implements IMapMenuAction {
 	@Override
 	public void doAction() {
 		
-		notificationCenter.showMessage(0, message.getMessageId());
+		notificationCenter.showMSIMessage(0, message.getMessageId());
 		notificationCenter.setVisible(true);
 		
 		

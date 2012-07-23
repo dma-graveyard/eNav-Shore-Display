@@ -73,6 +73,7 @@ public class RouteLoader {
 	public static Route loadSimple(File file) throws RouteLoadException {
 		Route route = new Route();
 		try {
+			@SuppressWarnings("resource")
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			boolean firstLine = true;
 			String line = null;

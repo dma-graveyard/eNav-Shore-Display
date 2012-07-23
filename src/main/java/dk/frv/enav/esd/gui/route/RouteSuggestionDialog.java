@@ -35,23 +35,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
 import dk.frv.enav.esd.ESD;
-import dk.frv.enav.esd.route.RouteManager;
 import dk.frv.enav.esd.ais.AisAdressedRouteSuggestion;
 import dk.frv.enav.esd.common.text.Formatter;
 import dk.frv.enav.esd.gui.utils.ComponentFrame;
 import dk.frv.enav.esd.gui.views.MainFrame;
-import dk.frv.enav.ins.gps.GpsData;
+import dk.frv.enav.esd.route.RouteManager;
 
 
 
@@ -62,7 +60,7 @@ public class RouteSuggestionDialog extends ComponentFrame implements ActionListe
 	private static final long serialVersionUID = 1L;
 	
 	private MainFrame mainFrame;
-	private RouteManager routeManager;
+//	private RouteManager routeManager;
 //	private ChartPanel chartPanel;
 //	private GpsHandler gpsHandler;
 //	
@@ -129,26 +127,10 @@ public class RouteSuggestionDialog extends ComponentFrame implements ActionListe
 		str.append("<html><b>DST/BRG/TTG/SPD</b><br/>");
 //		GpsData gpsData = gpsHandler.getCurrentData();
 //		if (gpsData != null && !gpsData.isBadPosition() && routeSuggestion.getWaypoints().size() > 0) {
-		if (false) {			
-//			double dst = routeSuggestion.getWaypoints().get(0).getRhumbLineDistance(gpsData.getPosition()) / 1852;
-//			str.append(Formatter.formatDistNM(dst));
-//			double brg = routeSuggestion.getWaypoints().get(0).getRhumbLineBearing(gpsData.getPosition());
-//			str.append(" / " + Formatter.formatDegrees(brg, 2));
-//			Long ttg = null;
-//			if (routeSuggestion.getEtaFirst() != null) {
-//				ttg = routeSuggestion.getEtaFirst().getTime() - GnssTime.getInstance().getDate().getTime();
-//			}
-//			if (ttg != null && ttg < 0) ttg = null;
-//			Double spd = null;
-//			if (ttg != null) {
-//				spd = (dst / ((double)ttg / 1000 / 60 / 60));
-//			}
-//			str.append(" / " + Formatter.formatTime(ttg));
-//			str.append(" / " + Formatter.formatSpeed(spd));
-//			
-		} else {
+	
+
 			str.append("N/A");
-		}
+		
 		str.append("</html>");
 		
 		wpInfoLabel.setText(str.toString());
@@ -183,9 +165,7 @@ public class RouteSuggestionDialog extends ComponentFrame implements ActionListe
 //		setState(JFrame.NORMAL);
 	}
 	
-	private void close() {
-		setVisible(false);
-	}
+
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -227,7 +207,7 @@ public class RouteSuggestionDialog extends ComponentFrame implements ActionListe
 	@Override
 	public void findAndInit(Object obj) {
 		if (obj instanceof RouteManager) {
-			routeManager = (RouteManager)obj;
+//			routeManager = (RouteManager)obj;
 		}
 //		if (obj instanceof ChartPanel) {
 //			chartPanel = (ChartPanel)obj;

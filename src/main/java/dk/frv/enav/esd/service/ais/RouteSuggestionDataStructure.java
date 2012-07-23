@@ -32,6 +32,8 @@ public class RouteSuggestionDataStructure<RouteSuggestionKey, RouteSuggestionDat
 	@SuppressWarnings("unchecked")
 	@Override
 	public RouteSuggestionData get(Object key){
+		
+		
 		RouteSuggestionKey suggestionKey = (RouteSuggestionKey) key;
 		
 	    for (Iterator<Entry<RouteSuggestionKey, RouteSuggestionData>> it = this.entrySet().iterator(); it.hasNext();) {
@@ -47,4 +49,21 @@ public class RouteSuggestionDataStructure<RouteSuggestionKey, RouteSuggestionDat
 	}
 	
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public RouteSuggestionData remove(Object key){
+		RouteSuggestionKey suggestionKey = (RouteSuggestionKey) key;
+		
+	    for (Iterator<Entry<RouteSuggestionKey, RouteSuggestionData>> it = this.entrySet().iterator(); it.hasNext();) {
+	        @SuppressWarnings("rawtypes")
+			Map.Entry entry = (Map.Entry) it.next();
+	        RouteSuggestionKey currentKey = (RouteSuggestionKey) entry.getKey();
+	        RouteSuggestionData value = (RouteSuggestionData) entry.getValue();
+	        if (currentKey.equals(suggestionKey)){
+	        	super.remove(currentKey);
+	        	return value;
+	        }
+	      }
+		return null;
+	}
 }

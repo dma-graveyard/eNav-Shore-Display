@@ -55,8 +55,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.apache.log4j.Logger;
-
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.route.Route;
 import dk.frv.enav.esd.route.RouteLoadException;
@@ -64,16 +62,15 @@ import dk.frv.enav.esd.route.RouteLoader;
 import dk.frv.enav.esd.route.RouteManager;
 import dk.frv.enav.esd.route.RoutesUpdateEvent;
 
-
 /**
  * Route manager dialog
  */
-public class RouteManagerDialog extends JInternalFrame implements ActionListener, ListSelectionListener, TableModelListener,
-		MouseListener {
+public class RouteManagerDialog extends JInternalFrame implements ActionListener, ListSelectionListener,
+		TableModelListener, MouseListener {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger LOG = Logger.getLogger(RouteManagerDialog.class);
+//	private static final Logger LOG = Logger.getLogger(RouteManagerDialog.class);
 
 	protected RouteManager routeManager;
 
@@ -127,6 +124,8 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 		copyBtn = new JButton("Copy");
 		copyBtn.addActionListener(this);
 
+		metocBtn.setEnabled(false);
+
 		routeTable = new JTable();
 		routesTableModel = new RoutesTableModel(routeManager);
 		routesTableModel.addTableModelListener(this);
@@ -136,7 +135,7 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 		routeScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		routeScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		routeTable.setFillsViewportHeight(true);
-		//TODO: Comment this line when using WindowBuilder
+		// TODO: Comment this line when using WindowBuilder
 		routeTable.setModel(routesTableModel);
 		for (int i = 0; i < 3; i++) {
 			if (i == 2) {
@@ -149,60 +148,72 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 		routeSelectionModel.addListSelectionListener(this);
 		routeTable.setSelectionModel(routeSelectionModel);
 		routeTable.addMouseListener(this);
-		
 
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(routeScrollPane, GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-							.addComponent(closeBtn, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(zoomToBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(propertiesBtn, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-							.addComponent(copyBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-							.addComponent(exportBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(deleteBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(reverseCopyBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(metocBtn, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-							.addComponent(exportAllBtn, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-							.addComponent(importBtn, GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)))
-					.addContainerGap())
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(propertiesBtn)
-							.addPreferredGap(ComponentPlacement.RELATED)
+		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addGroup(
+				groupLayout
+						.createSequentialGroup()
+						.addContainerGap()
+						.addComponent(routeScrollPane, GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(
+								groupLayout
+										.createParallelGroup(Alignment.LEADING)
+										.addGroup(
+												groupLayout
+														.createParallelGroup(Alignment.LEADING, false)
+														.addComponent(closeBtn, Alignment.TRAILING,
+																GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
+																Short.MAX_VALUE)
+														.addComponent(zoomToBtn, GroupLayout.DEFAULT_SIZE,
+																GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+														.addComponent(propertiesBtn, GroupLayout.DEFAULT_SIZE, 131,
+																Short.MAX_VALUE)
+														.addComponent(copyBtn, GroupLayout.DEFAULT_SIZE,
+																GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+										.addGroup(
+												groupLayout
+														.createParallelGroup(Alignment.LEADING, false)
+														.addComponent(exportBtn, GroupLayout.DEFAULT_SIZE,
+																GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+														.addComponent(deleteBtn, GroupLayout.DEFAULT_SIZE,
+																GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+														.addComponent(reverseCopyBtn, GroupLayout.DEFAULT_SIZE,
+																GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+														.addComponent(metocBtn, GroupLayout.DEFAULT_SIZE, 131,
+																Short.MAX_VALUE)
+														.addComponent(exportAllBtn, GroupLayout.DEFAULT_SIZE, 131,
+																Short.MAX_VALUE)
+														.addComponent(importBtn, GroupLayout.DEFAULT_SIZE, 131,
+																Short.MAX_VALUE))).addContainerGap()));
+		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(
+				groupLayout
+						.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(
+								groupLayout
+										.createParallelGroup(Alignment.LEADING)
+										.addGroup(
+												groupLayout.createSequentialGroup().addComponent(propertiesBtn)
+														.addPreferredGap(ComponentPlacement.RELATED)
 
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(zoomToBtn)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(copyBtn)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(reverseCopyBtn)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(deleteBtn)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(exportBtn)
-							.addGap(7)
-							.addComponent(metocBtn)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(exportAllBtn)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(importBtn))
-						.addComponent(routeScrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE))
-					.addGap(28)
-					.addComponent(closeBtn)
-					.addContainerGap())
-		);
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addComponent(zoomToBtn)
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addComponent(copyBtn)
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addComponent(reverseCopyBtn)
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addComponent(deleteBtn)
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addComponent(exportBtn).addGap(7).addComponent(metocBtn)
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addComponent(exportAllBtn)
+														.addPreferredGap(ComponentPlacement.RELATED)
+														.addComponent(importBtn))
+										.addComponent(routeScrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE,
+												289, Short.MAX_VALUE)).addGap(28).addComponent(closeBtn)
+						.addContainerGap()));
 
 		getContentPane().setLayout(groupLayout);
 
@@ -232,14 +243,13 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 		// LOG.info("activeRoute: " + routeManager.getActiveRouteIndex());
 		// LOG.info("\n\n");
 
-
 		propertiesBtn.setEnabled(routeSelected);
 		zoomToBtn.setEnabled(routeSelected);
 		reverseCopyBtn.setEnabled(routeSelected);
 		copyBtn.setEnabled(routeSelected);
 		deleteBtn.setEnabled(routeSelected && !activeSelected);
 		metocBtn.setEnabled(routeSelected);
-		exportBtn.setEnabled(routeSelected);		
+		exportBtn.setEnabled(routeSelected);
 	}
 
 	private void updateTable() {
@@ -257,41 +267,38 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 		this.setVisible(false);
 	}
 
-	private void activateRoute() {
-		LOG.debug("Activate route");
-		if (routeTable.getSelectedRow() >= 0) {
-			if (routeManager.isRouteActive()) {
-				routeManager.deactivateRoute();
-			} else {
-				routeManager.activateRoute(routeTable.getSelectedRow());
-			}
-
-			updateTable();
-		}
-	}
-
 	private void zoomTo() {
-		
+
+
+		Route selectedroute = routeManager.getRoute(routeTable.getSelectedRow());
+
+		if (ESD.getMainFrame().getActiveMapWindow() != null) {
+			ESD.getMainFrame().getActiveMapWindow().getChartPanel()
+					.zoomToPoint(selectedroute.getWaypoints().getFirst().getPos());
+		} else if (ESD.getMainFrame().getMapWindows().size() > 0) {
+			ESD.getMainFrame().getMapWindows().get(0).getChartPanel()
+					.zoomToPoint(selectedroute.getWaypoints().getFirst().getPos());
+		}
 		// TODO ChartPanel should implement a method that given a route does the
 		// following
 		// TODO disable auto follow
 		// TODO find minx, miny and maxx, maxy
 		// TODO center and scale map to include whole route
-		// 
+		//
 	}
-	
+
 	private void copy() {
-		if(routeTable.getSelectedRow() >= 0) {
+		if (routeTable.getSelectedRow() >= 0) {
 			routeManager.routeCopy(routeTable.getSelectedRow());
 			updateTable();
 		}
 	}
 
 	private void reverseCopy() {
-		if(routeTable.getSelectedRow() >= 0) {
+		if (routeTable.getSelectedRow() >= 0) {
 			routeManager.routeReverse(routeTable.getSelectedRow());
 			updateTable();
-		}		
+		}
 	}
 
 	private void properties() {
@@ -317,7 +324,7 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 			updateTable();
 		}
 	}
-	
+
 	private void exportToFile() {
 		exportToFile(routeTable.getSelectedRow());
 	}
@@ -326,27 +333,27 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 		if (routeId < 0) {
 			return;
 		}
-		
+
 		Route route = routeManager.getRoute(routeId);
-		
+
 		JFileChooser fc = new JFileChooser(System.getProperty("user.dir") + "/routes/");
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fc.setMultiSelectionEnabled(false);
-		
+
 		fc.addChoosableFileFilter(new FileNameExtensionFilter("Simple route text format", "txt", "TXT"));
 		fc.setAcceptAllFileFilterUsed(true);
 		File f = new File(route.getName() + ".txt");
 		fc.setSelectedFile(f);
-		
+
 		if (fc.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
 			return;
 		}
 		File file = fc.getSelectedFile();
-				
+
 		if (!fc.getSelectedFile().toString().contains(".txt")) {
 			file = new File(fc.getSelectedFile().getPath() + ".txt");
 		}
-		
+
 		if (file.exists()) {
 			if (JOptionPane.showConfirmDialog(this, "File exists. Overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION) != 0) {
 				exportToFile(routeId);
@@ -354,10 +361,11 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 			}
 		}
 
-		if(!RouteLoader.saveSimple(route, file)) {
-			JOptionPane.showMessageDialog(ESD.getMainFrame(), "Route save error", "Route not saved", JOptionPane.ERROR_MESSAGE);
+		if (!RouteLoader.saveSimple(route, file)) {
+			JOptionPane.showMessageDialog(ESD.getMainFrame(), "Route save error", "Route not saved",
+					JOptionPane.ERROR_MESSAGE);
 		}
-		
+
 	}
 
 	private void importFromFile() {
@@ -369,7 +377,6 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 		fc.addChoosableFileFilter(new FileNameExtensionFilter("ECDIS900 V3 route", "rou", "ROU"));
 		fc.addChoosableFileFilter(new FileNameExtensionFilter("Navisailor 3000 route", "rt3", "RT3"));
 		fc.setAcceptAllFileFilterUsed(true);
-		
 
 		if (fc.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
 			return;
@@ -388,16 +395,16 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 		updateTable();
 		routeSelectionModel.setSelectionInterval(routeTable.getRowCount() - 1, routeTable.getRowCount() - 1);
 	}
-	
+
 	// Hackish method for now to get the routemanager
 	public RouteManager getRouteManager() {
 		return routeManager;
 	}
-	
+
 	private void exportAllToFile() {
-		for (int i=0; i < routeTable.getRowCount(); i++) {
+		for (int i = 0; i < routeTable.getRowCount(); i++) {
 			exportToFile(i);
-		}		
+		}
 	}
 
 	@Override
@@ -473,6 +480,5 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 	public void mouseReleased(MouseEvent e) {
 
 	}
-	
-	
+
 }

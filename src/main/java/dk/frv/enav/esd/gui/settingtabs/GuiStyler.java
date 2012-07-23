@@ -45,6 +45,7 @@ public class GuiStyler {
 		label.setOpaque(true);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public static void styleDropDown(JComboBox comboBox){
 		
 //		comboBox.setBackground(backgroundColor);

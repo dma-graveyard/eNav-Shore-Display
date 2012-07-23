@@ -36,6 +36,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import dk.frv.enav.esd.service.ais.AisServices;
+import dk.frv.enav.esd.service.ais.AisServices.AIS_STATUS;
 import dk.frv.enav.esd.service.ais.RouteSuggestionData;
 import dk.frv.enav.ins.common.text.Formatter;
 
@@ -45,25 +46,24 @@ import dk.frv.enav.ins.common.text.Formatter;
 public class RouteExchangeTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 
-	private static final String[] AREA_COLUMN_NAMES = { "ID", "MMSI", "Route", "Date", "Status"};
-	private static final String[] COLUMN_NAMES = { "ID", "MMSI", "Route", "Status" };
-	
-	private AisServices aisService;
-	
-	private List<RouteSuggestionData> messages = new ArrayList<RouteSuggestionData>();
+	private static final String[] AREA_COLUMN_NAMES = { "ID", "MMSI", "Route Name", "Date", "Status" };
+	private static final String[] COLUMN_NAMES = { "ID", "MMSI", "Route Name", "Status" };
 
+	private AisServices aisService;
+
+	private List<RouteSuggestionData> messages = new ArrayList<RouteSuggestionData>();
 
 	/**
 	 * Constructor for creating the msi table model
+	 * 
 	 * @param msiHandler
 	 */
 	public RouteExchangeTableModel(AisServices aisService) {
 		super();
 		this.aisService = aisService;
-		
 		updateMessages();
 	}
-	
+
 	/**
 	 * Get column class at specific index
 	 */
@@ -83,7 +83,7 @@ public class RouteExchangeTableModel extends AbstractTableModel {
 	public int getColumnCount() {
 		return COLUMN_NAMES.length;
 	}
-	
+
 	public int areaGetColumnCount() {
 		return AREA_COLUMN_NAMES.length;
 	}
@@ -95,7 +95,7 @@ public class RouteExchangeTableModel extends AbstractTableModel {
 	public String getColumnName(int column) {
 		return COLUMN_NAMES[column];
 	}
-	
+
 	public String areaGetColumnName(int column) {
 		return AREA_COLUMN_NAMES[column];
 	}
@@ -107,7 +107,7 @@ public class RouteExchangeTableModel extends AbstractTableModel {
 	 */
 	public List<RouteSuggestionData> getMessages() {
 		return messages;
-		 
+
 	}
 
 	/**
@@ -123,29 +123,97 @@ public class RouteExchangeTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		
-		if(rowIndex == -1) return "";
+
+		if (rowIndex == -1)
+			return "";
 		RouteSuggestionData message = messages.get(rowIndex);
-		
+
 		switch (columnIndex) {
 		case 0:
 			return message.getId();
 		case 1:
-			return message.getMmsi();
+			return "" + message.getMmsi();
 		case 2:
 			return message.getRoute().getName();
 		case 3:
-			return message.getStatus();
+			return interpetStatusShort(message.getStatus());
 		default:
 			return "";
 
 		}
 	}
-	
+
+	public String interpetStatusShort(AIS_STATUS status) {
+
+		if (status == AIS_STATUS.RECIEVED_APP_ACK) {
+			return "Sent";
+		} else {
+			if (status == AIS_STATUS.FAILED) {
+				return "Failed";
+			} else {
+				if (status == AIS_STATUS.NOT_SENT) {
+					return "Not sent";
+				} else {
+					if (status == AIS_STATUS.RECIEVED_ACCEPTED) {
+						return "Accepted";
+					} else {
+						if (status == AIS_STATUS.RECIEVED_NOTED) {
+							return "Noted";
+						} else {
+							if (status == AIS_STATUS.RECIEVED_REJECTED) {
+								return "Rejected";
+							} else {
+								if (status == AIS_STATUS.SENT_NOT_ACK) {
+									return "Sent but not recieved";
+								} else {
+									return "Unknown: " + status;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public String interpetStatusLong(AIS_STATUS status) {
+
+		if (status == AIS_STATUS.RECIEVED_APP_ACK) {
+			return "Sent and acknowleged by application but not user";
+		} else {
+			if (status == AIS_STATUS.FAILED) {
+				return "Failed to send to target";
+			} else {
+				if (status == AIS_STATUS.NOT_SENT) {
+					return "Not sent - check AIS status";
+				} else {
+					if (status == AIS_STATUS.RECIEVED_ACCEPTED) {
+						return "Route Suggestion Accepted by ship";
+					} else {
+						if (status == AIS_STATUS.RECIEVED_NOTED) {
+							return "Route Suggestion Noted by user";
+						} else {
+							if (status == AIS_STATUS.RECIEVED_REJECTED) {
+								return "Route Suggestion Rejected by user";
+							} else {
+								if (status == AIS_STATUS.SENT_NOT_ACK) {
+									return "Sent but no answer from route aplication";
+								} else {
+									return "Unknown: " + status;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	public Object areaGetValueAt(int rowIndex, int columnIndex) {
-		if(rowIndex == -1) return "";
+		if (rowIndex == -1 || this.getRowCount() < 1)
+			return "";
 		RouteSuggestionData message = messages.get(rowIndex);
-		
+
 		switch (columnIndex) {
 		case 0:
 			return message.getId();
@@ -156,7 +224,7 @@ public class RouteExchangeTableModel extends AbstractTableModel {
 		case 3:
 			return Formatter.formatShortDateTime(message.getTimeSent());
 		case 4:
-			return message.getStatus();
+			return interpetStatusLong(message.getStatus());
 		default:
 			return "";
 		}
@@ -166,12 +234,18 @@ public class RouteExchangeTableModel extends AbstractTableModel {
 	 * Update messages
 	 */
 	public void updateMessages() {
-		
 		messages.clear();
-		
-		   for (Iterator<RouteSuggestionData> it = aisService.getRouteSuggestions().values().iterator(); it.hasNext();) {
-			   messages.add(it.next());
-		   }
+
+		for (Iterator<RouteSuggestionData> it = aisService.getRouteSuggestions().values().iterator(); it.hasNext();) {
+			messages.add(it.next());
+		}
+	}
+
+	public boolean isAwk(int rowIndex) {
+		if (rowIndex == -1 || this.getRowCount() < 1) {
+			return false;
+		}
+		return messages.get(rowIndex).isAcknowleged();
 	}
 
 }

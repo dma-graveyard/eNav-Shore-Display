@@ -46,6 +46,7 @@ public class AisIntendedRouteToggle extends JMenuItem implements
 	private static final long serialVersionUID = 1L;
 	private VesselTargetSettings vesselTargetSettings;
 	private VesselTarget vesselTarget;
+	@SuppressWarnings("unused")
 	private AisLayer aisLayer;
 
 	public AisIntendedRouteToggle() {

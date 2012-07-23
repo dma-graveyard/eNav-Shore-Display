@@ -12,8 +12,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -34,7 +32,6 @@ import dk.frv.enav.esd.gui.utils.ComponentFrame;
 import dk.frv.enav.esd.route.Route;
 import dk.frv.enav.esd.route.RouteManager;
 import dk.frv.enav.esd.service.ais.AisServices;
-import dk.frv.enav.ins.ais.AisTarget;
 import dk.frv.enav.ins.ais.VesselTarget;
 
 public class SendRouteDialog extends ComponentFrame implements MouseListener, ActionListener {
@@ -57,9 +54,11 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 
 	private JPanel mainPanel;
 	private SendRouteDialog sendRoute = null;
+	@SuppressWarnings("rawtypes")
 	private JComboBox mmsiListComboBox;
 	private JLabel callsignLbl;
 	private JLabel nameLbl;
+	@SuppressWarnings("rawtypes")
 	private JComboBox routeListComboBox;
 	private JLabel routeLengthLbl;
 	private JLabel statusLbl;
@@ -151,6 +150,7 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 	/**
 	 * Function for setting up custom GUI for the map frame
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void createGUIContent() {
 
 		this.setBackground(GuiStyler.backgroundColor);
@@ -280,6 +280,8 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 
 		mmsiListComboBox.addActionListener(this);
 		routeListComboBox.addActionListener(this);
+		
+		sendLbl.setEnabled(true);
 
 	}
 
@@ -310,10 +312,22 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 
+		if (arg0.getSource() == zoomLbl) {
+			
+			
+			 if (ESD.getMainFrame().getActiveMapWindow() != null) {
+			 ESD.getMainFrame().getActiveMapWindow().getChartPanel()
+			 .zoomToPoint(route.getWaypoints().getFirst().getPos());
+			 } else if (ESD.getMainFrame().getMapWindows().size() > 0) {
+			 ESD.getMainFrame().getMapWindows().get(0).getChartPanel()
+			 .zoomToPoint(route.getWaypoints().getFirst().getPos());
+			 }
+		}
+		
 		if (arg0.getSource() == sendLbl) {
 
 			int mmsiTarget = Integer.parseInt((String) mmsiListComboBox.getSelectedItem());
-			mmsiTarget = 219230000;
+//			mmsiTarget = 219230000;
 
 			AisServices service = ESD.getAisServices();
 			
@@ -354,6 +368,7 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void loadData() {
 //		System.out.println("load data");
 		loading = true;

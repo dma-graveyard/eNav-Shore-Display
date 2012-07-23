@@ -29,18 +29,9 @@
  */
 package dk.frv.enav.esd.gui.views.menuitems;
 
-import java.util.LinkedList;
-
 import javax.swing.JMenuItem;
 
-import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.gui.views.ToolBar;
-import dk.frv.enav.esd.layers.routeEdit.NewRouteContainerLayer;
-import dk.frv.enav.esd.route.Route;
-import dk.frv.enav.esd.route.RouteLeg;
-import dk.frv.enav.esd.route.RouteManager;
-import dk.frv.enav.esd.route.RouteWaypoint;
-import dk.frv.enav.ins.common.Heading;
 import dk.frv.enav.ins.gui.menuitems.IMapMenuAction;
 
 public class RouteEditEndRoute extends JMenuItem implements IMapMenuAction {
@@ -49,8 +40,8 @@ public class RouteEditEndRoute extends JMenuItem implements IMapMenuAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private NewRouteContainerLayer newRouteLayer;
-	private RouteManager routeManager;
+//	private NewRouteContainerLayer newRouteLayer;
+//	private RouteManager routeManager;
 	private ToolBar toolBar;
 
 	public RouteEditEndRoute(String text) {
