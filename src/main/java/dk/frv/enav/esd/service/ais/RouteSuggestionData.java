@@ -12,13 +12,15 @@ public class RouteSuggestionData {
 	private Date timeSent;
 	private AIS_STATUS status;
 	private int id;
+	private boolean acknowleged;
 
-	public RouteSuggestionData(int id, int mmsi, Route route, Date timeSent, AIS_STATUS status){
+	public RouteSuggestionData(int id, int mmsi, Route route, Date timeSent, AIS_STATUS status, boolean acknowleged){
 		this.mmsi = mmsi;
 		this.route = route;
 		this.timeSent = timeSent;
 		this.status = status;
 		this.id = id;
+		this.acknowleged = acknowleged;
 	}
 
 	
@@ -71,4 +73,18 @@ public class RouteSuggestionData {
 	public String toString(){
 		return mmsi + " " + route.getName() + " " + status;
 	}
+
+
+
+	public boolean isAcknowleged() {
+		return acknowleged;
+	}
+
+
+
+	public void setAcknowleged(boolean acknowleged) {
+		this.acknowleged = acknowleged;
+	}
+	
+	
 }

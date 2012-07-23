@@ -215,7 +215,7 @@ public class AisServices extends MapHandlerChild {
 
 		// Add it to the hashmap
 		routeSuggestions.put(new RouteSuggestionKey(mmsiDestination, id), new RouteSuggestionData(id, mmsiDestination,
-				route, start, AIS_STATUS.NOT_SENT));
+				route, start, AIS_STATUS.NOT_SENT, false));
 
 		// Create a send request
 		SendRequest sendRequest = new SendRequest(msg6, 1, mmsiDestination);

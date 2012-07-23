@@ -459,6 +459,7 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 			msiHandler.addListener(this);
 			msiTableModel = new MsiTableModel(msiHandler);
 			msiTable.setModel(msiTableModel);
+			msiPanel.setMsiHandler(msiHandler);
 			msiPanel.initTable();
 		}
 		if (obj instanceof MainFrame) {
@@ -481,6 +482,9 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		System.out.println("New messages are in");
+		msiPanel.updateTable();
+		
 
 	}
 
