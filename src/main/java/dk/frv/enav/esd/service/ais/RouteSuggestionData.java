@@ -13,18 +13,32 @@ public class RouteSuggestionData {
 	private AIS_STATUS status;
 	private int id;
 	private boolean acknowleged;
+	private Date appAck;
 
-	public RouteSuggestionData(int id, int mmsi, Route route, Date timeSent, AIS_STATUS status, boolean acknowleged){
+	public RouteSuggestionData(int id, int mmsi, Route route, Date timeSent, AIS_STATUS status, boolean acknowleged, Date appAck){
 		this.mmsi = mmsi;
 		this.route = route;
 		this.timeSent = timeSent;
 		this.status = status;
 		this.id = id;
 		this.acknowleged = acknowleged;
+		this.appAck = appAck;
 	}
 
 	
 	
+	public Date getAppAck() {
+		return appAck;
+	}
+
+
+
+	public void setAppAck(Date appAck) {
+		this.appAck = appAck;
+	}
+
+
+
 	public int getId() {
 		return id;
 	}

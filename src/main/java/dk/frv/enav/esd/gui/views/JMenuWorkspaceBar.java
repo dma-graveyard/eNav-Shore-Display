@@ -46,7 +46,6 @@ import javax.swing.JMenuItem;
 
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.gui.fileselection.WorkspaceFileFilter;
-import dk.frv.enav.esd.service.ais.AisServices;
 
 
 /**
@@ -93,9 +92,7 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		fm.add(mi);
 		
 
-		JMenuItem sendRoute = new JMenuItem("Send Route");
-		fm.add(sendRoute);
-		
+	
 		//Maps menu
 		
 		maps = new JMenu("Maps");
@@ -141,16 +138,6 @@ public class JMenuWorkspaceBar extends JMenuBar {
 		JMenuItem saveWorkspace = new JMenuItem("Save workspace");
 		workspace.add(saveWorkspace);
 				
-		// Route
-		JMenu route = new JMenu("Route");
-		this.add(route);
-		
-		JMenuItem routeManager = new JMenuItem("Route Manager");
-		route.add(routeManager);
-		
-		JMenuItem newRoute = new JMenuItem("New Route");
-		route.add(newRoute);
-		
 		
 		
 		//Action listeners
@@ -203,83 +190,6 @@ public class JMenuWorkspaceBar extends JMenuBar {
 				mainFrame.getSettingsWindow().toggleVisibility();
 			}
 		});
-		
-		sendRoute.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				System.out.println("Send Route");
-				
-				AisServices service = ESD.getAisServices();
-				
-				
-				service.sendRouteSuggestion(219230000, ESD.getMainFrame().getRouteManagerDialog().getRouteManager().getRoutes().get(0));
-//				
-//				
-//				
-//				
-//				int mmsiTarget = 219230000;
-////				int mmsiTarget = 219015063;
-//				
-//				// Create intended route ASM
-//				RouteSuggestion routeSuggestion = new RouteSuggestion();
-//				
-//				routeSuggestion.addWaypoint(new AisPosition(new GeoLocation(55, 12)));
-//				routeSuggestion.addWaypoint(new AisPosition(new GeoLocation(55, 13)));
-//				
-//				routeSuggestion.setDuration(10);
-//				routeSuggestion.setMsgLinkId(359);
-//				routeSuggestion.setRouteType(RouteType.RECOMMENDED.getType());
-//
-//				
-//				
-//				Date start = new Date();
-//				// Set start time
-//				Calendar cal = Calendar.getInstance();
-//				cal.setTime(start);
-//				cal.setTimeZone(TimeZone.getTimeZone("GMT+0000"));
-//				routeSuggestion.setStartMonth(cal.get(Calendar.MONTH) + 1);
-//				routeSuggestion.setStartDay(cal.get(Calendar.DAY_OF_MONTH));
-//				routeSuggestion.setStartHour(cal.get(Calendar.HOUR_OF_DAY));
-//				routeSuggestion.setStartMin(cal.get(Calendar.MINUTE));
-//				
-//				
-//				
-//				AisMessage6 msg6 = new AisMessage6();
-//				msg6.setAppMessage(routeSuggestion);
-//				
-//				msg6.setRetransmit(0);
-//				msg6.setDestination(mmsiTarget);
-//				
-//					
-//				
-//				
-//				// Create a send request
-//				SendRequest sendRequest = new SendRequest(msg6, 1, mmsiTarget);
-//				
-//				// Create a send thread
-//				AisSendThread aisSendThread = new AisSendThread(sendRequest, null);
-//				
-//				// Start send thread
-//				aisSendThread.start();
-//				
-				
-				
-//				
-//				// Send
-//				try {
-//					Abk abk = ESD.getAisReader().send(msg6, 1, mmsiTarget);
-//					System.out.println(abk);
-//				} catch (SendException e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				} catch (InterruptedException e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//				
-				
-			}
-		});
 
 
 		addMap.addActionListener(new ActionListener() {
@@ -328,11 +238,7 @@ public class JMenuWorkspaceBar extends JMenuBar {
 //			}
 //		});
 
-		routeManager.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				mainFrame.getRouteManagerDialog().setVisible(!mainFrame.getRouteManagerDialog().isVisible());
-			}
-		});
+
 
 	    
 	}

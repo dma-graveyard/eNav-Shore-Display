@@ -46,7 +46,7 @@ import dk.frv.enav.ins.common.text.Formatter;
 public class RouteExchangeTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 
-	private static final String[] AREA_COLUMN_NAMES = { "ID", "MMSI", "Route Name", "Date", "Status" };
+	private static final String[] AREA_COLUMN_NAMES = { "ID", "MMSI", "Route Name", "Date", "Status", "Application Recieve Date" };
 	private static final String[] COLUMN_NAMES = { "ID", "MMSI", "Route Name", "Status" };
 
 	private AisServices aisService;
@@ -225,6 +225,13 @@ public class RouteExchangeTableModel extends AbstractTableModel {
 			return Formatter.formatShortDateTime(message.getTimeSent());
 		case 4:
 			return interpetStatusLong(message.getStatus());
+		case 5:
+			if (message.getAppAck() != null){
+				return Formatter.formatShortDateTime(message.getAppAck());	
+			}else{
+				return "Not recieved by application";
+			}
+			
 		default:
 			return "";
 		}

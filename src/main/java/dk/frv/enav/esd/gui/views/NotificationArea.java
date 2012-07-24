@@ -97,7 +97,7 @@ public class NotificationArea extends ComponentFrame implements IMsiUpdateListen
 
 		// Setup location
 		this.setLocation((10 + moveHandlerHeight), (40 + mainFrame.getToolbar().getHeight()));
-		this.setSize(100, 400);
+//		this.setSize(100, 400);
 		this.setVisible(true);
 		this.setResizable(false);
 

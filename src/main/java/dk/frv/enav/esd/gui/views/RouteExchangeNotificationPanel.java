@@ -58,6 +58,7 @@ public class RouteExchangeNotificationPanel extends JPanel {
 	private JLabel but_read;
 	private JLabel but_goto;
 	private JLabel but_delete;
+	private JLabel but_resend;
 
 	private JPanel masterPanel;
 
@@ -210,7 +211,7 @@ public class RouteExchangeNotificationPanel extends JPanel {
 		masterPanel.add(rightPanel);
 		rightPanel.setLayout(null);
 		pane_3 = new JPanel();
-		pane_3.setBounds(85, 11, 245, 30);
+		pane_3.setBounds(35, 11, 345, 30);
 		rightPanel.add(pane_3);
 		pane_3.setBackground(backgroundColor);
 		pane_3.setLayout(new FlowLayout());
@@ -220,8 +221,15 @@ public class RouteExchangeNotificationPanel extends JPanel {
 		GuiStyler.styleButton(but_read);
 		but_read.setPreferredSize(new Dimension(75, 20));
 		pane_3.add(but_read);
-
 		but_read.setEnabled(false);
+		
+		but_resend = new JLabel("Resend", new ImageIcon("images/notificationcenter/arrow-circle-315.png"), JLabel.CENTER);
+		GuiStyler.styleButton(but_resend);
+		but_resend.setPreferredSize(new Dimension(75, 20));
+		pane_3.add(but_resend);
+		but_resend.setEnabled(false);
+
+		
 		
 		but_goto = new JLabel("Goto", new ImageIcon("images/notificationcenter/map-pin.png"), JLabel.CENTER);
 		GuiStyler.styleButton(but_goto);
@@ -257,8 +265,8 @@ public class RouteExchangeNotificationPanel extends JPanel {
 
 	public void initTable() {
 		routeTableModel = (RouteExchangeTableModel) routeTable.getModel();
-		routeTable.getColumnModel().getColumn(0).setPreferredWidth(40);
-		routeTable.getColumnModel().getColumn(1).setPreferredWidth(60);
+		routeTable.getColumnModel().getColumn(0).setPreferredWidth(27);
+		routeTable.getColumnModel().getColumn(1).setPreferredWidth(73);
 		routeTable.getColumnModel().getColumn(2).setPreferredWidth(90);
 		routeTable.getColumnModel().getColumn(3).setPreferredWidth(155);
 		routeTable.getSelectionModel().addListSelectionListener(new RouteExchangeRowListener());
@@ -338,6 +346,7 @@ public class RouteExchangeNotificationPanel extends JPanel {
 		}
 		but_goto.setEnabled(true);
 		but_delete.setEnabled(true);
+		but_resend.setEnabled(true);
 
 		// Update area
 
@@ -365,6 +374,20 @@ public class RouteExchangeNotificationPanel extends JPanel {
 				aisService.setAcknowledged(message.getMmsi(), message.getId());
 				routeTableModel.updateMessages();
 				but_read.setEnabled(false);
+
+			}
+		});
+		
+		but_resend.addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent e) {
+				RouteSuggestionData message = routeTableModel.getMessages().get(currentSelection);
+				aisService.sendRouteSuggestion((int) message.getMmsi(), message.getRoute());
+				
+//				RouteSuggestionData message = routeTableModel.getMessages().get(currentSelection);
+//
+//				aisService.setAcknowledged(message.getMmsi(), message.getId());
+//				routeTableModel.updateMessages();
+//				but_read.setEnabled(false);
 
 			}
 		});
@@ -400,6 +423,7 @@ public class RouteExchangeNotificationPanel extends JPanel {
 				 if (routeTable.getRowCount() > 0){
 					 readMessage(0);	 
 				 }else{
+					 but_resend.setEnabled(false);
 					 but_delete.setEnabled(false);
 					 but_goto.setEnabled(false);
 					 but_read.setEnabled(false);

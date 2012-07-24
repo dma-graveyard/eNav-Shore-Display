@@ -71,7 +71,7 @@ public class StatusArea extends JInternalFrame implements IMapCoordListener, Bea
 	private JPanel highlightPanel;
 	private static int moveHandlerHeight = 18;
 	private static int statusItemHeight = 20;
-	private static int statusItemWidth = 125;
+	private static int statusItemWidth = 130;
 	private static int statusPanelOffset = 4;
 	private HashMap<String, JLabel> statusItems = new HashMap<String, JLabel>();
 	private HashMap<String, JLabel> highlightItems = new HashMap<String, JLabel>();

@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -67,7 +68,8 @@ public class AisServices extends MapHandlerChild {
 	}
 
 	public AisServices() {
-
+		 Random generator = new Random();
+		idCounter = generator.nextInt(1000);
 	}
 
 	public void acknowledgedRecieved(long mmsi, AsmAcknowledge reply) {
@@ -82,7 +84,7 @@ System.out.println("ack?");
 				routeSuggestions.get(new RouteSuggestionKey(mmsi, reply.getTextSequenceNum())).setStatus(
 						AIS_STATUS.RECIEVED_APP_ACK);
 				routeSuggestions.get(new RouteSuggestionKey(mmsi, reply.getTextSequenceNum())).setAcknowleged(false);
-				
+				routeSuggestions.get(new RouteSuggestionKey(mmsi, reply.getTextSequenceNum())).setAppAck(new Date());
 				notifyRouteExchangeListeners();
 			}
 
@@ -160,8 +162,8 @@ System.out.println("ack?");
 
 		// Create route suggestion - intended route ASM
 		RouteSuggestion routeSuggestion = new RouteSuggestion();
-		routeSuggestion.setRouteType(RouteType.ALTERNATIVE.getType());
-		routeSuggestion.setDuration(10);
+		routeSuggestion.setRouteType(RouteType.RECOMMENDED.getType());
+		routeSuggestion.setDuration(0);
 
 		// Convert the route
 
@@ -169,11 +171,13 @@ System.out.println("ack?");
 
 		int maxWps = 8;
 
-		Date start = route.getStarttime();
-
-		if (start == null) {
-			start = new Date();
-		}
+//		Date start = route.getStarttime();
+//
+//		if (start == null) {
+//			start = new Date();
+//		}
+		
+		Date start = new Date();
 
 		// Set start time
 		Calendar cal = Calendar.getInstance();
@@ -216,7 +220,7 @@ System.out.println("ack?");
 
 		// Add it to the hashmap
 		routeSuggestions.put(new RouteSuggestionKey(mmsiDestination, id), new RouteSuggestionData(id, mmsiDestination,
-				route, start, AIS_STATUS.NOT_SENT, false));
+				route, start, AIS_STATUS.NOT_SENT, false, null));
 
 		// Create a send request
 		SendRequest sendRequest = new SendRequest(msg6, 1, mmsiDestination);
@@ -247,7 +251,10 @@ System.out.println("ack?");
 	public void sendResult(boolean sendOk, int mmsi, int id) {
 
 		if (sendOk) {
-			routeSuggestions.get(new RouteSuggestionKey(Long.valueOf(mmsi), id)).setStatus(AIS_STATUS.SENT_NOT_ACK);
+			if (routeSuggestions.get(new RouteSuggestionKey(mmsi, id)).getStatus() != AIS_STATUS.RECIEVED_APP_ACK){
+				routeSuggestions.get(new RouteSuggestionKey(Long.valueOf(mmsi), id)).setStatus(AIS_STATUS.SENT_NOT_ACK);
+				
+			}
 		} else {
 			routeSuggestions.get(new RouteSuggestionKey(Long.valueOf(mmsi), id)).setStatus(AIS_STATUS.FAILED);
 		}
