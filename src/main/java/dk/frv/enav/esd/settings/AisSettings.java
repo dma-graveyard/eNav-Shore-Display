@@ -67,6 +67,7 @@ public class AisSettings implements Serializable {
 	private String aisFilename = "";
 	private int aisTcpPort = 4001;
 	private int sartPrefix = 970;
+	private long ownMMSI = -1;
 	
 
 	/**
@@ -89,6 +90,7 @@ public class AisSettings implements Serializable {
 		aisTcpPort = PropUtils.intFromProperties(props, PREFIX + "aisTcpPort", aisTcpPort);
 		aisSensorRange = PropUtils.doubleFromProperties(props, PREFIX + "aisSensorRange", aisSensorRange);
 		aisFilename = props.getProperty(PREFIX + "aisFilename", aisFilename);
+		ownMMSI = PropUtils.longFromProperties(props, PREFIX + "ownMMSI", ownMMSI);
 	}
 	
 	public void setProperties(Properties props) {
@@ -100,6 +102,7 @@ public class AisSettings implements Serializable {
 		props.put(PREFIX + "aisTcpPort", Integer.toString(aisTcpPort));
 		props.put(PREFIX + "aisSensorRange", Double.toString(aisSensorRange));
 		props.put(PREFIX + "aisFilename", aisFilename);
+		props.put(PREFIX + "ownMMSI",  Long.toString(ownMMSI));
 	}
 
 	public SensorConnectionType getAisConnectionType() {
@@ -164,5 +167,15 @@ public class AisSettings implements Serializable {
 	public void setAllowSending(boolean allowSending) {
 		this.allowSending = allowSending;
 	}
+
+	public long getOwnMMSI() {
+		return ownMMSI;
+	}
+
+	public void setOwnMMSI(long ownMMSI) {
+		this.ownMMSI = ownMMSI;
+	}
+	
+	
 	
 }

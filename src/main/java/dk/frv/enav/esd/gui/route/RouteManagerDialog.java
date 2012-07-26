@@ -29,26 +29,38 @@
  */
 package dk.frv.enav.esd.gui.route;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 
+import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -56,6 +68,10 @@ import javax.swing.event.TableModelListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import dk.frv.enav.esd.ESD;
+import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
+import dk.frv.enav.esd.gui.settingtabs.GuiStyler;
+import dk.frv.enav.esd.gui.utils.ComponentFrame;
+import dk.frv.enav.esd.gui.views.MainFrame;
 import dk.frv.enav.esd.route.Route;
 import dk.frv.enav.esd.route.RouteLoadException;
 import dk.frv.enav.esd.route.RouteLoader;
@@ -65,7 +81,7 @@ import dk.frv.enav.esd.route.RoutesUpdateEvent;
 /**
  * Route manager dialog
  */
-public class RouteManagerDialog extends JInternalFrame implements ActionListener, ListSelectionListener,
+public class RouteManagerDialog extends ComponentFrame implements ActionListener, ListSelectionListener,
 		TableModelListener, MouseListener {
 
 	private static final long serialVersionUID = 1L;
@@ -74,57 +90,149 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 
 	protected RouteManager routeManager;
 
-	private JButton propertiesBtn;
-	private JButton zoomToBtn;
-	private JButton reverseCopyBtn;
-	private JButton deleteBtn;
-	private JButton exportBtn;
-	private JButton importBtn;
-	private JButton closeBtn;
+//	private JButton propertiesBtn;
+//	private JButton zoomToBtn;
+//	private JButton reverseCopyBtn;
+//	private JButton deleteBtn;
+//	private JButton exportBtn;
+//	private JButton importBtn;
+//	private JButton closeBtn;
+	private JLabel propertiesBtn;
+	private JLabel zoomToBtn;
+	private JLabel reverseCopyBtn;
+	private JLabel deleteBtn;
+	private JLabel exportBtn;
+	private JLabel importBtn;
+	private JLabel closeBtn;
+	private JLabel exportAllBtn;
+	private JLabel metocBtn;
+	private JLabel copyBtn;
 
 	private JScrollPane routeScrollPane;
 	private JTable routeTable;
 	private RoutesTableModel routesTableModel;
 	private ListSelectionModel routeSelectionModel;
 
-	private JButton exportAllBtn;
-
-	private JButton metocBtn;
-
-	private JButton copyBtn;
+	
 	JFrame parent;
 
+	private JPanel topBar;
+	private static int moveHandlerHeight = 18;
+	private JLabel moveHandler;
+	private JPanel masterPanel;
+	private JPanel contentPanel;
+	private Color backgroundColor = new Color(83, 83, 83);
+	private MainFrame mainFrame;
+	
+	
+	Border paddingLeft = BorderFactory.createMatteBorder(0, 8, 0, 0, new Color(65, 65, 65));
+	Border paddingBottom = BorderFactory.createMatteBorder(0, 0, 5, 0, new Color(83, 83, 83));
+	Border notificationPadding = BorderFactory.createCompoundBorder(paddingBottom, paddingLeft);
+	Border notificationsIndicatorImportant = BorderFactory.createMatteBorder(0, 0, 0, 10, new Color(206, 120, 120));
+	Border paddingLeftPressed = BorderFactory.createMatteBorder(0, 8, 0, 0, new Color(45, 45, 45));
+	Border notificationPaddingPressed = BorderFactory.createCompoundBorder(paddingBottom, paddingLeftPressed);
+	
+	
 	public RouteManagerDialog(JFrame parent) {
-		super("Route Manager", true);
+		super("Route Manager", false, true, false, false);
 		this.parent = parent;
 		routeManager = ESD.getRouteManager();
 
+		
+		
+		
+		// Strip off window looks
+		setRootPaneCheckingEnabled(false);
+		((javax.swing.plaf.basic.BasicInternalFrameUI) this.getUI()).setNorthPane(null);
+		this.setBorder(null);
+
+		// Map tools
+		topBar = new JPanel(new GridLayout(1, 3));
+		topBar.setPreferredSize(new Dimension(500, moveHandlerHeight));
+		topBar.setOpaque(true);
+		topBar.setBackground(Color.DARK_GRAY);
+		topBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(30, 30, 30)));
+
+		// Placeholder - for now
+		topBar.add(new JLabel());
+
+		// Movehandler/Title dragable)
+		moveHandler = new JLabel("Route Manager", JLabel.CENTER);
+		moveHandler.setFont(new Font("Arial", Font.BOLD, 9));
+		moveHandler.setForeground(new Color(200, 200, 200));
+		// actions = moveHandler.getListeners(MouseMotionListener.class);
+		topBar.add(moveHandler);
+
+		// The tools (minimize, maximize and close)
+		JPanel windowToolsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+		windowToolsPanel.setOpaque(false);
+		windowToolsPanel.setPreferredSize(new Dimension(60, 50));
+
+		JLabel close = new JLabel(new ImageIcon("images/window/close.png"));
+		close.addMouseListener(new MouseAdapter() {
+
+			public void mouseReleased(MouseEvent e) {
+				toggleVisibility();
+			}
+		});
+
+		close.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 2));
+		windowToolsPanel.add(close);
+		topBar.add(windowToolsPanel);
+		
+		contentPanel = new JPanel();
+		contentPanel.setPreferredSize(new Dimension(900, 600 - moveHandlerHeight));
+		contentPanel.setSize(new Dimension(900, 600 - moveHandlerHeight));
+		contentPanel.setBackground(backgroundColor);
+		
+		masterPanel = new JPanel(new BorderLayout());
+		masterPanel.add(topBar, BorderLayout.NORTH);
+		masterPanel.add(contentPanel, BorderLayout.CENTER);
+
+		masterPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, new Color(30, 30, 30), new Color(
+				45, 45, 45)));
+		
+		getContentPane().add(masterPanel);
+		
+		
+		
+		
 		setSize(600, 400);
 		setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		setLocation(10, 10);
 
-		propertiesBtn = new JButton("Properties");
-		propertiesBtn.addActionListener(this);
-		zoomToBtn = new JButton("Zoom to");
-		zoomToBtn.addActionListener(this);
-		reverseCopyBtn = new JButton("Reverse copy");
-		reverseCopyBtn.addActionListener(this);
-		deleteBtn = new JButton("Delete");
-		deleteBtn.addActionListener(this);
-		exportBtn = new JButton("Export");
-		exportBtn.addActionListener(this);
-		exportAllBtn = new JButton("Export All");
-		exportAllBtn.addActionListener(this);
-		importBtn = new JButton("Import");
-		importBtn.addActionListener(this);
-		closeBtn = new JButton("Close");
-		closeBtn.addActionListener(this);
-		metocBtn = new JButton("METOC");
-		metocBtn.addActionListener(this);
-		copyBtn = new JButton("Copy");
-		copyBtn.addActionListener(this);
-
+		propertiesBtn = new JLabel("Properties");
+		GuiStyler.styleButton(propertiesBtn);
+//		propertiesBtn.addActionListener(this);
+		zoomToBtn = new JLabel("Zoom to");
+		GuiStyler.styleButton(zoomToBtn);
+//		zoomToBtn.addActionListener(this);
+		reverseCopyBtn = new JLabel("Reverse copy");
+		GuiStyler.styleButton(reverseCopyBtn);
+//		reverseCopyBtn.addActionListener(this);
+		deleteBtn = new JLabel("Delete");
+		GuiStyler.styleButton(deleteBtn);
+//		deleteBtn.addActionListener(this);
+		exportBtn = new JLabel("Export");
+		GuiStyler.styleButton(exportBtn);
+//		exportBtn.addActionListener(this);
+		exportAllBtn = new JLabel("Export All");
+		GuiStyler.styleButton(exportAllBtn);
+//		exportAllBtn.addActionListener(this);
+		importBtn = new JLabel("Import");
+		GuiStyler.styleButton(importBtn);
+//		importBtn.addActionListener(this);
+		closeBtn = new JLabel("Close");
+		GuiStyler.styleButton(closeBtn);
+//		closeBtn.addActionListener(this);
+		metocBtn = new JLabel("METOC");
 		metocBtn.setEnabled(false);
+		GuiStyler.styleButton(metocBtn);
+//		metocBtn.addActionListener(this);
+		copyBtn = new JLabel("Copy");
+		GuiStyler.styleButton(copyBtn);
+//		copyBtn.addActionListener(this);
+
 
 		routeTable = new JTable();
 		routesTableModel = new RoutesTableModel(routeManager);
@@ -149,7 +257,7 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 		routeTable.setSelectionModel(routeSelectionModel);
 		routeTable.addMouseListener(this);
 
-		GroupLayout groupLayout = new GroupLayout(getContentPane());
+		GroupLayout groupLayout = new GroupLayout(contentPanel);
 		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addGroup(
 				groupLayout
 						.createSequentialGroup()
@@ -215,7 +323,7 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 												289, Short.MAX_VALUE)).addGap(28).addComponent(closeBtn)
 						.addContainerGap()));
 
-		getContentPane().setLayout(groupLayout);
+		contentPanel.setLayout(groupLayout);
 
 		int selectRow = routeManager.getActiveRouteIndex();
 		if (selectRow < 0 && routeManager.getRouteCount() > 0) {
@@ -227,6 +335,9 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 
 		updateTable();
 		updateButtons();
+		
+		addMouseListeners();
+		
 	}
 
 	private void updateButtons() {
@@ -248,7 +359,7 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 		reverseCopyBtn.setEnabled(routeSelected);
 		copyBtn.setEnabled(routeSelected);
 		deleteBtn.setEnabled(routeSelected && !activeSelected);
-		metocBtn.setEnabled(routeSelected);
+//		metocBtn.setEnabled(routeSelected);
 		exportBtn.setEnabled(routeSelected);
 	}
 
@@ -406,30 +517,77 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 			exportToFile(i);
 		}
 	}
+	
+	public void addMouseListeners() {
+
+		closeBtn.addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent e) {
+				close();
+			}
+		});
+
+		propertiesBtn.addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent e) {
+				properties();
+			}
+		});
+
+		
+		zoomToBtn.addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent e) {
+				zoomTo();
+			}
+		});
+
+		
+		copyBtn.addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent e) {
+				copy();
+			}
+		});
+
+		reverseCopyBtn.addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent e) {
+				reverseCopy();
+			}
+		});	
+		
+		deleteBtn.addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent e) {
+				delete();
+			}
+		});	
+		
+//		metocBtn.addMouseListener(new MouseAdapter() {
+//			public void mouseReleased(MouseEvent e) {
+//				metocProperties();
+//			}
+//		});	
+		
+		exportBtn.addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent e) {
+				exportToFile();
+			}
+		});	
+		
+		exportAllBtn.addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent e) {
+				exportAllToFile();
+			}
+		});	
+		
+		importBtn.addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent e) {
+				importFromFile();
+			}
+		});	
+		
+	}
+	
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == closeBtn) {
-			close();
-		} else if (e.getSource() == propertiesBtn) {
-			properties();
-		} else if (e.getSource() == zoomToBtn) {
-			zoomTo();
-		} else if (e.getSource() == copyBtn) {
-			copy();
-		} else if (e.getSource() == reverseCopyBtn) {
-			reverseCopy();
-		} else if (e.getSource() == deleteBtn) {
-			delete();
-		} else if (e.getSource() == metocBtn) {
-			metocProperties();
-		} else if (e.getSource() == exportBtn) {
-			exportToFile();
-		} else if (e.getSource() == exportAllBtn) {
-			exportAllToFile();
-		} else if (e.getSource() == importBtn) {
-			importFromFile();
-		}
+
 	}
 
 	@Override
@@ -441,16 +599,7 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		// ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-
-		// int firstIndex = e.getFirstIndex();
-		// int lastIndex = e.getLastIndex();
-		// boolean isAdjusting = e.getValueIsAdjusting();
-		// LOG.info("Event for indexes " + firstIndex + " - " + lastIndex +
-		// "; isAdjusting is " + isAdjusting + "; selected indexes:");
-
 		updateButtons();
-
 	}
 
 	@Override
@@ -480,5 +629,21 @@ public class RouteManagerDialog extends JInternalFrame implements ActionListener
 	public void mouseReleased(MouseEvent e) {
 
 	}
+	
+	@Override
+	public void findAndInit(Object obj) {
+		if (obj instanceof MainFrame) {
+			mainFrame = (MainFrame) obj;
+			ToolbarMoveMouseListener mml = new ToolbarMoveMouseListener(this, mainFrame);
+			topBar.addMouseListener(mml);
+			topBar.addMouseMotionListener(mml);
+		}
+	}
 
+	/**
+	 * Change the visiblity
+	 */
+	public void toggleVisibility() {
+		setVisible(!this.isVisible());
+	}
 }

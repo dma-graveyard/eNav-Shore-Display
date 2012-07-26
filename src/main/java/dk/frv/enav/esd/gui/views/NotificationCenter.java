@@ -476,7 +476,8 @@ public class NotificationCenter extends ComponentFrame implements ListSelectionL
 
 	public void toggleVisibility(int service) {
 
-		setVisible(!this.isVisible());
+//		setVisible(!this.isVisible());
+		setVisible(true);
 		setNotificationView(service);
 
 	}

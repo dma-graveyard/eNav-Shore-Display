@@ -396,7 +396,7 @@ public class AisLayer extends OMGraphicHandlerLayer implements Runnable, IVessel
 			info.put("Type", vessel.getShipType());
 			statusArea.receiveHighlight(info, vessel.getMMSI());
 
-			statusArea.receiveHighlight(info, vessel.getMMSI());
+//			statusArea.receiveHighlight(info, vessel.getMMSI());
 		}
 	}
 

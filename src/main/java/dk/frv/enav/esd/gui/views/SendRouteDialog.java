@@ -144,6 +144,8 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 				45, 45, 45)));
 
 		this.setContentPane(masterPanel);
+		
+		
 
 	}
 
@@ -255,6 +257,7 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 		sendLbl.setBounds(10, 61, 75, 20);
 		GuiStyler.styleButton(sendLbl);
 		sendPanel.add(sendLbl);
+		sendLbl.setEnabled(false);
 
 		// JButton sendBtn = new JButton("Send");
 		// sendBtn.setBounds(10, 61, 89, 23);
@@ -331,7 +334,7 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 
 			AisServices service = ESD.getAisServices();
 			
-			if (route == null){
+			if (route == null && routeListComboBox.getSelectedIndex() != -1){
 				route = routeManager.getRoutes().get(routeListComboBox.getSelectedIndex());
 //				System.out.println("no route");
 			}
@@ -383,6 +386,7 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 			routeListComboBox.addItem(routeManager.getRoutes().get(i).getName() + "                                                 " + i);
 		}
 		
+		
 		loading = false;
 
 	}
@@ -409,7 +413,6 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 //				System.out.println("mmsi selected to set to " + mmsi);
 				VesselTarget selectedShip = aisHandler.getVesselTargets().get(mmsi);
 
-				// AisTarget selectedShip = aisHandler.getTarget());
 				if (selectedShip != null){
 					
 				

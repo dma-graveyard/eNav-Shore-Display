@@ -40,6 +40,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 
 import dk.frv.enav.common.xml.metoc.MetocForecast;
+import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.route.Route;
 import dk.frv.enav.esd.route.RouteManager;
 import dk.frv.enav.esd.route.RoutesUpdateEvent;
@@ -55,22 +56,20 @@ public class MetocRequestDialog extends JDialog implements Runnable, ActionListe
 	
 	private RouteManager routeManager;
 	private Route route;
-	private Window parent;
 	private JLabel statusLbl;
 	private JButton cancelBtn;
 	private Boolean cancelReq = false;
 	
-	public MetocRequestDialog(Window parent, RouteManager routeManager, Route route) {
-		super(parent, "Request METOC");
+	public MetocRequestDialog(RouteManager routeManager, Route route) {
+		super(ESD.getMainFrame(), "Request METOC");
 		this.routeManager = routeManager;
 		this.route = route;
-		this.parent = parent;
 		
         initGui();		
 	}
 	
 	public static void requestMetoc(Window parent, RouteManager routeManager, Route route) {
-		MetocRequestDialog metocRequestDialog = new MetocRequestDialog(parent, routeManager, route);
+		MetocRequestDialog metocRequestDialog = new MetocRequestDialog(routeManager, route);
 		metocRequestDialog.doRequestMetoc();
 		metocRequestDialog = null;
 	}
@@ -111,11 +110,11 @@ public class MetocRequestDialog extends JDialog implements Runnable, ActionListe
 			if (error.getExtraMessage() != null) {
 				text += ": " + error.getExtraMessage();
 			}
-			JOptionPane.showMessageDialog(parent, text, "Shore service error",
+			JOptionPane.showMessageDialog(ESD.getMainFrame(), text, "Shore service error",
 					JOptionPane.ERROR_MESSAGE);
 		} else {
 			MetocForecast metocForecast = route.getMetocForecast();
-			JOptionPane.showMessageDialog(parent, "Received " + metocForecast.getForecasts().size() + " METOC forecast points", "Shore service result",
+			JOptionPane.showMessageDialog(ESD.getMainFrame(), "Received " + metocForecast.getForecasts().size() + " METOC forecast points", "Shore service result",
 					JOptionPane.INFORMATION_MESSAGE);
 		}		
 	}
@@ -123,7 +122,7 @@ public class MetocRequestDialog extends JDialog implements Runnable, ActionListe
 	private void initGui() {
 		setSize(280, 130);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(parent);
+        setLocationRelativeTo(ESD.getMainFrame());
         getContentPane().setLayout(null);
         
         cancelBtn = new JButton("Cancel");

@@ -62,6 +62,8 @@ public class ShoreServices extends MapHandlerChild implements IStatusComponent {
 	
 	}
 
+	
+	
 	public static double floatToDouble (float converThisNumberToFloat) {
 
 		String floatNumberInString = String.valueOf(converThisNumberToFloat);

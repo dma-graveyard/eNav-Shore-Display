@@ -146,7 +146,7 @@ public class AisHandler extends MapHandlerChild implements IAisHandler, IStatusC
 	protected List<IAisRouteSuggestionListener> suggestionListeners = new ArrayList<IAisRouteSuggestionListener>();
 
 
-	private long ownMMSI = 219622000;
+	private long ownMMSI = -1;
 	private AisServices aisService;
 	
 	/**
@@ -162,6 +162,9 @@ public class AisHandler extends MapHandlerChild implements IAisHandler, IStatusC
 		this.showIntendedRouteDefault = true;
 		this.strictAisMode = settings.getAisSettings().isStrict();
 
+		this.ownMMSI = settings.getAisSettings().getOwnMMSI();
+		
+		
 		ESD.startThread(this, "AisHandler");
 	}
 

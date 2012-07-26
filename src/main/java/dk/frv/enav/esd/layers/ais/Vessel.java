@@ -165,7 +165,7 @@ public class Vessel extends OMGraphicList {
 		if (staticData != null) {
 			vessel.setImageIcon(staticData.getShipType().toString());
 			callSign.setData("Call Sign: " + staticData.getCallsign());
-			vesselCallSign = staticData.getCallsign();
+			vesselCallSign = AisMessage.trimText(staticData.getCallsign());
 			vesselName = AisMessage.trimText(staticData.getName());
 			vesselDest = staticData.getDestination();
 			vesselEta = Long.toString(staticData.getEta());
