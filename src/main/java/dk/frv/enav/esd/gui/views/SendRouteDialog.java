@@ -284,7 +284,6 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 		mmsiListComboBox.addActionListener(this);
 		routeListComboBox.addActionListener(this);
 		
-		sendLbl.setEnabled(true);
 
 	}
 
@@ -327,7 +326,7 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 			 }
 		}
 		
-		if (arg0.getSource() == sendLbl) {
+		if (arg0.getSource() == sendLbl && sendLbl.isEnabled()) {
 
 			int mmsiTarget = Integer.parseInt((String) mmsiListComboBox.getSelectedItem());
 //			mmsiTarget = 219230000;
@@ -423,10 +422,10 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 					nameLbl.setText("N/A");
 					callsignLbl.setText("N/A");
 				}
-				sendLbl.setEnabled(true);
+				
 				}else{
 					statusLbl.setText("The ship is not visible on AIS");
-					sendLbl.setEnabled(false);	
+					
 				}
 			}
 		}
@@ -445,6 +444,12 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 			}
 			
 		}
+		
+		if (mmsi != -1 && route != null){
+			sendLbl.setEnabled(true);
+		}
+		
+		
 
 	}
 

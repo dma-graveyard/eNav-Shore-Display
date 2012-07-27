@@ -31,6 +31,7 @@ package dk.frv.enav.esd.gui.route;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -60,12 +61,15 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import dk.frv.enav.esd.ESD;
 import dk.frv.enav.esd.event.ToolbarMoveMouseListener;
@@ -233,16 +237,61 @@ public class RouteManagerDialog extends ComponentFrame implements ActionListener
 		GuiStyler.styleButton(copyBtn);
 //		copyBtn.addActionListener(this);
 
+		DefaultTableModel model = new DefaultTableModel(30, 3);
+		
+		routeTable = new JTable(model) {
+			private static final long serialVersionUID = 1L;
 
-		routeTable = new JTable();
+			public Component prepareRenderer(TableCellRenderer renderer, int Index_row, int Index_col) {
+				Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
+				if (Index_row % 2 == 0) {
+					comp.setBackground(new Color(49, 49, 49));
+				} else {
+					comp.setBackground(new Color(65, 65, 65));
+				}
+
+				if (isCellSelected(Index_row, Index_col)) {
+					comp.setForeground(Color.white);
+					comp.setBackground(new Color(85, 85, 85));
+				}
+
+				
+				return comp;
+			}
+		};
+		
+			
+		
+//		routeTable.setTableHeader(null);
+		
+		
+		routeTable.setBorder(new EmptyBorder(0, 0, 0, 0));
+//		routeTable.setIntercellSpacing(new Dimension(0, 0));
+		routeTable.setBackground(new Color(49, 49, 49));
+		routeTable.setShowVerticalLines(false);
+		routeTable.setShowHorizontalLines(false);
+		routeTable.setShowGrid(false);
+		routeTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+		routeTable.setForeground(Color.white);
+		routeTable.setSelectionForeground(Color.gray);
+//		routeTable.setRowHeight(20);
+		routeTable.setFocusable(false);
+//		routeTable.setAutoResizeMode(0);
+			
+		
 		routesTableModel = new RoutesTableModel(routeManager);
 		routesTableModel.addTableModelListener(this);
+		
 		routeTable.setShowHorizontalLines(false);
 		routeTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
 		routeScrollPane = new JScrollPane(routeTable);
 		routeScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		routeScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		routeTable.setFillsViewportHeight(true);
+		
+		routeScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(30, 30, 30)));
+		
 		// TODO: Comment this line when using WindowBuilder
 		routeTable.setModel(routesTableModel);
 		for (int i = 0; i < 3; i++) {

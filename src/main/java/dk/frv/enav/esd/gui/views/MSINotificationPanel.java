@@ -137,7 +137,7 @@ public class MSINotificationPanel extends JPanel {
 		((FlowLayout) headerPanel.getLayout()).setHgap(0);
 		leftPanel.add(headerPanel);
 
-		msiTable = new JTable();
+//		msiTable = new JTable();
 
 		msiTable = new JTable(model) {
 			private static final long serialVersionUID = 1L;
