@@ -374,7 +374,7 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 	public void loadData() {
 //		System.out.println("load data");
 		loading = true;
-		mmsiListComboBox.removeAllItems();
+//		mmsiListComboBox.removeAllItems();
 		for (int i = 0; i < aisHandler.getShipList().size(); i++) {
 			mmsiListComboBox.addItem(Long.toString(aisHandler.getShipList().get(i).MMSI));
 		}

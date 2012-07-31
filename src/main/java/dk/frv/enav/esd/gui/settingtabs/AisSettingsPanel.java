@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.JSpinner.NumberEditor;
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 
@@ -75,6 +76,7 @@ public class AisSettingsPanel extends JPanel{
 		textFieldAisHostOrSerialPort.setColumns(10);
 		
 		spinnerAisTcpPort = new JSpinner();
+		spinnerAisTcpPort.setEditor(new NumberEditor(spinnerAisTcpPort, "#"));
 		GuiStyler.styleSpinner(spinnerAisTcpPort);
 		spinnerAisTcpPort.setBounds(134, 65, 142, 20);
 		aisConnection.add(spinnerAisTcpPort);
