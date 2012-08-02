@@ -107,10 +107,12 @@ public class GuiStyler {
 		
 		label.addMouseListener(new MouseAdapter() {  
 		    public void mousePressed(MouseEvent e) {
+		    	if (label.isEnabled())
 		    	label.setBackground(new Color(45, 45, 45));
 		    }
 			
 		    public void mouseReleased(MouseEvent e) {
+		    	if (label.isEnabled())
 		    	label.setBackground(new Color(60, 60, 60));
 		    }
 		});

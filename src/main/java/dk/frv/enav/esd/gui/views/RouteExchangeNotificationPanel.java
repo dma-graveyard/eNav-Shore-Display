@@ -222,15 +222,14 @@ public class RouteExchangeNotificationPanel extends JPanel {
 		but_read.setPreferredSize(new Dimension(75, 20));
 		pane_3.add(but_read);
 		but_read.setEnabled(false);
-		
-		but_resend = new JLabel("Resend", new ImageIcon("images/notificationcenter/arrow-circle-315.png"), JLabel.CENTER);
+
+		but_resend = new JLabel("Resend", new ImageIcon("images/notificationcenter/arrow-circle-315.png"),
+				JLabel.CENTER);
 		GuiStyler.styleButton(but_resend);
 		but_resend.setPreferredSize(new Dimension(75, 20));
 		pane_3.add(but_resend);
 		but_resend.setEnabled(false);
 
-		
-		
 		but_goto = new JLabel("Goto", new ImageIcon("images/notificationcenter/map-pin.png"), JLabel.CENTER);
 		GuiStyler.styleButton(but_goto);
 		but_goto.setPreferredSize(new Dimension(75, 20));
@@ -338,7 +337,6 @@ public class RouteExchangeNotificationPanel extends JPanel {
 
 	public void readMessage(int selectedRow) {
 
-
 		if (routeTableModel.isAwk(selectedRow)) {
 			but_read.setEnabled(false);
 		} else {
@@ -369,67 +367,72 @@ public class RouteExchangeNotificationPanel extends JPanel {
 		but_read.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
 
-				RouteSuggestionData message = routeTableModel.getMessages().get(currentSelection);
+				if (but_read.isEnabled()) {
 
-				aisService.setAcknowledged(message.getMmsi(), message.getId());
-				routeTableModel.updateMessages();
-				but_read.setEnabled(false);
+					RouteSuggestionData message = routeTableModel.getMessages().get(currentSelection);
 
+					aisService.setAcknowledged(message.getMmsi(), message.getId());
+					routeTableModel.updateMessages();
+					but_read.setEnabled(false);
+				}
 			}
 		});
-		
+
 		but_resend.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
-				RouteSuggestionData message = routeTableModel.getMessages().get(currentSelection);
-				aisService.sendRouteSuggestion((int) message.getMmsi(), message.getRoute());
-				
-//				RouteSuggestionData message = routeTableModel.getMessages().get(currentSelection);
-//
-//				aisService.setAcknowledged(message.getMmsi(), message.getId());
-//				routeTableModel.updateMessages();
-//				but_read.setEnabled(false);
+				if (but_resend.isEnabled()) {
+					RouteSuggestionData message = routeTableModel.getMessages().get(currentSelection);
+					aisService.sendRouteSuggestion((int) message.getMmsi(), message.getRoute());
 
+					// RouteSuggestionData message =
+					// routeTableModel.getMessages().get(currentSelection);
+					//
+					// aisService.setAcknowledged(message.getMmsi(),
+					// message.getId());
+					// routeTableModel.updateMessages();
+					// but_read.setEnabled(false);
+				}
 			}
 		});
 
 		but_goto.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
+				if (but_goto.isEnabled()) {
+					RouteSuggestionData message = routeTableModel.getMessages().get(currentSelection);
 
-				RouteSuggestionData message = routeTableModel.getMessages().get(currentSelection);
-				
-				GeoLocation routeLocation = aisService.getRouteSuggestions().get(new RouteSuggestionKey(message.getMmsi(), message.getId())).getRoute().getWaypoints().getFirst().getPos();
-				
-				 if (ESD.getMainFrame().getActiveMapWindow() != null) {
-				 ESD.getMainFrame().getActiveMapWindow().getChartPanel()
-				 .zoomToPoint(routeLocation);
-				 } else if (ESD.getMainFrame().getMapWindows().size() > 0) {
-				 ESD.getMainFrame().getMapWindows().get(0).getChartPanel()
-				 .zoomToPoint(routeLocation);
-				 }
+					GeoLocation routeLocation = aisService.getRouteSuggestions()
+							.get(new RouteSuggestionKey(message.getMmsi(), message.getId())).getRoute().getWaypoints()
+							.getFirst().getPos();
 
+					if (ESD.getMainFrame().getActiveMapWindow() != null) {
+						ESD.getMainFrame().getActiveMapWindow().getChartPanel().zoomToPoint(routeLocation);
+					} else if (ESD.getMainFrame().getMapWindows().size() > 0) {
+						ESD.getMainFrame().getMapWindows().get(0).getChartPanel().zoomToPoint(routeLocation);
+					}
+
+				}
 			}
 		});
 
 		but_delete.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
+				if (but_delete.isEnabled()) {
+					RouteSuggestionData message = routeTableModel.getMessages().get(currentSelection);
 
-				RouteSuggestionData message = routeTableModel.getMessages().get(currentSelection);
+					aisService.removeSuggestion(message.getMmsi(), message.getId());
+					routeTableModel.updateMessages();
 
-				aisService.removeSuggestion(message.getMmsi(), message.getId());
-				routeTableModel.updateMessages();
+					routeTable.updateUI();
 
-				 routeTable.updateUI();
-				 
-				 if (routeTable.getRowCount() > 0){
-					 readMessage(0);	 
-				 }else{
-					 but_resend.setEnabled(false);
-					 but_delete.setEnabled(false);
-					 but_goto.setEnabled(false);
-					 but_read.setEnabled(false);
-				 }
-				 
-
+					if (routeTable.getRowCount() > 0) {
+						readMessage(0);
+					} else {
+						but_resend.setEnabled(false);
+						but_delete.setEnabled(false);
+						but_goto.setEnabled(false);
+						but_read.setEnabled(false);
+					}
+				}
 			}
 
 		});

@@ -48,7 +48,6 @@ import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -469,14 +468,14 @@ public class RouteManagerDialog extends ComponentFrame implements ActionListener
 		}
 	}
 
-	private void metocProperties() {
-		int i = routeTable.getSelectedRow();
-		if (i >= 0) {
-			RouteMetocDialog routeMetocDialog = new RouteMetocDialog((Window) parent, routeManager, i);
-			routeMetocDialog.setVisible(true);
-			routeManager.notifyListeners(RoutesUpdateEvent.METOC_SETTINGS_CHANGED);
-		}
-	}
+//	private void metocProperties() {
+//		int i = routeTable.getSelectedRow();
+//		if (i >= 0) {
+//			RouteMetocDialog routeMetocDialog = new RouteMetocDialog((Window) parent, routeManager, i);
+//			routeMetocDialog.setVisible(true);
+//			routeManager.notifyListeners(RoutesUpdateEvent.METOC_SETTINGS_CHANGED);
+//		}
+//	}
 
 	private void delete() {
 		if (routeTable.getSelectedRow() >= 0) {
