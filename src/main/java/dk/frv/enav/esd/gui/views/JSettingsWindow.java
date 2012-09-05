@@ -46,7 +46,6 @@ import dk.frv.enav.esd.layers.wms.WMSService;
 import dk.frv.enav.esd.services.shore.ShoreServices;
 import dk.frv.enav.esd.settings.Settings;
 import dk.frv.enav.esd.status.IStatusComponent;
-import dk.frv.enav.ins.EeINS;
 
 public class JSettingsWindow extends ComponentFrame implements MouseListener {
 

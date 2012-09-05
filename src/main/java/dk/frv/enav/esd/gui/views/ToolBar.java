@@ -362,9 +362,8 @@ public class ToolBar extends JInternalFrame {
 	
 	public void endRoute(){
 		
-		NewRouteContainerLayer newRouteLayer = ESD.getMainFrame().getMapWindows().get(0).getChartPanel().getNewRouteContainerLayer();
-		
-		
+		NewRouteContainerLayer newRouteLayer = ESD.getMainFrame().getActiveMapWindow().getChartPanel().getNewRouteContainerLayer();
+				
 		//Route saved
 		if (newRouteLayer.getRoute().getWaypoints().size() > 1) {
 			Route route = new Route(newRouteLayer.getRoute());
