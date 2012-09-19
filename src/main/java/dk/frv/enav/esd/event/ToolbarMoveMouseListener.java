@@ -88,7 +88,7 @@ public class ToolbarMoveMouseListener implements MouseListener, MouseMotionListe
 		
 		Point current = this.getScreenLocation(e);
 		
-		if(current != null) {
+		if(current != null && start_drag != null) {
 		
 			Point offset = new Point(
 					(int) current.getX() - (int) start_drag.getX(),
