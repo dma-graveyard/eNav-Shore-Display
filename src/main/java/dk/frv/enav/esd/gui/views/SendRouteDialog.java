@@ -314,7 +314,7 @@ public class SendRouteDialog extends ComponentFrame implements MouseListener, Ac
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 
-		if (arg0.getSource() == zoomLbl) {
+		if (arg0.getSource() == zoomLbl && route.getWaypoints() != null) {
 			
 			
 			 if (ESD.getMainFrame().getActiveMapWindow() != null) {
