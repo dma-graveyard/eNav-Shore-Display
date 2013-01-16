@@ -418,14 +418,18 @@ public class RouteExchangeNotificationPanel extends JPanel {
 			public void mouseReleased(MouseEvent e) {
 				if (but_delete.isEnabled()) {
 					RouteSuggestionData message = routeTableModel.getMessages().get(currentSelection);
-
+//					currentSelection = currentSelection-1;
+//					routeTable.getSelectedRow();
+					routeTable.setRowSelectionInterval(0, 0);
+					
+					
 					aisService.removeSuggestion(message.getMmsi(), message.getId());
 					routeTableModel.updateMessages();
 
 					routeTable.updateUI();
 
 					if (routeTable.getRowCount() > 0) {
-						readMessage(0);
+						readMessage(currentSelection);
 					} else {
 						but_resend.setEnabled(false);
 						but_delete.setEnabled(false);
